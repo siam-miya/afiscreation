@@ -1,37 +1,26 @@
+
 import ProductCard from "@/components/Main/ProductCard";
 import ProductToolbar from "@/components/Main/ProductToolbar";
 import SubBanner from "@/components/Main/SubBanner";
 import Pagination from "@/components/Main/Pagination";
 import FilterProduct from "@/components/Main/FilterProduct";
 
-export const metadata = {
-  title: "All Products || Afis Creation",
-  description: "Afis Creation all products page",
-};
+const SITE_URL = "https://afiscreation.com";
 
-const ProductsPage = async ({ searchParams }) => {
-  const resolvedSearchParams = await searchParams;
+export async function generateMetadata({
+  searchParams,
+}) {
+  const resolvedSearchParams =
+    await searchParams;
 
   const selectedCategory =
     resolvedSearchParams.category || "all";
 
   const selectedColor =
-    resolvedSearchParams.color || "all";
+    resolvedSearchParams.color || "";
 
   const sortBy =
-    resolvedSearchParams.sort || "default";
-
-  const limit =
-    parseInt(
-      resolvedSearchParams.limit || "16",
-      10
-    );
-
-  const currentPage =
-    parseInt(
-      resolvedSearchParams.page || "1",
-      10
-    );
+    resolvedSearchParams.sort || "";
 
   const minPrice =
     resolvedSearchParams.minPrice || "";
@@ -39,8 +28,254 @@ const ProductsPage = async ({ searchParams }) => {
   const maxPrice =
     resolvedSearchParams.maxPrice || "";
 
+  const currentPage =
+    resolvedSearchParams.page || "1";
+
+  try {
+    const apiUrl =
+      process.env.NEXT_PUBLIC_API_URL ||
+      "http://localhost:5000";
+
+    let categoryName = "";
+
+    if (
+      selectedCategory !== "all"
+    ) {
+      try {
+        const categoryRes =
+          await fetch(
+            `${apiUrl}/api/v1/categories/all`,
+            {
+              cache: "no-store",
+            }
+          );
+
+        const categoryResult =
+          await categoryRes.json();
+
+        if (
+          categoryResult.success &&
+          Array.isArray(
+            categoryResult.data
+          )
+        ) {
+          const matchedCategory =
+            categoryResult.data.find(
+              (category) =>
+                category._id ===
+                  selectedCategory ||
+                category.name
+                  ?.toLowerCase() ===
+                  selectedCategory.toLowerCase()
+            );
+
+          categoryName =
+            matchedCategory?.name ||
+            selectedCategory;
+        }
+      } catch (categoryError) {
+        console.error(
+          "Failed to fetch category for metadata:",
+          categoryError
+        );
+
+        categoryName =
+          selectedCategory;
+      }
+    }
+
+    const isFilteredPage =
+      Boolean(
+        selectedColor ||
+        sortBy ||
+        minPrice ||
+        maxPrice ||
+        currentPage !== "1"
+      );
+
+    if (
+      selectedCategory !== "all"
+    ) {
+      const title =
+        `${categoryName} Collection | Afis Creation`;
+
+      const description =
+        `Explore our ${categoryName} collection at Afis Creation. Shop elegant, premium and comfortable modest fashion in Bangladesh.`;
+
+      const categoryUrl =
+        `${SITE_URL}/products?category=${encodeURIComponent(
+          selectedCategory
+        )}`;
+
+      return {
+        title,
+
+        description,
+
+        alternates: {
+          canonical:
+            categoryUrl,
+        },
+
+        robots: {
+          index:
+            !isFilteredPage,
+          follow: true,
+
+          googleBot: {
+            index:
+              !isFilteredPage,
+            follow: true,
+            "max-image-preview":
+              "large",
+            "max-snippet": -1,
+            "max-video-preview":
+              -1,
+          },
+        },
+
+        openGraph: {
+          type: "website",
+          locale: "en_BD",
+          url: categoryUrl,
+          siteName:
+            "Afis Creation",
+          title,
+          description,
+        },
+
+        twitter: {
+          card:
+            "summary_large_image",
+          title,
+          description,
+        },
+      };
+    }
+
+    const productsUrl =
+      `${SITE_URL}/products`;
+
+    return {
+      title:
+        "All Products | Afis Creation",
+
+      description:
+        "Explore all premium abayas, borkhas and modest fashion products from Afis Creation in Bangladesh.",
+
+      alternates: {
+        canonical:
+          productsUrl,
+      },
+
+      robots: {
+        index:
+          !isFilteredPage,
+        follow: true,
+
+        googleBot: {
+          index:
+            !isFilteredPage,
+          follow: true,
+          "max-image-preview":
+            "large",
+          "max-snippet": -1,
+          "max-video-preview":
+            -1,
+        },
+      },
+
+      openGraph: {
+        type: "website",
+        locale: "en_BD",
+        url:
+          productsUrl,
+        siteName:
+          "Afis Creation",
+        title:
+          "All Products | Afis Creation",
+        description:
+          "Explore all premium abayas, borkhas and modest fashion products from Afis Creation in Bangladesh.",
+      },
+
+      twitter: {
+        card:
+          "summary_large_image",
+        title:
+          "All Products | Afis Creation",
+        description:
+          "Explore all premium abayas, borkhas and modest fashion products from Afis Creation in Bangladesh.",
+      },
+    };
+  } catch (error) {
+    console.error(
+      "Failed to generate products metadata:",
+      error
+    );
+
+    return {
+      title:
+        "All Products | Afis Creation",
+
+      description:
+        "Explore all premium abayas, borkhas and modest fashion products from Afis Creation in Bangladesh.",
+
+      alternates: {
+        canonical:
+          `${SITE_URL}/products`,
+      },
+
+      robots: {
+        index: true,
+        follow: true,
+      },
+    };
+  }
+}
+
+const ProductsPage = async ({
+  searchParams,
+}) => {
+  const resolvedSearchParams =
+    await searchParams;
+
+  const selectedCategory =
+    resolvedSearchParams.category ||
+    "all";
+
+  const selectedColor =
+    resolvedSearchParams.color ||
+    "all";
+
+  const sortBy =
+    resolvedSearchParams.sort ||
+    "default";
+
+  const limit =
+    parseInt(
+      resolvedSearchParams.limit ||
+        "16",
+      10
+    );
+
+  const currentPage =
+    parseInt(
+      resolvedSearchParams.page ||
+        "1",
+      10
+    );
+
+  const minPrice =
+    resolvedSearchParams.minPrice ||
+    "";
+
+  const maxPrice =
+    resolvedSearchParams.maxPrice ||
+    "";
+
   const view =
-    resolvedSearchParams.view || "4";
+    resolvedSearchParams.view ||
+    "4";
 
   let productsData = [];
   let totalResults = 0;
@@ -62,10 +297,6 @@ const ProductsPage = async ({ searchParams }) => {
       );
     }
 
-    // =================================================
-    // Color Filter
-    // =================================================
-
     if (
       selectedColor !== "all"
     ) {
@@ -74,10 +305,6 @@ const ProductsPage = async ({ searchParams }) => {
         selectedColor
       );
     }
-
-    // =================================================
-    // Price Filter
-    // =================================================
 
     if (minPrice) {
       queryParams.append(
@@ -92,10 +319,6 @@ const ProductsPage = async ({ searchParams }) => {
         maxPrice
       );
     }
-
-    // =================================================
-    // Sorting
-    // =================================================
 
     if (
       sortBy !== "default"
@@ -183,15 +406,21 @@ const ProductsPage = async ({ searchParams }) => {
         <div className="w-full pb-12 sm:pb-16 md:pb-26">
 
           <ProductToolbar
-            totalProducts={totalResults}
-            currentShowing={currentShowing}
+            totalProducts={
+              totalResults
+            }
+            currentShowing={
+              currentShowing
+            }
           />
 
           <div className="mt-5 grid w-full grid-cols-1 items-start gap-5 sm:mt-6 sm:gap-6 lg:grid-cols-4 lg:gap-8">
 
             {/* Left Sidebar */}
             <div className="relative z-20 w-full min-w-0 lg:sticky lg:top-24 lg:col-span-1 lg:self-start">
+
               <FilterProduct />
+
             </div>
 
             {/* Right Side: Products Grid */}
@@ -216,9 +445,13 @@ const ProductsPage = async ({ searchParams }) => {
                         }
                         className="flex w-full min-w-0"
                       >
+
                         <ProductCard
-                          product={product}
+                          product={
+                            product
+                          }
                         />
+
                       </div>
                     )
                   )
@@ -238,20 +471,25 @@ const ProductsPage = async ({ searchParams }) => {
               </div>
 
               {/* Pagination */}
-              {totalResults > limit && (
+              {totalResults >
+                limit && (
+
                 <div className="mt-7 w-full sm:mt-8 md:mt-12">
 
                   <Pagination
                     totalProducts={
                       totalResults
                     }
-                    limit={limit}
+                    limit={
+                      limit
+                    }
                     currentPage={
                       currentPage
                     }
                   />
 
                 </div>
+
               )}
 
             </div>

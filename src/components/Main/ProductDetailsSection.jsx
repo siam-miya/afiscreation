@@ -25,18 +25,12 @@ const ProductDetailsSection = ({ product }) => {
   const [showSizeChart, setShowSizeChart] = useState(false)
   const [showCustomization, setShowCustomization] = useState(false)
 
-  // =====================================================
-  // CONTACT SETTINGS
-  // =====================================================
-
   const [contactSettings, setContactSettings] = useState({
     enableWhatsapp: false,
     whatsappNumber: '',
     enablePhoneCall: false,
     phoneNumber: '',
   })
-
-  // Custom Measurement
   const [customLength, setCustomLength] = useState('')
   const [customHeight, setCustomHeight] = useState('')
   const [customWidth, setCustomWidth] = useState('')
@@ -571,10 +565,6 @@ Hello, I want to order this product. Please provide me with the next steps.
 
 }
 
-  // =====================================================
-  // ORDER ON CALL
-  // =====================================================
-
   const handleOrderOnCall = () => {
 
     if (
@@ -649,1243 +639,1373 @@ Hello, I want to order this product. Please provide me with the next steps.
   }
 
   return (
-    <>
-      <section className="w-full bg-white">
+  <>
+    <section className="w-full bg-white">
+      <div className="container mx-auto px-4 py-5 md:py-8">
 
-        <div className="container mx-auto px-4 py-6 md:py-10">
+        {/* =================================================
+            PRODUCT NAME - SCREENSHOT STYLE
+        ================================================= */}
 
-          {/* =================================================
-              TOP PRODUCT NAME
-          ================================================= */}
-
-          <div className="mb-6">
-
-            <span className="text-lg font-bold text-gray-900">
-              Product Name:{' '}
+        <div className="mb-7">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-base md:text-lg font-bold text-gray-900">
+              Product Name:
             </span>
 
-            <span className="text-lg font-normal text-gray-700">
+            <span className="text-base md:text-lg font-normal text-gray-700">
               {product?.title}
             </span>
 
             {product?.sku && (
-
-              <span className="ml-2 text-sm text-gray-500">
-
+              <span className="text-xs md:text-sm text-gray-400">
                 (SKU: {product.sku})
-
               </span>
-
             )}
+          </div>
+        </div>
+
+
+        {/* =================================================
+            MAIN PRODUCT AREA
+        ================================================= */}
+
+        <div className="grid grid-cols-1 lg:grid-cols-[1.08fr_0.92fr] gap-8 xl:gap-14 items-start">
+
+
+          {/* =================================================
+              LEFT SIDE - PRODUCT IMAGE
+          ================================================= */}
+
+          <div className="flex flex-col-reverse md:flex-row gap-4">
+
+
+            {/* =================================================
+                THUMBNAILS
+            ================================================= */}
+
+            {productImages.length > 1 && (
+              <div className="
+                flex
+                md:flex-col
+                gap-2.5
+                overflow-x-auto
+                md:overflow-y-auto
+                md:overflow-x-hidden
+                max-h-[510px]
+                pb-1
+                md:pb-0
+                scrollbar-thin
+                scrollbar-thumb-gray-200
+              ">
+
+                {productImages.map((image, index) => (
+                  <button
+                    key={`${image}-${index}`}
+                    type="button"
+                    onClick={() => setSelectedImage(index)}
+                    className={`
+                      relative
+                      h-[76px]
+                      w-[76px]
+                      md:h-[90px]
+                      md:w-[90px]
+                      flex-shrink-0
+                      overflow-hidden
+                      bg-white
+                      border
+                      transition-all
+                      duration-200
+                      ${
+                        selectedImage === index
+                          ? 'border-[#f27a1a] shadow-sm'
+                          : 'border-gray-200 hover:border-gray-400'
+                      }
+                    `}
+                  >
+                    <Image
+                      src={image}
+                      alt={`${product?.title || 'Product'} ${index + 1}`}
+                      fill
+                      className="object-contain p-2"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
+
+            <div
+              className="
+                relative
+                flex-1
+                h-[430px]
+                md:h-[500px]
+                overflow-hidden
+                border
+                border-gray-200
+                bg-white
+                flex
+                items-center
+                justify-center
+                group
+              "
+            >
+
+              {currentImage && (
+                <Image
+                  src={currentImage}
+                  alt={product?.title || 'Product image'}
+                  width={700}
+                  height={700}
+                  priority
+                  className="
+                    max-h-[410px]
+                    md:max-h-[460px]
+                    w-auto
+                    max-w-[90%]
+                    cursor-zoom-in
+                    object-contain
+                    transition-transform
+                    duration-300
+                    group-hover:scale-[1.02]
+                  "
+                  onClick={() => setIsImagePopupOpen(true)}
+                />
+              )}
+
+
+              {/* IMAGE ARROWS */}
+
+              {productImages.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={handlePreviousImage}
+                    className="
+                      absolute
+                      left-4
+                      top-1/2
+                      -translate-y-1/2
+                      flex
+                      h-9
+                      w-9
+                      items-center
+                      justify-center
+                      bg-white
+                      border
+                      border-gray-200
+                      text-gray-700
+                      shadow-sm
+                      opacity-0
+                      group-hover:opacity-100
+                      transition-all
+                      hover:bg-gray-50
+                    "
+                  >
+                    <MdOutlineKeyboardArrowLeft size={24} />
+                  </button>
+
+
+                  <button
+                    type="button"
+                    onClick={handleNextImage}
+                    className="
+                      absolute
+                      right-4
+                      top-1/2
+                      -translate-y-1/2
+                      flex
+                      h-9
+                      w-9
+                      items-center
+                      justify-center
+                      bg-white
+                      border
+                      border-gray-200
+                      text-gray-700
+                      shadow-sm
+                      opacity-0
+                      group-hover:opacity-100
+                      transition-all
+                      hover:bg-gray-50
+                    "
+                  >
+                    <MdOutlineKeyboardArrowRight size={24} />
+                  </button>
+                </>
+              )}
+
+            </div>
 
           </div>
 
 
-          <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 items-start">
+          {/* =================================================
+              RIGHT SIDE - PRODUCT INFORMATION
+          ================================================= */}
+
+          <div className="w-full lg:pt-1">
 
 
-            {/* =================================================
-                LEFT SIDE: IMAGES
-            ================================================= */}
+            {/* PRODUCT TITLE */}
 
-            <div className="flex flex-col-reverse md:flex-row gap-4">
+            <h1 className="
+              text-[27px]
+              md:text-[30px]
+              lg:text-[32px]
+              leading-tight
+              font-bold
+              tracking-[-0.5px]
+              text-gray-950
+            ">
+              {product?.title}
+            </h1>
 
 
-              {/* Vertical Thumbnails */}
+            {/* STOCK */}
 
-              {productImages.length > 1 && (
-
-                <div className="flex md:flex-col gap-3 overflow-x-auto md:overflow-y-auto max-h-[500px] pb-2 md:pb-0">
-
-                  {productImages.map(
-                    (image, index) => (
-
-                      <button
-                        key={`${image}-${index}`}
-                        type="button"
-                        onClick={() =>
-                          setSelectedImage(index)
-                        }
-                        className={`relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg border-2 bg-gray-50 ${
-                          selectedImage === index
-                            ? 'border-orange-500'
-                            : 'border-gray-200'
-                        }`}
-                      >
-
-                        <Image
-                          src={image}
-                          alt={`${product?.title || 'Product'} ${index + 1}`}
-                          fill
-                          className="object-contain p-1"
-                        />
-
-                      </button>
-
-                    )
-                  )}
-
-                </div>
-
+            <div className="mt-3">
+              {product?.stock > 0 ? (
+                <p className="text-sm font-medium text-[#00c853]">
+                  In Stock
+                </p>
+              ) : (
+                <p className="text-sm font-medium text-red-600">
+                  Out of Stock
+                </p>
               )}
+            </div>
 
+            <div className="mt-5 flex items-center gap-3 flex-wrap">
 
-              {/* Main Image */}
+              <span className="
+                text-[28px]
+                md:text-[30px]
+                font-extrabold
+                tracking-tight
+                text-gray-950
+              ">
+                ৳{finalUnitPrice}
+              </span>
 
-              <div className="relative flex-1 overflow-hidden rounded-xl border border-gray-200 bg-white p-4 flex items-center justify-center min-h-[400px]">
-
-                {currentImage && (
-
-                  <Image
-                    src={currentImage}
-                    alt={product?.title || 'Product image'}
-                    width={600}
-                    height={600}
-                    priority
-                    className="max-h-[450px] w-auto cursor-zoom-in object-contain"
-                    onClick={() =>
-                      setIsImagePopupOpen(true)
-                    }
-                  />
-
-                )}
-
-
-                {productImages.length > 1 && (
-
-                  <>
-
-                    <button
-                      type="button"
-                      onClick={
-                        handlePreviousImage
-                      }
-                      className="absolute left-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white shadow-md transition hover:bg-gray-100 border border-gray-100"
-                    >
-
-                      <MdOutlineKeyboardArrowLeft
-                        size={24}
-                      />
-
-                    </button>
-
-
-                    <button
-                      type="button"
-                      onClick={
-                        handleNextImage
-                      }
-                      className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white shadow-md transition hover:bg-gray-100 border border-gray-100"
-                    >
-
-                      <MdOutlineKeyboardArrowRight
-                        size={24}
-                      />
-
-                    </button>
-
-                  </>
-
-                )}
-
-              </div>
+              {product?.discountPrice > 0 && (
+                <span className="text-base text-gray-400 line-through">
+                  ৳{product.price}
+                </span>
+              )}
 
             </div>
 
 
             {/* =================================================
-                RIGHT SIDE
+                SHORT DESCRIPTION
             ================================================= */}
 
-            <div className="w-full">
-
-
-              {/* STOCK STATUS */}
-
-              <div className="mb-2">
-
-                {product?.stock > 0 ? (
-
-                  <p className="text-sm font-semibold text-[#00E676]">
-                    In Stock
-                  </p>
-
-                ) : (
-
-                  <p className="text-sm font-semibold text-red-600">
-                    Out of Stock
-                  </p>
-
-                )}
-
+            {product?.shortDescription && (
+              <div className="
+                mt-5
+                max-w-xl
+                text-sm
+                leading-6
+                text-gray-500
+              ">
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: product.shortDescription,
+                  }}
+                />
               </div>
+            )}
 
 
-              {/* =================================================
-                  PRICE SECTION
-              ================================================= */}
+            {/* =================================================
+                COLORS
+            ================================================= */}
 
-              <div className="mt-2 flex items-center gap-3 flex-wrap">
+            {productColors.length > 0 && (
+              <div className="mt-6">
 
-                <span className="text-3xl font-extrabold text-gray-900">
-
-                  ৳{finalUnitPrice}
-
-                </span>
-
-
-                {product?.discountPrice > 0 && (
-
-                  <span className="text-lg text-gray-400 line-through">
-
-                    ৳{product.price}
-
+                <h3 className="mb-3 text-sm font-semibold text-gray-900">
+                  Color:{' '}
+                  <span className="font-normal text-gray-500 capitalize">
+                    {selectedColor}
                   </span>
+                </h3>
 
-                )}
+                <div className="flex flex-wrap gap-2.5">
 
-              </div>
+                  {productColors.map((color, index) => {
+                    const colorName =
+                      color?.name || `Color ${index + 1}`
 
+                    const colorCode =
+                      color?.code || '#cccccc'
 
-              {/* =================================================
-                  SHORT DESCRIPTION
-              ================================================= */}
+                    const isSelected =
+                      selectedColorCode ===
+                      (color?.code || color?.name)
 
-              {product?.shortDescription && (
-
-                <div className="mt-4 text-sm text-gray-600 leading-relaxed">
-
-                  <div
-                    dangerouslySetInnerHTML={{
-                      __html:
-                        product.shortDescription
-                    }}
-                  />
-
-                </div>
-
-              )}
-
-
-              {/* =================================================
-                  COLORS
-              ================================================= */}
-
-              {productColors.length > 0 && (
-
-                <div className="mt-6">
-
-                  <h3 className="mb-2 font-semibold text-gray-900 text-sm">
-
-                    Color:{' '}
-
-                    <span className="font-normal text-gray-600 capitalize">
-
-                      {selectedColor}
-
-                    </span>
-
-                  </h3>
-
-
-                  <div className="flex flex-wrap gap-2">
-
-                    {productColors.map(
-                      (color, index) => {
-
-                        const colorName =
-                          color?.name ||
-                          `Color ${index + 1}`
-
-                        const colorCode =
-                          color?.code ||
-                          '#cccccc'
-
-                        const isSelected =
-                          selectedColorCode ===
-                          (
-                            color?.code ||
-                            color?.name
-                          )
-
-
-                        return (
-
-                          <button
-                            key={`${colorName}-${index}`}
-                            type="button"
-                            onClick={() =>
-                              handleColorClick(
-                                color
-                              )
-                            }
-                            title={colorName}
-                            className={`relative h-8 w-8 rounded-full border transition ${
-                              isSelected
-                                ? 'border-black ring-2 ring-orange-400'
-                                : 'border-gray-300'
-                            }`}
-                            style={{
-                              backgroundColor:
-                                colorCode
-                            }}
-                          />
-
-                        )
-
-                      }
-                    )}
-
-                  </div>
-
-                </div>
-
-              )}
-
-
-              {/* =================================================
-                  SIZES
-              ================================================= */}
-
-              {productSizes.length > 0 && (
-
-                <div className="mt-6">
-
-                  <div className="mb-2 flex items-center justify-between">
-
-                    <h3 className="font-semibold text-gray-900 text-sm">
-
-                      Size:{' '}
-
-                      <span className="font-normal text-gray-600">
-
-                        {selectedSize}
-
-                      </span>
-
-                    </h3>
-
-                  </div>
-
-
-                  <div className="flex flex-wrap gap-2">
-
-                    {productSizes.map(
-                      (size, index) => (
-
-                        <button
-                          key={`${size}-${index}`}
-                          type="button"
-                          onClick={() =>
-                            setSelectedSize(
-                              size
-                            )
+                    return (
+                      <button
+                        key={`${colorName}-${index}`}
+                        type="button"
+                        onClick={() => handleColorClick(color)}
+                        title={colorName}
+                        className={`
+                          relative
+                          h-8
+                          w-8
+                          rounded-full
+                          border
+                          transition-all
+                          cursor-pointer
+                          ${
+                            isSelected
+                              ? 'border-gray-900 ring-2 ring-[#f27a1a] ring-offset-1'
+                              : 'border-gray-300 hover:border-gray-500'
                           }
-                          className={`rounded-md border px-3 py-1.5 text-xs font-medium transition ${
-                            selectedSize === size
-                              ? 'border-orange-500 bg-orange-50 text-orange-600'
-                              : 'border-gray-300 bg-white text-gray-800 hover:border-gray-400'
-                          }`}
-                        >
-
-                          {size}
-
-                        </button>
-
-                      )
-                    )}
-
-                  </div>
+                        `}
+                        style={{
+                          backgroundColor: colorCode,
+                        }}
+                      />
+                    )
+                  })}
 
                 </div>
+              </div>
+            )}
 
-              )}
+            {productSizes.length > 0 && (
+              <div className="mt-6">
 
+                <div className="mb-3">
+                  <h3 className="text-sm font-semibold text-gray-900">
+                    Size:{' '}
+                    <span className="font-normal text-gray-500">
+                      {selectedSize}
+                    </span>
+                  </h3>
+                </div>
 
-              {/* =================================================
-                  CUSTOMIZE & SIZE CHART BUTTONS
-              ================================================= */}
+                <div className="flex flex-wrap gap-2">
 
-              <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {productSizes.map((size, index) => (
+                    <button
+                      key={`${size}-${index}`}
+                      type="button"
+                      onClick={() => setSelectedSize(size)}
+                      className={`
+                        min-w-[42px]
+                        h-9
+                        px-3
+                        border
+                        text-xs
+                        font-medium
+                        transition-all
+                        cursor-pointer
+                        ${
+                          selectedSize === size
+                            ? 'border-primary bg-primary text-white'
+                            : 'border-gray-300 bg-white text-gray-800 hover:border-gray-500'
+                        }
+                      `}
+                    >
+                      {size}
+                    </button>
+                  ))}
 
+                </div>
+              </div>
+            )}
 
-                {/* Customization Button */}
+            {(isCustomSizeEnabled || product?.sizeChartImage) && (
+              <div className="
+                mt-6
+                flex
+                flex-wrap
+                gap-3
+              ">
 
                 {isCustomSizeEnabled && (
-
                   <button
                     type="button"
-                    onClick={() =>
-                      setShowCustomization(true)
-                    }
-                    className="flex items-center justify-center gap-2 h-11 rounded-lg border-2 border-orange-500 bg-orange-50 text-orange-600 text-sm font-bold hover:bg-orange-100 transition"
+                    onClick={() => setShowCustomization(true)}
+                    className="
+                      h-10
+                      px-4
+                      flex
+                      items-center
+                      justify-center
+                      gap-2
+                      bg-primary
+                      text-white
+                      text-xs
+                      font-bold
+                      hover:bg-secondary
+                      hover:border-0
+                      transition
+                      cursor-pointer
+                    "
                   >
-
-                    <BiRuler
-                      size={18}
-                    />
+                    <BiRuler size={17} />
 
                     {customLength ||
                     customHeight ||
                     customWidth
-                      ? 'Customization Added ✓'
-                      : 'Custom Product Measurement'}
-
+                      ? 'Customization Added'
+                      : 'Custom Measurement'}
                   </button>
-
                 )}
 
 
-                {/* Size Chart Button */}
-
                 <button
                   type="button"
-                  onClick={() =>
-                    setShowSizeChart(true)
-                  }
-                  className="flex items-center justify-center gap-2 h-11 rounded-lg border border-gray-300 bg-white text-gray-700 text-sm font-bold hover:bg-gray-50 transition"
+                  onClick={() => setShowSizeChart(true)}
+                  className="
+                    h-10
+                    px-4
+                    flex
+                    items-center
+                    justify-center
+                    gap-2
+                    border
+                    border-gray-300
+                    bg-white
+                    text-gray-700
+                    text-xs
+                    font-bold
+                    hover:border-gray-500
+                    transition
+                    cursor-pointer
+                  "
                 >
-
                   <BiRuler
-                    size={18}
-                    className="text-orange-500"
+                    size={17}
+                    className="text-[#f27a1a]"
                   />
 
                   Size Chart
-
                 </button>
 
               </div>
+            )}
 
-
-              {/* =================================================
-                  QUANTITY & BUY NOW
-              ================================================= */}
-
-              <div className="mt-6 flex flex-wrap items-center gap-3">
-
-
-                {/* Quantity Counter */}
-
-                <div className="flex items-center overflow-hidden rounded-lg border border-gray-300 bg-white h-12">
-
-                  <button
-                    type="button"
-                    onClick={
-                      decreaseQuantity
-                    }
-                    disabled={
-                      quantity <= 1
-                    }
-                    className="flex h-full w-10 items-center justify-center text-gray-600 hover:bg-gray-100 disabled:opacity-40"
-                  >
-
-                    <FiMinus
-                      size={14}
-                    />
-
-                  </button>
-
-
-                  <span className="flex h-full w-10 items-center justify-center text-sm font-semibold text-gray-800">
-
-                    {quantity}
-
-                  </span>
-
-
-                  <button
-                    type="button"
-                    onClick={
-                      increaseQuantity
-                    }
-                    disabled={
-                      product?.stock > 0 &&
-                      quantity >=
-                        product.stock
-                    }
-                    className="flex h-full w-10 items-center justify-center text-gray-600 hover:bg-gray-100 disabled:opacity-40"
-                  >
-
-                    <FiPlus
-                      size={14}
-                    />
-
-                  </button>
-
-                </div>
-
-
-                {/* Buy Now */}
+            <div className="
+              mt-7
+              flex
+              items-stretch
+              gap-3
+            ">
+              <div className="
+                flex
+                h-12
+                shrink-0
+                items-center
+                border
+                border-gray-300
+                bg-white
+              ">
+                <button
+                  type="button"
+                  onClick={decreaseQuantity}
+                  disabled={quantity <= 1}
+                  className="
+                    flex
+                    h-full
+                    w-10
+                    items-center
+                    justify-center
+                    text-white
+                    bg-secondary
+                    disabled:opacity-40
+                    cursor-pointer
+                  "
+                >
+                  <FiMinus size={14} />
+                </button>
+                <span className="
+                  flex
+                  h-full
+                  w-10
+                  items-center
+                  justify-center
+                  border-x
+                  border-gray-200
+                  text-sm
+                  font-semibold
+                  text-gray-900
+                ">
+                  {quantity}
+                </span>
 
                 <button
                   type="button"
-                  onClick={
-                    handleBuyNow
-                  }
+                  onClick={increaseQuantity}
                   disabled={
-                    product?.stock <= 0
+                    product?.stock > 0 &&
+                    quantity >= product.stock
                   }
-                  className="flex-1 h-12 rounded-lg bg-[#f27a1a] px-6 text-sm font-bold text-white shadow hover:bg-[#e06d12] transition disabled:opacity-50"
+                  className="
+                    flex
+                    h-full
+                    w-10
+                    items-center
+                    justify-center
+                    text-white
+                    hover:bg-secondary
+                    disabled:opacity-40
+                    cursor-pointer
+                    bg-primary
+                  "
                 >
-
-                  Buy Now
-
+                  <FiPlus size={14} />
                 </button>
-
-
-                {/* Wishlist */}
-
-                <button
-                  type="button"
-                  onClick={
-                    handleWishlist
-                  }
-                  className="flex h-12 w-12 items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition"
-                >
-
-                  {isWishlisted ? (
-
-                    <FaHeart
-                      className="text-red-500"
-                      size={18}
-                    />
-
-                  ) : (
-
-                    <FaRegHeart
-                      size={18}
-                    />
-
-                  )}
-
-                </button>
-
               </div>
+              <button
+                type="button"
+                onClick={handleBuyNow}
+                disabled={product?.stock <= 0}
+                className="
+                  flex-1
+                  h-12
+                  min-w-[130px]
+                  bg-primary
+                  px-5
+                  text-sm
+                  font-bold
+                  text-white
+                  transition-all
+                  hover:bg-secondary
+                  active:scale-[0.99]
+                  disabled:cursor-not-allowed
+                  disabled:opacity-50
+                  cursor-pointer
+                "
+              >
+                Buy Now
+              </button>
 
-
-              {/* =================================================
-                  ADD TO CART
-              ================================================= */}
-
-              <div className="mt-3">
-
-                <div className="w-full [&>button]:w-full [&>button]:h-12 [&>button]:rounded-lg [&>button]:bg-black [&>button]:text-white [&>button]:font-bold [&>button]:text-sm">
-
-                  <AddToCartButton
-                    product={
-                      customizedProduct
-                    }
-
-                    selectedColor={
-                      selectedColor
-                    }
-
-                    selectedColorCode={
-                      selectedColorCode
-                    }
-
-                    selectedSize={
-                      selectedSize
-                    }
-
-                    quantity={
-                      quantity
-                    }
-
-                    customization={{
-                      length:
-                        customLength || '',
-
-                      height:
-                        customHeight || '',
-
-                      width:
-                        customWidth || '',
-                    }}
-
-                    disabled={
-                      product?.stock <= 0
-                    }
+              <button
+                type="button"
+                onClick={handleWishlist}
+                className="
+                  flex
+                  h-12
+                  w-12
+                  shrink-0
+                  items-center
+                  justify-center
+                  border
+                  border-gray-300
+                  bg-white
+                  text-gray-700
+                  transition
+                  hover:border-gray-500
+                  hover:bg-gray-50
+                "
+              >
+                {isWishlisted ? (
+                  <FaHeart
+                    className="text-red-500"
+                    size={18}
                   />
-
-                </div>
-
-              </div>
-
-
-              {/* =================================================
-                  WHATSAPP & CALL
-              ================================================= */}
-
-              {(contactSettings.enableWhatsapp &&
-                contactSettings.whatsappNumber) ||
-              (contactSettings.enablePhoneCall &&
-                contactSettings.phoneNumber) ? (
-
-                <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
-
-                  {/* WhatsApp */}
-
-                  {contactSettings.enableWhatsapp &&
-                    contactSettings.whatsappNumber && (
-
-                    <button
-                      type="button"
-                      onClick={
-                        handleWhatsApp
-                      }
-                      className="flex items-center justify-center gap-2 h-12 rounded-lg bg-[#25D366] px-4 text-sm font-bold text-white shadow-sm hover:opacity-95 transition"
-                    >
-
-                      <FaWhatsapp
-                        size={20}
-                      />
-
-                      WhatsApp Order
-
-                    </button>
-
-                  )}
-
-
-                  {/* Phone Call */}
-
-                  {contactSettings.enablePhoneCall &&
-                    contactSettings.phoneNumber && (
-
-                    <button
-                      type="button"
-                      onClick={
-                        handleOrderOnCall
-                      }
-                      className="flex items-center justify-center gap-2 h-12 rounded-lg bg-[#00B0FF] px-4 text-sm font-bold text-white shadow-sm hover:opacity-95 transition"
-                    >
-
-                      <FiPhoneCall
-                        size={18}
-                      />
-
-                      Order On Call
-
-                    </button>
-
-                  )}
-
-                </div>
-
-              ) : null}
-
-            </div>
-
-          </div>
-
-
-          {/* =====================================================
-              DESCRIPTION & TABS
-          ===================================================== */}
-
-          <div className="mt-14 border-t border-gray-200 pt-8">
-
-            <div className="flex border-b border-gray-200">
-
-              <button
-                type="button"
-                onClick={() =>
-                  setActiveTab(
-                    'description'
-                  )
-                }
-                className={`pb-3 px-4 text-sm font-bold border-b-2 transition ${
-                  activeTab ===
-                  'description'
-                    ? 'border-orange-500 text-orange-600'
-                    : 'border-transparent text-gray-600 hover:text-black'
-                }`}
-              >
-
-                Product Description
-
-              </button>
-
-
-              <button
-                type="button"
-                onClick={() =>
-                  setActiveTab(
-                    'additional'
-                  )
-                }
-                className={`pb-3 px-4 text-sm font-bold border-b-2 transition ${
-                  activeTab ===
-                  'additional'
-                    ? 'border-orange-500 text-orange-600'
-                    : 'border-transparent text-gray-600 hover:text-black'
-                }`}
-              >
-
-                Additional Information
-
+                ) : (
+                  <FaRegHeart size={18} />
+                )}
               </button>
 
             </div>
 
+            <div className="mt-3">
 
-            {activeTab ===
-              'description' && (
+              <div className="
+                w-full
+                [&>button]:w-full
+                [&>button]:h-12
+                [&>button]:rounded-none
+                [&>button]:bg-black
+                [&>button]:text-white
+                [&>button]:font-bold
+                [&>button]:text-sm
+                [&>button]:transition
+                [&>button:hover]:bg-gray-900
+              ">
 
-              <div className="py-6">
-
-                <div
-                  className="prose max-w-none text-sm leading-7 text-gray-600"
-                  dangerouslySetInnerHTML={{
-                    __html:
-                      product?.description ||
-                      '',
+                <AddToCartButton
+                  product={customizedProduct}
+                  selectedColor={selectedColor}
+                  selectedColorCode={selectedColorCode}
+                  selectedSize={selectedSize}
+                  quantity={quantity}
+                  customization={{
+                    length: customLength || '',
+                    height: customHeight || '',
+                    width: customWidth || '',
                   }}
+                  disabled={product?.stock <= 0}
                 />
 
               </div>
 
-            )}
+            </div>
 
+            {(contactSettings.enableWhatsapp &&
+              contactSettings.whatsappNumber) ||
+            (contactSettings.enablePhoneCall &&
+              contactSettings.phoneNumber) ? (
 
-            {activeTab ===
-              'additional' && (
+              <div className="
+                mt-3
+                grid
+                grid-cols-1
+                sm:grid-cols-2
+                gap-3
+              ">
 
-              <div className="py-6">
-
-                <div className="overflow-hidden rounded-lg border border-gray-200 max-w-xl">
-
-                  {product?.sku && (
-
-                    <div className="grid grid-cols-2 border-b border-gray-200">
-
-                      <div className="bg-gray-50 p-3 text-sm font-semibold">
-                        SKU
-                      </div>
-
-                      <div className="p-3 text-sm text-gray-600">
-                        {product.sku}
-                      </div>
-
-                    </div>
-
+                {contactSettings.enableWhatsapp &&
+                  contactSettings.whatsappNumber && (
+                    <button
+                      type="button"
+                      onClick={handleWhatsApp}
+                      className="
+                        flex
+                        h-11
+                        items-center
+                        justify-center
+                        gap-2
+                        bg-[#25D366]
+                        px-4
+                        text-sm
+                        font-bold
+                        text-white
+                        transition
+                        hover:brightness-95
+                        cursor-pointer
+                      "
+                    >
+                      <FaWhatsapp size={19} />
+                      WhatsApp Order
+                    </button>
                   )}
 
 
-                  {product?.category && (
-
-                    <div className="grid grid-cols-2 border-b border-gray-200">
-
-                      <div className="bg-gray-50 p-3 text-sm font-semibold">
-                        Category
-                      </div>
-
-                      <div className="p-3 text-sm text-gray-600">
-                        {product.category}
-                      </div>
-
-                    </div>
-
+                {contactSettings.enablePhoneCall &&
+                  contactSettings.phoneNumber && (
+                    <button
+                      type="button"
+                      onClick={handleOrderOnCall}
+                      className="
+                        flex
+                        h-11
+                        items-center
+                        justify-center
+                        gap-2
+                        bg-[#00B0FF]
+                        px-4
+                        text-sm
+                        font-bold
+                        text-white
+                        transition
+                        hover:brightness-95
+                        cursor-pointer
+                      "
+                    >
+                      <FiPhoneCall size={18} />
+                      Order On Call
+                    </button>
                   )}
-
-
-                  {productSizes.length > 0 && (
-
-                    <div className="grid grid-cols-2">
-
-                      <div className="bg-gray-50 p-3 text-sm font-semibold">
-                        Available Sizes
-                      </div>
-
-                      <div className="p-3 text-sm text-gray-600">
-                        {productSizes.join(', ')}
-                      </div>
-
-                    </div>
-
-                  )}
-
-
-                  {/* Custom Measurement Info */}
-
-                  {isCustomSizeEnabled && (
-
-                    <div className="grid grid-cols-2 border-t border-gray-200">
-
-                      <div className="bg-gray-50 p-3 text-sm font-semibold">
-                        Custom Measurement
-                      </div>
-
-                      <div className="p-3 text-sm text-gray-600">
-
-                        Available
-
-                        <span className="block text-xs text-orange-600 mt-1">
-                          Unit: {measurementUnit}
-                        </span>
-
-                      </div>
-
-                    </div>
-
-                  )}
-
-                </div>
 
               </div>
 
-            )}
+            ) : null}
 
           </div>
 
         </div>
 
-      </section>
+        <div className="mt-14 border-t border-gray-200 pt-8">
 
-
-      {/* =====================================================
-          IMAGE POPUP
-      ===================================================== */}
-
-      {isImagePopupOpen &&
-        currentImage && (
-
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4"
-          onClick={() =>
-            setIsImagePopupOpen(false)
-          }
-        >
-
-          <div
-            className="relative max-h-[90vh] max-w-5xl bg-white p-2 rounded-lg"
-            onClick={(e) =>
-              e.stopPropagation()
-            }
-          >
-
-            <Image
-              src={currentImage}
-              alt={
-                product?.title ||
-                'Product image'
-              }
-              width={1000}
-              height={1000}
-              className="max-h-[85vh] w-auto object-contain"
-            />
-
+          <div className="flex overflow-x-auto border-b border-gray-200">
 
             <button
               type="button"
-              onClick={() =>
-                setIsImagePopupOpen(
-                  false
-                )
-              }
-              className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-black text-white"
-            >
-
-              ×
-
-            </button>
-
-          </div>
-
-        </div>
-
-      )}
-
-
-      {/* =====================================================
-          SIZE CHART MODAL
-      ===================================================== */}
-
-      {showSizeChart && (
-
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4"
-          onClick={() =>
-            setShowSizeChart(false)
-          }
-        >
-
-          <div
-            className="relative max-h-[90vh] max-w-3xl overflow-auto rounded-xl bg-white p-4"
-            onClick={(e) =>
-              e.stopPropagation()
-            }
-          >
-
-            <button
-              type="button"
-              onClick={() =>
-                setShowSizeChart(false)
-              }
-              className="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-black text-white"
-            >
-
-              ×
-
-            </button>
-
-
-            {product?.sizeChartImage ? (
-
-              <Image
-                src={
-                  product.sizeChartImage
+              onClick={() => setActiveTab('description')}
+              className={`
+                shrink-0
+                px-5
+                pb-3
+                text-sm
+                font-bold
+                border-b-2
+                transition
+                cursor-pointer
+                ${
+                  activeTab === 'description'
+                    ? 'border-primary text-primary'
+                    : 'border-transparent text-gray-500 hover:text-gray-900'
                 }
-                alt="Size chart"
-                width={1000}
-                height={1000}
-                className="h-auto w-full object-contain"
+              `}
+            >
+              Product Description
+            </button>
+
+
+            <button
+              type="button"
+              onClick={() => setActiveTab('additional')}
+              className={`
+                shrink-0
+                px-5
+                pb-3
+                text-sm
+                font-bold
+                border-b-2
+                transition
+                cursor-pointer
+                ${
+                  activeTab === 'additional'
+                    ? 'border-primary text-primary'
+                    : 'border-transparent text-gray-500 hover:text-gray-900'
+                }
+              `}
+            >
+              Additional Information
+            </button>
+
+          </div>
+
+          {activeTab === 'description' && (
+            <div className="py-7">
+
+              <div
+                className="
+                  prose
+                  prose-sm
+                  max-w-none
+                  text-gray-600
+                  leading-7
+                  prose-headings:text-gray-900
+                  prose-a:text-primary
+                "
+                dangerouslySetInnerHTML={{
+                  __html: product?.description || '',
+                }}
               />
 
-            ) : (
+            </div>
+          )}
 
-              <div className="p-8 text-center text-gray-500">
 
-                No size chart available for this product.
+          {/* ADDITIONAL INFORMATION */}
+
+          {activeTab === 'additional' && (
+            <div className="py-7">
+
+              <div className="
+                overflow-hidden
+                border
+                border-gray-200
+                max-w-2xl
+              ">
+
+                {product?.sku && (
+                  <div className="grid grid-cols-2 border-b border-gray-200">
+
+                    <div className="
+                      bg-gray-50
+                      p-3
+                      text-sm
+                      font-semibold
+                      text-gray-800
+                    ">
+                      SKU
+                    </div>
+
+                    <div className="
+                      p-3
+                      text-sm
+                      text-gray-600
+                    ">
+                      {product.sku}
+                    </div>
+
+                  </div>
+                )}
+
+
+                {product?.category && (
+                  <div className="grid grid-cols-2 border-b border-gray-200">
+
+                    <div className="
+                      bg-gray-50
+                      p-3
+                      text-sm
+                      font-semibold
+                      text-gray-800
+                    ">
+                      Category
+                    </div>
+
+                    <div className="
+                      p-3
+                      text-sm
+                      text-gray-600
+                    ">
+                      {product.category}
+                    </div>
+
+                  </div>
+                )}
+
+
+                {productSizes.length > 0 && (
+                  <div className="grid grid-cols-2 border-b border-gray-200">
+
+                    <div className="
+                      bg-gray-50
+                      p-3
+                      text-sm
+                      font-semibold
+                      text-gray-800
+                    ">
+                      Available Sizes
+                    </div>
+
+                    <div className="
+                      p-3
+                      text-sm
+                      text-gray-600
+                    ">
+                      {productSizes.join(', ')}
+                    </div>
+
+                  </div>
+                )}
+
+
+                {isCustomSizeEnabled && (
+                  <div className="grid grid-cols-2">
+
+                    <div className="
+                      bg-gray-50
+                      p-3
+                      text-sm
+                      font-semibold
+                      text-gray-800
+                    ">
+                      Custom Measurement
+                    </div>
+
+                    <div className="
+                      p-3
+                      text-sm
+                      text-gray-600
+                    ">
+                      Available
+
+                      <span className="
+                        block
+                        mt-1
+                        text-xs
+                        text-primary
+                      ">
+                        Unit: {measurementUnit}
+                      </span>
+                    </div>
+
+                  </div>
+                )}
 
               </div>
 
-            )}
-
-          </div>
+            </div>
+          )}
 
         </div>
 
-      )}
+      </div>
+    </section>
 
-
-      {/* =====================================================
-          CUSTOMIZATION MODAL
-      ===================================================== */}
-
-      {showCustomization && (
+    {isImagePopupOpen && currentImage && (
+      <div
+        className="
+          fixed
+          inset-0
+          z-[100]
+          flex
+          items-center
+          justify-center
+          bg-black/80
+          p-4
+        "
+        onClick={() => setIsImagePopupOpen(false)}
+      >
 
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4"
-          onClick={() =>
-            setShowCustomization(false)
-          }
+          className="
+            relative
+            max-h-[90vh]
+            max-w-5xl
+            bg-white
+            p-2
+          "
+          onClick={(e) => e.stopPropagation()}
         >
 
-          <div
-            className="relative w-full max-w-md rounded-xl bg-white p-6 shadow-xl"
-            onClick={(e) =>
-              e.stopPropagation()
-            }
+          <Image
+            src={currentImage}
+            alt={product?.title || 'Product image'}
+            width={1000}
+            height={1000}
+            className="
+              max-h-[85vh]
+              w-auto
+              object-contain
+            "
+          />
+
+          <button
+            type="button"
+            onClick={() => setIsImagePopupOpen(false)}
+            className="
+              absolute
+              right-2
+              top-2
+              flex
+              h-8
+              w-8
+              items-center
+              justify-center
+              bg-black
+              text-white
+              text-lg
+            "
           >
+            ×
+          </button>
+
+        </div>
+
+      </div>
+    )}
+
+    {showSizeChart && (
+      <div
+        className="
+          fixed
+          inset-0
+          z-[100]
+          flex
+          items-center
+          justify-center
+          bg-black/70
+          p-4
+        "
+        onClick={() => setShowSizeChart(false)}
+      >
+
+        <div
+          className="
+            relative
+            max-h-[90vh]
+            max-w-3xl
+            overflow-auto
+            bg-white
+            p-4
+          "
+          onClick={(e) => e.stopPropagation()}
+        >
+
+          <button
+            type="button"
+            onClick={() => setShowSizeChart(false)}
+            className="
+              absolute
+              right-3
+              top-3
+              z-10
+              flex
+              h-8
+              w-8
+              items-center
+              justify-center
+              rounded-full
+              bg-black
+              text-white
+            "
+          >
+            ×
+          </button>
 
 
-            {/* Modal Header */}
+          {product?.sizeChartImage ? (
+            <Image
+              src={product.sizeChartImage}
+              alt="Size chart"
+              width={1000}
+              height={1000}
+              className="h-auto w-full object-contain"
+            />
+          ) : (
+            <div className="p-8 text-center text-gray-500">
+              No size chart available for this product.
+            </div>
+          )}
 
-            <div className="flex items-center justify-between mb-4">
+        </div>
 
-              <div>
+      </div>
+    )}
 
-                <h3 className="text-lg font-bold text-gray-900">
+    {showCustomization && (
+      <div
+        className="
+          fixed
+          inset-0
+          z-[100]
+          flex
+          items-center
+          justify-center
+          bg-black/70
+          p-4
+        "
+        onClick={() => setShowCustomization(false)}
+      >
 
-                  Custom Measurement
+        <div
+          className="
+            relative
+            w-full
+            max-w-md
+            bg-white
+            p-6
+            shadow-xl
+          "
+          onClick={(e) => e.stopPropagation()}
+        >
 
-                </h3>
+          <div className="mb-5 flex items-center justify-between">
 
-                <p className="mt-1 text-xs text-gray-500">
+            <div>
+              <h3 className="text-lg font-bold text-gray-900">
+                Custom Measurement
+              </h3>
 
-                  Enter your measurement in {measurementUnit}
+              <p className="mt-1 text-xs text-gray-500">
+                Enter your measurement in {measurementUnit}
+              </p>
+            </div>
 
-                </p>
+
+            <button
+              type="button"
+              onClick={() => setShowCustomization(false)}
+              className="
+                flex
+                h-8
+                w-8
+                items-center
+                justify-center
+                bg-gray-100
+                text-gray-700
+                hover:bg-gray-200
+              "
+            >
+              ×
+            </button>
+
+          </div>
+
+
+          <div className="space-y-4">
+
+            {/* LENGTH */}
+
+            <div>
+
+              <label className="
+                mb-1
+                block
+                text-sm
+                font-medium
+                text-gray-700
+              ">
+                Length
+              </label>
+
+              <div className="relative">
+
+                <input
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  value={customLength}
+                  onChange={(e) =>
+                    setCustomLength(e.target.value)
+                  }
+                  placeholder={
+                    measurementUnit === 'cm'
+                      ? 'e.g. 122'
+                      : 'e.g. 48'
+                  }
+                  className="
+                    w-full
+                    border
+                    border-gray-300
+                    p-2.5
+                    pr-14
+                    text-sm
+                    focus:border-primary
+                    focus:outline-none
+                  "
+                />
+
+                <span className="
+                  absolute
+                  right-3
+                  top-1/2
+                  -translate-y-1/2
+                  text-xs
+                  font-medium
+                  text-gray-500
+                ">
+                  {measurementUnit}
+                </span>
 
               </div>
-
-
-              <button
-                type="button"
-                onClick={() =>
-                  setShowCustomization(
-                    false
-                  )
-                }
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200"
-              >
-
-                ×
-
-              </button>
 
             </div>
 
 
-            <div className="space-y-4">
+            {/* HEIGHT */}
 
+            <div>
 
-              {/* =================================================
-                  LENGTH
-              ================================================= */}
+              <label className="
+                mb-1
+                block
+                text-sm
+                font-medium
+                text-gray-700
+              ">
+                Height
+              </label>
 
-              <div>
+              <div className="relative">
 
-                <label className="mb-1 block text-sm font-medium text-gray-700">
+                <input
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  value={customHeight}
+                  onChange={(e) =>
+                    setCustomHeight(e.target.value)
+                  }
+                  placeholder={
+                    measurementUnit === 'cm'
+                      ? 'e.g. 165'
+                      : 'e.g. 65'
+                  }
+                  className="
+                    w-full
+                    border
+                    border-gray-300
+                    p-2.5
+                    pr-14
+                    text-sm
+                    focus:border-primary
+                    focus:outline-none
+                  "
+                />
 
-                  Length
-
-                </label>
-
-                <div className="relative">
-
-                  <input
-                    type="number"
-                    min="0"
-                    step="0.1"
-                    value={
-                      customLength
-                    }
-                    onChange={(e) =>
-                      setCustomLength(
-                        e.target.value
-                      )
-                    }
-                    placeholder={
-                      measurementUnit === 'cm'
-                        ? 'e.g. 122'
-                        : 'e.g. 48'
-                    }
-                    className="w-full rounded-lg border border-gray-300 p-2.5 pr-14 text-sm focus:border-orange-500 focus:outline-none"
-                  />
-
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-gray-500">
-
-                    {measurementUnit}
-
-                  </span>
-
-                </div>
-
-              </div>
-
-
-              {/* =================================================
-                  HEIGHT
-              ================================================= */}
-
-              <div>
-
-                <label className="mb-1 block text-sm font-medium text-gray-700">
-
-                  Height
-
-                </label>
-
-                <div className="relative">
-
-                  <input
-                    type="number"
-                    min="0"
-                    step="0.1"
-                    value={
-                      customHeight
-                    }
-                    onChange={(e) =>
-                      setCustomHeight(
-                        e.target.value
-                      )
-                    }
-                    placeholder={
-                      measurementUnit === 'cm'
-                        ? 'e.g. 165'
-                        : 'e.g. 65'
-                    }
-                    className="w-full rounded-lg border border-gray-300 p-2.5 pr-14 text-sm focus:border-orange-500 focus:outline-none"
-                  />
-
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-gray-500">
-
-                    {measurementUnit}
-
-                  </span>
-
-                </div>
+                <span className="
+                  absolute
+                  right-3
+                  top-1/2
+                  -translate-y-1/2
+                  text-xs
+                  font-medium
+                  text-gray-500
+                ">
+                  {measurementUnit}
+                </span>
 
               </div>
-
-
-              {/* =================================================
-                  WIDTH
-              ================================================= */}
-
-              <div>
-
-                <label className="mb-1 block text-sm font-medium text-gray-700">
-
-                  Width / Chest
-
-                </label>
-
-                <div className="relative">
-
-                  <input
-                    type="number"
-                    min="0"
-                    step="0.1"
-                    value={
-                      customWidth
-                    }
-                    onChange={(e) =>
-                      setCustomWidth(
-                        e.target.value
-                      )
-                    }
-                    placeholder={
-                      measurementUnit === 'cm'
-                        ? 'e.g. 56'
-                        : 'e.g. 22'
-                    }
-                    className="w-full rounded-lg border border-gray-300 p-2.5 pr-14 text-sm focus:border-orange-500 focus:outline-none"
-                  />
-
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-gray-500">
-
-                    {measurementUnit}
-
-                  </span>
-
-                </div>
-
-              </div>
-
-
-              {/* =================================================
-                  MEASUREMENT SUMMARY
-              ================================================= */}
-
-              <div className="rounded-lg bg-orange-50 border border-orange-100 p-3">
-
-                <div className="mb-2 text-sm font-bold text-gray-900">
-
-                  Your Measurements
-
-                </div>
-
-                <div className="space-y-1 text-sm text-gray-600">
-
-                  <div className="flex justify-between">
-
-                    <span>
-                      Length
-                    </span>
-
-                    <span className="font-semibold text-gray-800">
-
-                      {customLength
-                        ? `${customLength} ${measurementUnit}`
-                        : 'Not provided'}
-
-                    </span>
-
-                  </div>
-
-
-                  <div className="flex justify-between">
-
-                    <span>
-                      Height
-                    </span>
-
-                    <span className="font-semibold text-gray-800">
-
-                      {customHeight
-                        ? `${customHeight} ${measurementUnit}`
-                        : 'Not provided'}
-
-                    </span>
-
-                  </div>
-
-
-                  <div className="flex justify-between">
-
-                    <span>
-                      Width / Chest
-                    </span>
-
-                    <span className="font-semibold text-gray-800">
-
-                      {customWidth
-                        ? `${customWidth} ${measurementUnit}`
-                        : 'Not provided'}
-
-                    </span>
-
-                  </div>
-
-                </div>
-
-              </div>
-
-
-              {/* =================================================
-                  PRICE INFO
-              ================================================= */}
-
-              <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
-
-                <div className="flex items-center justify-between">
-
-                  <span className="text-sm text-gray-600">
-
-                    Product Price
-
-                  </span>
-
-                  <span className="font-bold text-gray-900">
-
-                    ৳{baseProductPrice}
-
-                  </span>
-
-                </div>
-
-                <p className="mt-1 text-xs text-gray-500">
-
-                  Custom measurement-এর জন্য বর্তমানে কোনো extra charge নেই।
-
-                </p>
-
-              </div>
-
-
-              {/* =================================================
-                  SAVE BUTTON
-              ================================================= */}
-
-              <button
-                type="button"
-                onClick={() =>
-                  setShowCustomization(
-                    false
-                  )
-                }
-                className="w-full h-11 rounded-lg bg-orange-500 text-white font-bold text-sm hover:bg-orange-600 transition mt-2"
-              >
-
-                Save Measurements
-
-              </button>
 
             </div>
+
+
+            {/* WIDTH */}
+
+            <div>
+
+              <label className="
+                mb-1
+                block
+                text-sm
+                font-medium
+                text-gray-700
+              ">
+                Width / Chest
+              </label>
+
+              <div className="relative">
+
+                <input
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  value={customWidth}
+                  onChange={(e) =>
+                    setCustomWidth(e.target.value)
+                  }
+                  placeholder={
+                    measurementUnit === 'cm'
+                      ? 'e.g. 56'
+                      : 'e.g. 22'
+                  }
+                  className="
+                    w-full
+                    border
+                    border-gray-300
+                    p-2.5
+                    pr-14
+                    text-sm
+                    focus:border-primary
+                    focus:outline-none
+                  "
+                />
+
+                <span className="
+                  absolute
+                  right-3
+                  top-1/2
+                  -translate-y-1/2
+                  text-xs
+                  font-medium
+                  text-gray-500
+                ">
+                  {measurementUnit}
+                </span>
+
+              </div>
+
+            </div>
+
+
+            {/* SUMMARY */}
+
+            <div className="
+              border
+              border-orange-100
+              bg-orange-50
+              p-3
+            ">
+
+              <div className="
+                mb-2
+                text-sm
+                font-bold
+                text-gray-900
+              ">
+                Your Measurements
+              </div>
+
+              <div className="space-y-1 text-sm text-gray-600">
+
+                <div className="flex justify-between">
+                  <span>Length</span>
+
+                  <span className="font-semibold text-gray-800">
+                    {customLength
+                      ? `${customLength} ${measurementUnit}`
+                      : 'Not provided'}
+                  </span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span>Height</span>
+
+                  <span className="font-semibold text-gray-800">
+                    {customHeight
+                      ? `${customHeight} ${measurementUnit}`
+                      : 'Not provided'}
+                  </span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span>Width / Chest</span>
+
+                  <span className="font-semibold text-gray-800">
+                    {customWidth
+                      ? `${customWidth} ${measurementUnit}`
+                      : 'Not provided'}
+                  </span>
+                </div>
+
+              </div>
+
+            </div>
+
+
+            {/* PRICE */}
+
+            <div className="
+              border
+              border-gray-200
+              bg-gray-50
+              p-3
+            ">
+
+              <div className="flex items-center justify-between">
+
+                <span className="text-sm text-gray-600">
+                  Product Price
+                </span>
+
+                <span className="font-bold text-gray-900">
+                  ৳{baseProductPrice}
+                </span>
+
+              </div>
+
+              <p className="mt-1 text-xs text-gray-500">
+                Custom measurement-এর জন্য বর্তমানে কোনো extra charge নেই।
+              </p>
+
+            </div>
+
+
+            {/* SAVE */}
+
+            <button
+              type="button"
+              onClick={() => setShowCustomization(false)}
+              className="
+                mt-2
+                h-11
+                w-full
+                bg-primary
+                text-sm
+                font-bold
+                text-white
+                transition
+                hover:bg-secondary
+              "
+            >
+              Save Measurements
+            </button>
 
           </div>
 
         </div>
 
-      )}
+      </div>
+    )}
 
-    </>
-  )
+  </>
+)
 }
 
 export default ProductDetailsSection

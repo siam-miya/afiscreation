@@ -19,8 +19,6 @@ export default function SecretAdminLayout({ children }) {
 
   const isLoginPage =
     pathname.includes('/secret-admin-portal-afia/login');
-
-
   useEffect(() => {
 
     const savedTheme =

@@ -46,8 +46,7 @@ const Category = () => {
           const apiUrl =
             process.env.NEXT_PUBLIC_API_URL ||
             "http://localhost:5000";
-
-
+            
           const res =
             await axios.get(
               `${apiUrl}/api/v1/categories/all`
