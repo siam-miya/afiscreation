@@ -53,10 +53,6 @@ const ProductsPage = async ({ searchParams }) => {
     const queryParams =
       new URLSearchParams();
 
-    // =================================================
-    // Category Filter
-    // =================================================
-
     if (
       selectedCategory !== "all"
     ) {

@@ -461,19 +461,9 @@ export default function AddProductPage() {
           );
         }
       );
-
-      /*
-        API URL
-      */
-
       const apiUrl =
         process.env.NEXT_PUBLIC_API_URL ||
         'http://localhost:5000';
-
-      /*
-        CREATE PRODUCT
-      */
-
       const res = await fetch(
         `${apiUrl}/api/products`,
         {

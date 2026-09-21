@@ -240,10 +240,6 @@ const CheckoutForm = () => {
         process.env.NEXT_PUBLIC_API_URL ||
         "http://localhost:5000";
 
-      // ---------------------------------
-      // Order payload
-      // ---------------------------------
-
       const orderPayload = {
         fullName:
           formData.fullName.trim(),

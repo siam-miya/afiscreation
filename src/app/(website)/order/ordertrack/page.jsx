@@ -34,11 +34,6 @@ const OrderTrack = () => {
   const apiUrl =
     process.env.NEXT_PUBLIC_API_URL ||
     "http://localhost:5000";
-
-  // =====================================
-  // AUTO LOAD ORDER ID FROM THANK YOU PAGE
-  // =====================================
-
   useEffect(() => {
     const orderId = searchParams.get("orderId");
 

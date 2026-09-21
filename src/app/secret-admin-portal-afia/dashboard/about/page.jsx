@@ -25,8 +25,6 @@ const AboutAdmin = () => {
 
   const BASE_URL =
     process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-
-  // ডাটাবেজ থেকে আগের ডাটা লোড করা
   useEffect(() => {
     const fetchAboutData = async () => {
       try {

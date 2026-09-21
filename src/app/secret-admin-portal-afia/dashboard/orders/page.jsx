@@ -67,10 +67,6 @@ const OrdersPage = () => {
   const [editingAddress, setEditingAddress] =
     useState("");
 
-  // ========================================
-  // DELETE ORDER STATE
-  // ========================================
-
   const [deleteOrder, setDeleteOrder] =
     useState(null);
 
@@ -78,10 +74,6 @@ const OrdersPage = () => {
     process.env.NEXT_PUBLIC_API_URL ||
     "http://localhost:5000"
   ).replace(/\/+$/, "");
-
-  // ========================================
-  // FETCH ORDERS
-  // ========================================
 
   const fetchOrders = async () => {
     try {

@@ -8,9 +8,13 @@ import { toast } from 'react-toastify';
 const LoginButton = () => {
     const router = useRouter();
 
+    const apiUrl =
+        process.env.NEXT_PUBLIC_API_URL ||
+        "http://localhost:5000";
+
     const handleSuccess = async (credentialResponse) => {
         try {
-            const res = await fetch('http://localhost:5000/api/auth/google', {
+            const res = await fetch(`${apiUrl}/api/auth/google`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -61,3 +65,4 @@ const LoginButton = () => {
 };
 
 export default LoginButton;
+

@@ -1,9 +1,5 @@
 
-
 const nextConfig = {
-  // ========================================
-  // NEXT IMAGE CONFIGURATION
-  // ========================================
 
   images: {
     remotePatterns: [
@@ -28,36 +24,7 @@ const nextConfig = {
       },
     ],
   },
-
-  // ========================================
-  // REACT COMPILER
-  // ========================================
-
   reactCompiler: true,
-
-  // ========================================
-  // BACKEND API PROXY
-  // ========================================
-  // Frontend:
-  // /api/...
-  //
-  // will be forwarded to:
-  // http://localhost:5000/api/...
-  //
-  // Examples:
-  //
-  // /api/orders
-  //      ↓
-  // http://localhost:5000/api/orders
-  //
-  // /api/courier/pathao-settings
-  //      ↓
-  // http://localhost:5000/api/courier/pathao-settings
-  //
-  // /api/fraud/check/:orderId
-  //      ↓
-  // http://localhost:5000/api/fraud/check/:orderId
-  // ========================================
 
   async rewrites() {
     return [
@@ -65,7 +32,7 @@ const nextConfig = {
         source: "/api/:path*",
 
         destination:
-          "http://localhost:5000/api/:path*",
+          `${process.env.NEXT_PUBLIC_API_URL}/api/:path*`,
       },
     ];
   },
