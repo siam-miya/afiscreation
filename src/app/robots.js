@@ -1,4 +1,4 @@
-const SITE_URL = "https://afiscreation.com";
+const SITE_URL = "https://www.afiscreation.com";
 
 export default function robots() {
   return {
