@@ -1,0 +1,786 @@
+@import "tailwindcss";
+
+@import "@heroui/styles";
+@custom-variant dark (&:where(.dark, .dark *));
+
+.container {
+
+  max-width: 1320px;
+
+  margin: auto;
+
+}
+
+@theme {
+
+  --font-poppins: var(--font-poppins), sans-serif;
+
+  --font-inter: var(--font-inter), sans-serif;
+
+  --color-primary: #6a313d;
+
+  --color-secondary: #a77d48;
+
+}
+
+/* flash sales section */
+
+.mySwiper {
+
+  overflow: hidden !important;
+
+  padding-top: 24px !important;
+
+  padding-bottom: 24px !important;
+
+  margin-top: -24px !important;
+
+  margin-bottom: calc(51px - 24px) !important;
+
+}
+
+.mySwiper .swiper-wrapper {
+
+  overflow: visible !important;
+
+}
+
+.mySwiper .swiper-slide {
+
+  overflow: visible !important;
+
+}
+
+/* Swiper Custom Dash Pagination Triggers */
+
+.custom-swiper .swiper-pagination {
+
+  bottom: 16px !important;
+
+  left: 0 !important;
+
+  width: 100% !important;
+
+  display: flex !important;
+
+  justify-content: center !important;
+
+  align-items: center !important;
+
+  gap: 6px !important;
+
+}
+
+.custom-swiper .swiper-pagination-bullet {
+
+  width: 16px !important;
+
+  height: 4px !important;
+
+  border-radius: 2px !important;
+
+  background-color: rgba(255, 255, 255, 0.5) !important;
+
+  opacity: 1 !important;
+
+  margin: 0 !important;
+
+  transition: all 0.3s ease !important;
+
+}
+
+.custom-swiper .swiper-pagination-bullet-active {
+
+  width: 32px !important;
+
+  background-color: #ffffff !important;
+
+}
+
+/* related items */
+
+.swiper-button-lock {
+
+  display: flex !important;
+
+}
+
+
+/* =========================================
+   ADMIN PANEL DARK MODE
+========================================= */
+
+html.dark .admin-main [class~="bg-white"] {
+
+  background-color: #0f172a !important;
+
+}
+
+html.dark .admin-main [class~="bg-gray-50"] {
+
+  background-color: #0f172a !important;
+
+}
+
+html.dark .admin-main [class~="bg-gray-100"] {
+
+  background-color: #1e293b !important;
+
+}
+
+html.dark .admin-main [class~="text-gray-900"],
+html.dark .admin-main [class~="text-gray-800"] {
+
+  color: #f8fafc !important;
+
+}
+
+html.dark .admin-main [class~="text-gray-700"] {
+
+  color: #e2e8f0 !important;
+
+}
+
+html.dark .admin-main [class~="text-gray-600"] {
+
+  color: #cbd5e1 !important;
+
+}
+
+html.dark .admin-main [class~="text-gray-500"] {
+
+  color: #94a3b8 !important;
+
+}
+
+html.dark .admin-main [class~="text-gray-400"] {
+
+  color: #64748b !important;
+
+}
+
+html.dark .admin-main [class~="border-gray-100"],
+html.dark .admin-main [class~="border-gray-200"] {
+
+  border-color: #1e293b !important;
+
+}
+
+html.dark .admin-main [class~="hover:bg-white"]:hover {
+
+  background-color: #0f172a !important;
+
+}
+
+html.dark .admin-main [class~="hover:bg-gray-50"]:hover {
+
+  background-color: #1e293b !important;
+
+}
+
+html.dark .admin-main [class~="hover:bg-gray-100"]:hover {
+
+  background-color: #1e293b !important;
+
+}
+
+html.dark .admin-main [class~="hover:bg-gray-50/70"]:hover {
+
+  background-color: rgba(30, 41, 59, 0.7) !important;
+
+}
+
+
+/* =========================================
+   ADMIN CATEGORY PAGE
+   LIGHT MODE
+========================================= */
+
+html:not(.dark) .admin-category-page [class~="bg-[#1e293b]"] {
+
+  background-color: #ffffff !important;
+
+}
+
+html:not(.dark) .admin-category-page [class~="bg-[#0f172a]"] {
+
+  background-color: #f8fafc !important;
+
+}
+
+html:not(.dark) .admin-category-page [class~="bg-[#0f172a]/60"] {
+
+  background-color: rgba(241, 245, 249, 0.8) !important;
+
+}
+
+html:not(.dark) .admin-category-page [class~="bg-[#0f172a]/30"] {
+
+  background-color: rgba(248, 250, 252, 0.8) !important;
+
+}
+
+html:not(.dark) .admin-category-page [class~="bg-[#162032]"] {
+
+  background-color: #f1f5f9 !important;
+
+}
+
+html:not(.dark) .admin-category-page [class~="bg-[#162032]/60"] {
+
+  background-color: rgba(241, 245, 249, 0.8) !important;
+
+}
+
+
+/* Light Text */
+
+html:not(.dark) .admin-category-page [class~="text-white"] {
+
+  color: #0f172a !important;
+
+}
+
+html:not(.dark) .admin-category-page [class~="text-slate-200"] {
+
+  color: #1e293b !important;
+
+}
+
+html:not(.dark) .admin-category-page [class~="text-slate-300"] {
+
+  color: #334155 !important;
+
+}
+
+html:not(.dark) .admin-category-page [class~="text-slate-400"] {
+
+  color: #64748b !important;
+
+}
+
+html:not(.dark) .admin-category-page [class~="text-slate-500"] {
+
+  color: #64748b !important;
+
+}
+
+
+/* Light Border */
+
+html:not(.dark) .admin-category-page [class~="border-slate-800"] {
+
+  border-color: #e2e8f0 !important;
+
+}
+
+html:not(.dark) .admin-category-page [class~="border-slate-700"] {
+
+  border-color: #cbd5e1 !important;
+
+}
+
+html:not(.dark) .admin-category-page [class~="border-slate-600/30"] {
+
+  border-color: rgba(148, 163, 184, 0.3) !important;
+
+}
+
+
+/* Light Input */
+
+html:not(.dark) .admin-category-page input,
+html:not(.dark) .admin-category-page select {
+
+  background-color: #f8fafc !important;
+
+  color: #0f172a !important;
+
+  border-color: #cbd5e1 !important;
+
+}
+
+html:not(.dark) .admin-category-page select option {
+
+  background-color: #ffffff !important;
+
+  color: #0f172a !important;
+
+}
+
+
+/* Light Hover */
+
+html:not(.dark) .admin-category-page [class~="hover:bg-[#162032]"]:hover {
+
+  background-color: #f1f5f9 !important;
+
+}
+
+html:not(.dark) .admin-category-page [class~="hover:bg-[#162032]/60"]:hover {
+
+  background-color: #f1f5f9 !important;
+
+}
+
+
+/* Light Empty Icon */
+
+html:not(.dark) .admin-category-page [class~="bg-slate-800"] {
+
+  background-color: #e2e8f0 !important;
+
+}
+
+
+/* =========================================
+   ADMIN CATEGORY PAGE
+   DARK MODE
+========================================= */
+
+html.dark .admin-category-page [class~="bg-[#1e293b]"] {
+
+  background-color: #1e293b !important;
+
+}
+
+html.dark .admin-category-page [class~="bg-[#0f172a]"] {
+
+  background-color: #0f172a !important;
+
+}
+
+html.dark .admin-category-page [class~="bg-[#0f172a]/60"] {
+
+  background-color: rgba(15, 23, 42, 0.6) !important;
+
+}
+
+html.dark .admin-category-page [class~="bg-[#0f172a]/30"] {
+
+  background-color: rgba(15, 23, 42, 0.3) !important;
+
+}
+
+html.dark .admin-category-page [class~="bg-[#162032]"] {
+
+  background-color: #162032 !important;
+
+}
+
+html.dark .admin-category-page [class~="bg-[#162032]/60"] {
+
+  background-color: rgba(22, 32, 50, 0.6) !important;
+
+}
+
+
+/* Dark Text */
+
+html.dark .admin-category-page [class~="text-white"] {
+
+  color: #ffffff !important;
+
+}
+
+html.dark .admin-category-page [class~="text-slate-200"] {
+
+  color: #e2e8f0 !important;
+
+}
+
+html.dark .admin-category-page [class~="text-slate-300"] {
+
+  color: #cbd5e1 !important;
+
+}
+
+html.dark .admin-category-page [class~="text-slate-400"] {
+
+  color: #94a3b8 !important;
+
+}
+
+html.dark .admin-category-page [class~="text-slate-500"] {
+
+  color: #64748b !important;
+
+}
+
+
+/* Dark Border */
+
+html.dark .admin-category-page [class~="border-slate-800"] {
+
+  border-color: #1e293b !important;
+
+}
+
+html.dark .admin-category-page [class~="border-slate-700"] {
+
+  border-color: #334155 !important;
+
+}
+
+html.dark .admin-category-page [class~="border-slate-600/30"] {
+
+  border-color: rgba(71, 85, 105, 0.3) !important;
+
+}
+
+
+/* Dark Input */
+
+html.dark .admin-category-page input,
+html.dark .admin-category-page select {
+
+  background-color: #0f172a !important;
+
+  color: #ffffff !important;
+
+  border-color: #334155 !important;
+
+}
+
+html.dark .admin-category-page select option {
+
+  background-color: #0f172a !important;
+
+  color: #ffffff !important;
+
+}
+
+
+/* Dark Empty Icon */
+
+html.dark .admin-category-page [class~="bg-slate-800"] {
+
+  background-color: #1e293b !important;
+
+}
+
+
+html:not(.dark) .admin-product-list [class~="bg-white"] {
+  background-color: #ffffff !important;
+}
+
+html:not(.dark) .admin-product-list [class~="bg-slate-50"] {
+  background-color: #f8fafc !important;
+}
+
+html:not(.dark) .admin-product-list [class~="text-white"] {
+  color: #0f172a !important;
+}
+
+html:not(.dark) .admin-product-list [class~="text-slate-400"] {
+  color: #64748b !important;
+}
+
+html:not(.dark) .admin-product-list [class~="text-slate-500"] {
+  color: #64748b !important;
+}
+
+html:not(.dark) .admin-product-list [class~="border-slate-200"] {
+  border-color: #e2e8f0 !important;
+}
+
+html:not(.dark) .admin-product-list [class~="border-slate-100"] {
+  border-color: #f1f5f9 !important;
+}
+
+html:not(.dark) .admin-product-list [class~="border-slate-700"] {
+  border-color: #cbd5e1 !important;
+}
+
+html:not(.dark) .admin-product-list [class~="divide-slate-100"] > :not([hidden]) ~ :not([hidden]) {
+  border-color: #f1f5f9 !important;
+}
+
+html:not(.dark) .admin-product-list [class~="hover:bg-slate-50"]:hover {
+  background-color: #f8fafc !important;
+}
+
+
+/* =========================================
+   ADMIN PRODUCT LIST PAGE
+   DARK MODE
+========================================= */
+
+html.dark .admin-product-list [class~="bg-white"] {
+  background-color: #0f172a !important;
+}
+
+html.dark .admin-product-list [class~="bg-slate-50"] {
+  background-color: #1e293b !important;
+}
+
+html.dark .admin-product-list [class~="text-black"] {
+  color: #ffffff !important;
+}
+
+html.dark .admin-product-list [class~="text-white"] {
+  color: #ffffff !important;
+}
+
+html.dark .admin-product-list [class~="text-slate-400"] {
+  color: #94a3b8 !important;
+}
+
+html.dark .admin-product-list [class~="text-slate-500"] {
+  color: #cbd5e1 !important;
+}
+
+html.dark .admin-product-list [class~="text-slate-600"] {
+  color: #cbd5e1 !important;
+}
+
+html.dark .admin-product-list [class~="border-slate-200"] {
+  border-color: #1e293b !important;
+}
+
+html.dark .admin-product-list [class~="border-slate-100"] {
+  border-color: #1e293b !important;
+}
+
+html.dark .admin-product-list [class~="border-slate-700"] {
+  border-color: #334155 !important;
+}
+
+html.dark .admin-product-list [class~="divide-slate-100"] > :not([hidden]) ~ :not([hidden]) {
+  border-color: #1e293b !important;
+}
+
+html.dark .admin-product-list [class~="divide-slate-800"] > :not([hidden]) ~ :not([hidden]) {
+  border-color: #1e293b !important;
+}
+
+html.dark .admin-product-list [class~="hover:bg-slate-50"]:hover {
+  background-color: #1e293b !important;
+}
+
+html.dark .admin-product-list [class~="hover:bg-slate-800/50"]:hover {
+  background-color: rgba(30, 41, 59, 0.5) !important;
+}
+
+html:not(.dark) .admin-orders-page [class~="bg-white"] {
+  background-color: #ffffff !important;
+}
+
+html:not(.dark) .admin-orders-page [class~="bg-gray-50"] {
+  background-color: #f8fafc !important;
+}
+
+html:not(.dark) .admin-orders-page [class~="bg-gray-50/70"] {
+  background-color: rgba(248, 250, 252, 0.7) !important;
+}
+
+html:not(.dark) .admin-orders-page [class~="bg-gray-50/50"] {
+  background-color: rgba(248, 250, 252, 0.5) !important;
+}
+
+html:not(.dark) .admin-orders-page [class~="bg-gray-100"] {
+  background-color: #f1f5f9 !important;
+}
+
+
+/* Light Text */
+
+html:not(.dark) .admin-orders-page [class~="text-gray-900"] {
+  color: #0f172a !important;
+}
+
+html:not(.dark) .admin-orders-page [class~="text-gray-800"] {
+  color: #1e293b !important;
+}
+
+html:not(.dark) .admin-orders-page [class~="text-gray-700"] {
+  color: #334155 !important;
+}
+
+html:not(.dark) .admin-orders-page [class~="text-gray-600"] {
+  color: #475569 !important;
+}
+
+html:not(.dark) .admin-orders-page [class~="text-gray-500"] {
+  color: #64748b !important;
+}
+
+html:not(.dark) .admin-orders-page [class~="text-gray-400"] {
+  color: #94a3b8 !important;
+}
+
+html:not(.dark) .admin-orders-page [class~="text-gray-300"] {
+  color: #cbd5e1 !important;
+}
+
+
+/* Light Border */
+
+html:not(.dark) .admin-orders-page [class~="border-gray-100"] {
+  border-color: #f1f5f9 !important;
+}
+
+html:not(.dark) .admin-orders-page [class~="border-gray-200"] {
+  border-color: #e2e8f0 !important;
+}
+
+
+/* Light Hover */
+
+html:not(.dark) .admin-orders-page [class~="hover:bg-gray-50"]:hover {
+  background-color: #f8fafc !important;
+}
+
+html:not(.dark) .admin-orders-page [class~="hover:bg-gray-100"]:hover {
+  background-color: #f1f5f9 !important;
+}
+
+html:not(.dark) .admin-orders-page [class~="hover:bg-white"]:hover {
+  background-color: #ffffff !important;
+}
+
+
+/* Light Inputs */
+
+html:not(.dark) .admin-orders-page input,
+html:not(.dark) .admin-orders-page textarea,
+html:not(.dark) .admin-orders-page select {
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+  border-color: #e2e8f0 !important;
+}
+
+html:not(.dark) .admin-orders-page input::placeholder,
+html:not(.dark) .admin-orders-page textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+
+/* =========================================
+   ADMIN ORDERS PAGE
+   DARK MODE
+========================================= */
+
+html.dark .admin-orders-page [class~="bg-white"] {
+  background-color: #0f172a !important;
+}
+
+html.dark .admin-orders-page [class~="bg-gray-50"] {
+  background-color: #1e293b !important;
+}
+
+html.dark .admin-orders-page [class~="bg-gray-50/70"] {
+  background-color: rgba(30, 41, 59, 0.7) !important;
+}
+
+html.dark .admin-orders-page [class~="bg-gray-50/50"] {
+  background-color: rgba(30, 41, 59, 0.5) !important;
+}
+
+html.dark .admin-orders-page [class~="bg-gray-100"] {
+  background-color: #334155 !important;
+}
+
+
+/* Dark Text */
+
+html.dark .admin-orders-page [class~="text-gray-900"] {
+  color: #f8fafc !important;
+}
+
+html.dark .admin-orders-page [class~="text-gray-800"] {
+  color: #f1f5f9 !important;
+}
+
+html.dark .admin-orders-page [class~="text-gray-700"] {
+  color: #e2e8f0 !important;
+}
+
+html.dark .admin-orders-page [class~="text-gray-600"] {
+  color: #cbd5e1 !important;
+}
+
+html.dark .admin-orders-page [class~="text-gray-500"] {
+  color: #94a3b8 !important;
+}
+
+html.dark .admin-orders-page [class~="text-gray-400"] {
+  color: #64748b !important;
+}
+
+html.dark .admin-orders-page [class~="text-gray-300"] {
+  color: #475569 !important;
+}
+
+
+/* Dark Border */
+
+html.dark .admin-orders-page [class~="border-gray-100"] {
+  border-color: #1e293b !important;
+}
+
+html.dark .admin-orders-page [class~="border-gray-200"] {
+  border-color: #334155 !important;
+}
+
+
+/* Dark Hover */
+
+html.dark .admin-orders-page [class~="hover:bg-gray-50"]:hover {
+  background-color: #1e293b !important;
+}
+
+html.dark .admin-orders-page [class~="hover:bg-gray-100"]:hover {
+  background-color: #334155 !important;
+}
+
+html.dark .admin-orders-page [class~="hover:bg-white"]:hover {
+  background-color: #0f172a !important;
+}
+
+
+/* Dark Inputs */
+
+html.dark .admin-orders-page input,
+html.dark .admin-orders-page textarea,
+html.dark .admin-orders-page select {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+
+html.dark .admin-orders-page input::placeholder,
+html.dark .admin-orders-page textarea::placeholder {
+  color: #64748b !important;
+}
+
+
+/* =========================================
+   ORDER PRODUCT BOX
+========================================= */
+
+html.dark .admin-orders-page [class~="border-orange-100"] {
+  border-color: #7c2d12 !important;
+}
+
+
+/* =========================================
+   ORDER MODAL
+========================================= */
+
+html.dark .admin-orders-page [class~="border-gray-300"] {
+  border-color: #475569 !important;
+}
+
+html.dark .admin-orders-page [class~="hover:bg-gray-200"]:hover {
+  background-color: #475569 !important;
+}
+
+
+/* =========================================
+   ORDER DIVIDERS
+========================================= */
+
+html.dark .admin-orders-page [class~="divide-gray-200"] > :not([hidden]) ~ :not([hidden]) {
+  border-color: #334155 !important;
+}
