@@ -18,6 +18,7 @@ import {
   Package,
   MapPin,
   Phone,
+  Check,
 } from "lucide-react";
 
 import html2canvas from "html2canvas";
@@ -44,20 +45,12 @@ function ThankYouContent() {
 
   const invoiceRef = useRef(null);
 
-  // ==========================================
-  // LOAD ORDER DETAILS
-  // ==========================================
-
   useEffect(() => {
     const orderId = searchParams.get("orderId");
 
     if (!orderId) return;
 
     const cleanOrderId = orderId.trim().toUpperCase();
-
-    // ------------------------------------------
-    // 1. FIRST TRY LOCAL STORAGE
-    // ------------------------------------------
 
     const savedOrder = localStorage.getItem(
       `order_${orderId}`
@@ -94,10 +87,6 @@ function ThankYouContent() {
         );
       }
     }
-
-    // ------------------------------------------
-    // 2. FALLBACK TO BACKEND
-    // ------------------------------------------
 
     const apiUrl =
       process.env.NEXT_PUBLIC_API_URL ||
@@ -180,66 +169,142 @@ function ThankYouContent() {
       });
   }, [searchParams]);
 
-  // ==========================================
-  // DOWNLOAD INVOICE PDF
-  // ==========================================
+ const downloadInvoicePdf = async () => {
+  if (
+    !invoiceRef.current ||
+    isGeneratingPdf
+  ) {
+    return;
+  }
 
-  const downloadInvoicePdf = async () => {
-    if (!invoiceRef.current) return;
+  setIsGeneratingPdf(true);
 
-    setIsGeneratingPdf(true);
+  try {
+    await new Promise((resolve) =>
+      requestAnimationFrame(resolve)
+    );
 
-    try {
-      const canvas = await html2canvas(
-        invoiceRef.current,
-        {
-          scale: 2,
-          useCORS: true,
-          logging: false,
-        }
+    const canvas = await html2canvas(
+      invoiceRef.current,
+      {
+        scale: 2,
+        useCORS: true,
+        allowTaint: false,
+        backgroundColor: "#ffffff",
+        logging: false,
+        imageTimeout: 15000,
+        removeContainer: true,
+        foreignObjectRendering: false,
+      }
+    );
+
+    const imgData =
+      canvas.toDataURL(
+        "image/png",
+        1.0
       );
 
-      const imgData =
-        canvas.toDataURL("image/png");
+    const pdf = new jsPDF(
+      "p",
+      "mm",
+      "a4"
+    );
 
-      const pdf = new jsPDF(
-        "p",
-        "mm",
-        "a4"
-      );
+    const pdfWidth =
+      pdf.internal.pageSize.getWidth();
 
-      const pdfWidth =
-        pdf.internal.pageSize.getWidth();
+    const pdfPageHeight =
+      pdf.internal.pageSize.getHeight();
 
-      const pdfHeight =
-        (canvas.height * pdfWidth) /
-        canvas.width;
+    const imgHeight =
+      (canvas.height * pdfWidth) /
+      canvas.width;
+
+    let heightLeft = imgHeight;
+    let position = 0;
+
+    pdf.addImage(
+      imgData,
+      "PNG",
+      0,
+      position,
+      pdfWidth,
+      imgHeight,
+      undefined,
+      "FAST"
+    );
+
+    heightLeft -= pdfPageHeight;
+
+    while (heightLeft > 0) {
+      position =
+        heightLeft - imgHeight;
+
+      pdf.addPage();
 
       pdf.addImage(
         imgData,
         "PNG",
         0,
-        0,
+        position,
         pdfWidth,
-        pdfHeight
+        imgHeight,
+        undefined,
+        "FAST"
       );
 
-      pdf.save(
-        `Invoice-${orderDetails.orderId || "Afis"}.pdf`
-      );
-    } catch (error) {
-      console.error(
-        "PDF generation failed:",
-        error
-      );
-    } finally {
-      setIsGeneratingPdf(false);
+      heightLeft -= pdfPageHeight;
     }
-  };
 
-  // ==========================================
-  // SUBTOTAL
-  // ==========================================
+    const fileName =
+      `Invoice-${orderDetails.orderId || "Afis"}.pdf`;
+
+    const pdfBlob =
+      pdf.output("blob");
+
+    const blobUrl =
+      URL.createObjectURL(pdfBlob);
+
+    const downloadLink =
+      document.createElement("a");
+
+    downloadLink.href =
+      blobUrl;
+
+    downloadLink.download =
+      fileName;
+
+    downloadLink.style.display =
+      "none";
+
+    document.body.appendChild(
+      downloadLink
+    );
+
+    downloadLink.click();
+
+    document.body.removeChild(
+      downloadLink
+    );
+
+    setTimeout(() => {
+      URL.revokeObjectURL(blobUrl);
+    }, 1000);
+
+  } catch (error) {
+    console.error(
+      "PDF generation failed:",
+      error
+    );
+
+    alert(
+      "Invoice download failed. Please try again."
+    );
+
+  } finally {
+    setIsGeneratingPdf(false);
+  }
+};
 
   const subtotalAmount =
     Array.isArray(orderDetails.cart)
@@ -255,28 +320,20 @@ function ThankYouContent() {
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
-        {/* ==========================================
-            SUCCESS HEADER
-        ========================================== */}
-
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center mb-8">
+        <div className="bg-white rounded-bl-4xl rounded-tr-4xl shadow  border border-gray-100 p-8 text-center mb-8">
           <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
-            <CheckCircle2 className="w-10 h-10" />
+            <Check className="w-10 h-10"/>  
           </div>
-
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
             Order Placed Successfully!
           </h1>
-
           <p className="text-gray-600 mb-6">
             Thank you for shopping with{" "}
-            <span className="font-semibold text-amber-700">
+            <span className="font-semibold text-primary">
               Afis Creation
             </span>
             . We have received your order.
           </p>
-
-          {/* ORDER ID */}
 
           <div className="inline-block bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 mb-6">
             <span className="text-sm text-gray-500">
@@ -289,17 +346,11 @@ function ThankYouContent() {
             </span>
           </div>
 
-          {/* ==========================================
-              ACTION BUTTONS
-          ========================================== */}
-
           <div className="flex flex-wrap justify-center gap-4">
-            {/* DOWNLOAD INVOICE */}
-
             <button
               onClick={downloadInvoicePdf}
               disabled={isGeneratingPdf}
-              className="inline-flex items-center gap-2 bg-amber-700 hover:bg-amber-800 text-white font-medium px-6 py-2.5 rounded-xl transition-colors shadow-sm disabled:opacity-50 cursor-pointer"
+              className="inline-flex items-center gap-2 bg-primary hover:bg-secondary text-white font-medium px-6 py-2.5 transition-colors shadow-sm disabled:opacity-50 cursor-pointer rounded-tl-2xl"
             >
               <Download className="w-4 h-4" />
 
@@ -307,42 +358,31 @@ function ThankYouContent() {
                 ? "Generating PDF..."
                 : "Download Invoice"}
             </button>
-
-            {/* TRACK ORDER */}
-
             <Link
               href={`/order/ordertrack?orderId=${encodeURIComponent(
                 orderDetails.orderId
               )}`}
-              className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-medium px-6 py-2.5 rounded-xl transition-colors shadow-sm"
+              className="inline-flex items-center gap-2 bg-secondary hover:bg-slate-800 text-white font-medium px-6 py-2.5 transition-colors shadow-sm rounded-br-2xl"
             >
               <Package className="w-4 h-4" />
               Track My Order
             </Link>
 
-            {/* BACK HOME */}
-
             <Link
               href="/"
-              className="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 font-medium px-6 py-2.5 rounded-xl border border-gray-300 transition-colors"
+              className="inline-flex items-center gap-2 text-white bg-black hover:bg-secondary font-medium px-6 py-2.5 rounded-br-3xl rounded-tl-2xl border border-gray-300 transition-colors "
             >
               <Home className="w-4 h-4" />
               Back to Home
             </Link>
           </div>
         </div>
-
-        {/* ==========================================
-            ORDER SUMMARY
-        ========================================== */}
-
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 mb-8">
+ 
+        <div className="bg-white rounded-bl-4xl rounded-tr-4xl shadow border border-gray-100 p-6 sm:p-8 mb-8">
           <h3 className="text-lg font-bold text-gray-900 mb-4 pb-2 border-b border-gray-100 flex items-center gap-2">
             <Package className="w-5 h-5 text-amber-700" />
             Order Summary
           </h3>
-
-          {/* CUSTOMER + ADDRESS */}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 text-sm">
             {/* CUSTOMER */}
@@ -590,10 +630,6 @@ function ThankYouContent() {
             </div>
           </div>
         </div>
-
-        {/* ==========================================
-            HIDDEN PROFESSIONAL INVOICE
-        ========================================== */}
 
         <div
           style={{

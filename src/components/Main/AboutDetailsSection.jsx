@@ -36,7 +36,7 @@ const AboutDetailsSection = ({ data }) => {
           </div>
         </div>
 
-        <div className="w-full h-[350px] md:h-[450px] rounded-tl-[150px] md:rounded-tl-[300px] rounded-br-[100px] md:rounded-br-[200px] relative overflow-hidden bg-pink-100 flex items-center justify-center">
+        <div className="w-full h-[350px] md:h-[450px] rounded-md relative overflow-hidden bg-pink-100 flex items-center justify-center">
           {data?.aboutImage && (
             <Image 
               src={imageUrl} 

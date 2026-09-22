@@ -173,10 +173,6 @@ const Navbar = () => {
 
     }, []);
 
-    // =====================================================
-    // Product Search
-    // =====================================================
-
     useEffect(() => {
 
         const searchProducts = async () => {
@@ -254,10 +250,6 @@ const Navbar = () => {
 
     }, [searchQuery]);
 
-    // =====================================================
-    // Close Search Dropdown
-    // =====================================================
-
     useEffect(() => {
 
         const handleClickOutside = (
@@ -290,10 +282,6 @@ const Navbar = () => {
 
     }, []);
 
-    // =====================================================
-    // Search Submit
-    // =====================================================
-
     const handleSearchSubmit = (e) => {
 
         e.preventDefault();
@@ -307,9 +295,7 @@ const Navbar = () => {
                     searchQuery.trim()
                 )}`
             );
-
         }
-
     };
 
     const handleProfileClick = (e) => {
@@ -366,9 +352,7 @@ const Navbar = () => {
                 "Logout error",
                 error
             );
-
         }
-
     };
 
     return (
@@ -633,7 +617,8 @@ const Navbar = () => {
 
                                 <Image
                                     src={wishlistIcon}
-                                    fill
+                                    width={24}
+                                    height={24}
                                     sizes="24px"
                                     alt="wishlist"
                                     className="object-contain"

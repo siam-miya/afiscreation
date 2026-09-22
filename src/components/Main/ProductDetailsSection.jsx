@@ -73,10 +73,6 @@ const ProductDetailsSection = ({ product }) => {
       item.id === product?._id
   )
 
-  // =====================================================
-  // FETCH FLOATING CONTACT SETTINGS
-  // =====================================================
-
   useEffect(() => {
 
     const fetchContactSettings = async () => {
@@ -136,10 +132,6 @@ const ProductDetailsSection = ({ product }) => {
 
   }, [])
 
-  // =====================================================
-  // CUSTOM SIZE STATUS
-  // =====================================================
-
   const isCustomSizeEnabled =
     product?.hasCustomSize === true ||
     product?.hasCustomSize === 'true' ||
@@ -151,10 +143,6 @@ const ProductDetailsSection = ({ product }) => {
       ? 'cm'
       : 'inch'
 
-  // =====================================================
-  // PRODUCT PRICE
-  // =====================================================
-
   const baseProductPrice =
     Number(product?.discountPrice) > 0
       ? Number(product.discountPrice)
@@ -164,31 +152,19 @@ const ProductDetailsSection = ({ product }) => {
 
   const customizedProduct = {
     ...product,
-
-    // Normal product price
     price: finalUnitPrice,
-
-    // Keep original discount behavior
     discountPrice: product?.discountPrice || 0,
-
-    // Selected product options
     selectedColor,
     selectedColorCode,
     selectedSize,
     quantity,
     selectedImage: currentImage,
-
-    // Custom measurement info
     customization: {
       length: customLength || '',
       height: customHeight || '',
       width: customWidth || '',
     },
   }
-
-  // =====================================================
-  // RESET WHEN PRODUCT CHANGES
-  // =====================================================
 
   useEffect(() => {
 
@@ -236,10 +212,6 @@ const ProductDetailsSection = ({ product }) => {
 
   }, [product])
 
-  // =====================================================
-  // COLOR CLICK
-  // =====================================================
-
   const handleColorClick = (color) => {
 
     setSelectedColor(
@@ -276,10 +248,6 @@ const ProductDetailsSection = ({ product }) => {
 
   }
 
-  // =====================================================
-  // IMAGE NAVIGATION
-  // =====================================================
-
   const handlePreviousImage = () => {
 
     if (
@@ -315,10 +283,6 @@ const ProductDetailsSection = ({ product }) => {
 
   }
 
-  // =====================================================
-  // QUANTITY
-  // =====================================================
-
   const increaseQuantity = () => {
 
     if (
@@ -346,10 +310,6 @@ const ProductDetailsSection = ({ product }) => {
 
   }
 
-  // =====================================================
-  // WISHLIST
-  // =====================================================
-
   const handleWishlist = () => {
 
     if (!product) {
@@ -359,10 +319,6 @@ const ProductDetailsSection = ({ product }) => {
     toggleWishlist(product)
 
   }
-
-  // =====================================================
-  // NORMALIZE WHATSAPP NUMBER
-  // =====================================================
 
   const normalizeWhatsappNumber = (
     number
@@ -403,10 +359,6 @@ const ProductDetailsSection = ({ product }) => {
 
   }
 
-  // =====================================================
-  // NORMALIZE PHONE NUMBER
-  // =====================================================
-
   const normalizePhoneNumber = (
     number
   ) => {
@@ -431,7 +383,6 @@ const ProductDetailsSection = ({ product }) => {
     let digits =
       raw.replace(/\D/g, '')
 
-    // 018XXXXXXXX
     if (
       digits.startsWith('0')
     ) {
@@ -440,8 +391,6 @@ const ProductDetailsSection = ({ product }) => {
         `88${digits}`
 
     }
-
-    // 18XXXXXXXX
     else if (
       digits.length === 10 &&
       digits.startsWith('1')
@@ -456,41 +405,37 @@ const ProductDetailsSection = ({ product }) => {
 
   }
 
-  // =====================================================
-  // WHATSAPP ORDER
-  // =====================================================
+  const handleWhatsApp = () => {
 
- const handleWhatsApp = () => {
+    if (
+      !contactSettings.enableWhatsapp ||
+      !contactSettings.whatsappNumber
+    ) {
 
-  if (
-    !contactSettings.enableWhatsapp ||
-    !contactSettings.whatsappNumber
-  ) {
+      return
 
-    return
+    }
 
-  }
+    const whatsappNumber =
+      normalizeWhatsappNumber(
+        contactSettings.whatsappNumber
+      )
 
-  const whatsappNumber =
-    normalizeWhatsappNumber(
-      contactSettings.whatsappNumber
-    )
+    if (!whatsappNumber) {
 
-  if (!whatsappNumber) {
+      return
 
-    return
+    }
 
-  }
+    const totalPrice =
+      baseProductPrice * quantity
 
-  const totalPrice =
-    baseProductPrice * quantity
+    const productLink =
+      typeof window !== 'undefined'
+        ? window.location.href
+        : ''
 
-  const productLink =
-    typeof window !== 'undefined'
-      ? window.location.href
-      : ''
-
-  const message = `
+    const message = `
 
 🛍️ NEW PRODUCT ORDER INQUIRY
 
@@ -523,22 +468,22 @@ Size: ${selectedSize || 'Not selected'}
 📏 CUSTOM MEASUREMENT
 
 Length: ${
-    customLength
-      ? `${customLength} ${measurementUnit}`
-      : 'Not provided'
-  }
+      customLength
+        ? `${customLength} ${measurementUnit}`
+        : 'Not provided'
+    }
 
 Height: ${
-    customHeight
-      ? `${customHeight} ${measurementUnit}`
-      : 'Not provided'
-  }
+      customHeight
+        ? `${customHeight} ${measurementUnit}`
+        : 'Not provided'
+    }
 
 Width / Chest: ${
-    customWidth
-      ? `${customWidth} ${measurementUnit}`
-      : 'Not provided'
-  }
+      customWidth
+        ? `${customWidth} ${measurementUnit}`
+        : 'Not provided'
+    }
 
 ━━━━━━━━━━━━━━━━━━
 
@@ -552,18 +497,18 @@ Hello, I want to order this product. Please provide me with the next steps.
 
 `
 
-  const whatsappUrl =
-    `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
-      message
-    )}`
+    const whatsappUrl =
+      `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
+        message
+      )}`
 
-  window.open(
-    whatsappUrl,
-    '_blank',
-    'noopener,noreferrer'
-  )
+    window.open(
+      whatsappUrl,
+      '_blank',
+      'noopener,noreferrer'
+    )
 
-}
+  }
 
   const handleOrderOnCall = () => {
 
@@ -591,10 +536,6 @@ Hello, I want to order this product. Please provide me with the next steps.
       `tel:${phoneNumber}`
 
   }
-
-  // =====================================================
-  // BUY NOW
-  // =====================================================
 
   const handleBuyNow = () => {
 
@@ -643,10 +584,6 @@ Hello, I want to order this product. Please provide me with the next steps.
     <section className="w-full bg-white">
       <div className="container mx-auto px-4 py-5 md:py-8">
 
-        {/* =================================================
-            PRODUCT NAME - SCREENSHOT STYLE
-        ================================================= */}
-
         <div className="mb-7">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-base md:text-lg font-bold text-gray-900">
@@ -665,25 +602,8 @@ Hello, I want to order this product. Please provide me with the next steps.
           </div>
         </div>
 
-
-        {/* =================================================
-            MAIN PRODUCT AREA
-        ================================================= */}
-
         <div className="grid grid-cols-1 lg:grid-cols-[1.08fr_0.92fr] gap-8 xl:gap-14 items-start">
-
-
-          {/* =================================================
-              LEFT SIDE - PRODUCT IMAGE
-          ================================================= */}
-
           <div className="flex flex-col-reverse md:flex-row gap-4">
-
-
-            {/* =================================================
-                THUMBNAILS
-            ================================================= */}
-
             {productImages.length > 1 && (
               <div className="
                 flex
@@ -718,7 +638,7 @@ Hello, I want to order this product. Please provide me with the next steps.
                       duration-200
                       ${
                         selectedImage === index
-                          ? 'border-[#f27a1a] shadow-sm'
+                          ? 'border-primary shadow-sm'
                           : 'border-gray-200 hover:border-gray-400'
                       }
                     `}
@@ -773,9 +693,6 @@ Hello, I want to order this product. Please provide me with the next steps.
                 />
               )}
 
-
-              {/* IMAGE ARROWS */}
-
               {productImages.length > 1 && (
                 <>
                   <button
@@ -804,7 +721,6 @@ Hello, I want to order this product. Please provide me with the next steps.
                   >
                     <MdOutlineKeyboardArrowLeft size={24} />
                   </button>
-
 
                   <button
                     type="button"
@@ -836,33 +752,22 @@ Hello, I want to order this product. Please provide me with the next steps.
               )}
 
             </div>
-
           </div>
-
-
-          {/* =================================================
-              RIGHT SIDE - PRODUCT INFORMATION
-          ================================================= */}
 
           <div className="w-full lg:pt-1">
 
-
-            {/* PRODUCT TITLE */}
-
             <h1 className="
-              text-[27px]
-              md:text-[30px]
-              lg:text-[32px]
-              leading-tight
+              text-[22px]
+              md:text-[24px]
+              lg:text-[26px]
+              leading-7
               font-bold
               tracking-[-0.5px]
               text-gray-950
+              font-inter
             ">
               {product?.title}
             </h1>
-
-
-            {/* STOCK */}
 
             <div className="mt-3">
               {product?.stock > 0 ? (
@@ -876,11 +781,10 @@ Hello, I want to order this product. Please provide me with the next steps.
               )}
             </div>
 
-            <div className="mt-5 flex items-center gap-3 flex-wrap">
-
+            <div className="mt-2 flex items-center gap-3 flex-wrap">
               <span className="
-                text-[28px]
-                md:text-[30px]
+                text-[22px]
+                md:text-[24px]
                 font-extrabold
                 tracking-tight
                 text-gray-950
@@ -896,18 +800,14 @@ Hello, I want to order this product. Please provide me with the next steps.
 
             </div>
 
-
-            {/* =================================================
-                SHORT DESCRIPTION
-            ================================================= */}
-
             {product?.shortDescription && (
               <div className="
-                mt-5
+                mt-2
                 max-w-xl
                 text-sm
                 leading-6
                 text-gray-500
+                border-b
               ">
                 <div
                   dangerouslySetInnerHTML={{
@@ -917,13 +817,8 @@ Hello, I want to order this product. Please provide me with the next steps.
               </div>
             )}
 
-
-            {/* =================================================
-                COLORS
-            ================================================= */}
-
             {productColors.length > 0 && (
-              <div className="mt-6">
+              <div className="mt-4">
 
                 <h3 className="mb-3 text-sm font-semibold text-gray-900">
                   Color:{' '}
@@ -961,8 +856,8 @@ Hello, I want to order this product. Please provide me with the next steps.
                           cursor-pointer
                           ${
                             isSelected
-                              ? 'border-gray-900 ring-2 ring-[#f27a1a] ring-offset-1'
-                              : 'border-gray-300 hover:border-gray-500'
+                              ? 'border-gray-900 ring-2 ring-primary ring-offset-1'
+                              : 'border-gray-300 hover:border-secondary'
                           }
                         `}
                         style={{
@@ -976,19 +871,23 @@ Hello, I want to order this product. Please provide me with the next steps.
               </div>
             )}
 
-            {productSizes.length > 0 && (
+            {(productSizes.length > 0 ||
+              isCustomSizeEnabled ||
+              product?.sizeChartImage) && (
               <div className="mt-6">
 
-                <div className="mb-3">
-                  <h3 className="text-sm font-semibold text-gray-900">
-                    Size:{' '}
-                    <span className="font-normal text-gray-500">
-                      {selectedSize}
-                    </span>
-                  </h3>
-                </div>
+                {productSizes.length > 0 && (
+                  <div className="mb-3">
+                    <h3 className="text-sm font-semibold text-gray-900">
+                      Size:{' '}
+                      <span className="font-normal text-gray-500">
+                        {selectedSize}
+                      </span>
+                    </h3>
+                  </div>
+                )}
 
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap items-center gap-2">
 
                   {productSizes.map((size, index) => (
                     <button
@@ -1015,79 +914,69 @@ Hello, I want to order this product. Please provide me with the next steps.
                     </button>
                   ))}
 
+                  {isCustomSizeEnabled && (
+                    <button
+                      type="button"
+                      onClick={() => setShowCustomization(true)}
+                      className="
+                        h-9
+                        px-3
+                        flex
+                        items-center
+                        justify-center
+                        gap-1.5
+                        bg-primary
+                        text-white
+                        text-xs
+                        font-bold
+                        hover:bg-secondary
+                        hover:border-0
+                        transition
+                        cursor-pointer
+                      "
+                    >
+                      <BiRuler size={15} />
+
+                      {customLength ||
+                      customHeight ||
+                      customWidth
+                        ? 'Customization Added'
+                        : 'Customize your product'}
+                    </button>
+                  )}
+
+                  {(isCustomSizeEnabled || product?.sizeChartImage) && (
+                    <button
+                      type="button"
+                      onClick={() => setShowSizeChart(true)}
+                      className="
+                        h-9
+                        px-3
+                        flex
+                        items-center
+                        justify-center
+                        gap-1.5
+                        border
+                        border-gray-300
+                        bg-white
+                        text-gray-700
+                        text-xs
+                        font-bold
+                        hover:border-gray-500
+                        transition
+                        cursor-pointer
+                      "
+                    >
+                      <BiRuler
+                        size={15}
+                        className="text-primary"
+                      />
+
+                      Size Chart
+                    </button>
+                  )}
+
                 </div>
-              </div>
-            )}
-
-            {(isCustomSizeEnabled || product?.sizeChartImage) && (
-              <div className="
-                mt-6
-                flex
-                flex-wrap
-                gap-3
-              ">
-
-                {isCustomSizeEnabled && (
-                  <button
-                    type="button"
-                    onClick={() => setShowCustomization(true)}
-                    className="
-                      h-10
-                      px-4
-                      flex
-                      items-center
-                      justify-center
-                      gap-2
-                      bg-primary
-                      text-white
-                      text-xs
-                      font-bold
-                      hover:bg-secondary
-                      hover:border-0
-                      transition
-                      cursor-pointer
-                    "
-                  >
-                    <BiRuler size={17} />
-
-                    {customLength ||
-                    customHeight ||
-                    customWidth
-                      ? 'Customization Added'
-                      : 'Custom Measurement'}
-                  </button>
-                )}
-
-
-                <button
-                  type="button"
-                  onClick={() => setShowSizeChart(true)}
-                  className="
-                    h-10
-                    px-4
-                    flex
-                    items-center
-                    justify-center
-                    gap-2
-                    border
-                    border-gray-300
-                    bg-white
-                    text-gray-700
-                    text-xs
-                    font-bold
-                    hover:border-gray-500
-                    transition
-                    cursor-pointer
-                  "
-                >
-                  <BiRuler
-                    size={17}
-                    className="text-[#f27a1a]"
-                  />
-
-                  Size Chart
-                </button>
-
               </div>
             )}
 
@@ -1124,6 +1013,7 @@ Hello, I want to order this product. Please provide me with the next steps.
                 >
                   <FiMinus size={14} />
                 </button>
+
                 <span className="
                   flex
                   h-full
@@ -1162,6 +1052,7 @@ Hello, I want to order this product. Please provide me with the next steps.
                   <FiPlus size={14} />
                 </button>
               </div>
+
               <button
                 type="button"
                 onClick={handleBuyNow}
@@ -1282,13 +1173,14 @@ Hello, I want to order this product. Please provide me with the next steps.
                         transition
                         hover:brightness-95
                         cursor-pointer
+                        rounded-br-2xl
+                        rounded-tl-2xl
                       "
                     >
                       <FaWhatsapp size={19} />
                       WhatsApp Order
                     </button>
                   )}
-
 
                 {contactSettings.enablePhoneCall &&
                   contactSettings.phoneNumber && (
@@ -1309,6 +1201,8 @@ Hello, I want to order this product. Please provide me with the next steps.
                         transition
                         hover:brightness-95
                         cursor-pointer
+                        rounded-tr-2xl
+                        rounded-bl-2xl
                       "
                     >
                       <FiPhoneCall size={18} />
@@ -1349,7 +1243,6 @@ Hello, I want to order this product. Please provide me with the next steps.
             >
               Product Description
             </button>
-
 
             <button
               type="button"
@@ -1396,9 +1289,6 @@ Hello, I want to order this product. Please provide me with the next steps.
             </div>
           )}
 
-
-          {/* ADDITIONAL INFORMATION */}
-
           {activeTab === 'additional' && (
             <div className="py-7">
 
@@ -1433,7 +1323,6 @@ Hello, I want to order this product. Please provide me with the next steps.
                   </div>
                 )}
 
-
                 {product?.category && (
                   <div className="grid grid-cols-2 border-b border-gray-200">
 
@@ -1458,7 +1347,6 @@ Hello, I want to order this product. Please provide me with the next steps.
                   </div>
                 )}
 
-
                 {productSizes.length > 0 && (
                   <div className="grid grid-cols-2 border-b border-gray-200">
 
@@ -1482,7 +1370,6 @@ Hello, I want to order this product. Please provide me with the next steps.
 
                   </div>
                 )}
-
 
                 {isCustomSizeEnabled && (
                   <div className="grid grid-cols-2">
@@ -1638,7 +1525,6 @@ Hello, I want to order this product. Please provide me with the next steps.
             ×
           </button>
 
-
           {product?.sizeChartImage ? (
             <Image
               src={product.sizeChartImage}
@@ -1697,7 +1583,6 @@ Hello, I want to order this product. Please provide me with the next steps.
               </p>
             </div>
 
-
             <button
               type="button"
               onClick={() => setShowCustomization(false)}
@@ -1717,10 +1602,7 @@ Hello, I want to order this product. Please provide me with the next steps.
 
           </div>
 
-
           <div className="space-y-4">
-
-            {/* LENGTH */}
 
             <div>
 
@@ -1777,9 +1659,6 @@ Hello, I want to order this product. Please provide me with the next steps.
 
             </div>
 
-
-            {/* HEIGHT */}
-
             <div>
 
               <label className="
@@ -1834,9 +1713,6 @@ Hello, I want to order this product. Please provide me with the next steps.
               </div>
 
             </div>
-
-
-            {/* WIDTH */}
 
             <div>
 
@@ -1893,9 +1769,6 @@ Hello, I want to order this product. Please provide me with the next steps.
 
             </div>
 
-
-            {/* SUMMARY */}
-
             <div className="
               border
               border-orange-100
@@ -1948,9 +1821,6 @@ Hello, I want to order this product. Please provide me with the next steps.
 
             </div>
 
-
-            {/* PRICE */}
-
             <div className="
               border
               border-gray-200
@@ -1975,9 +1845,6 @@ Hello, I want to order this product. Please provide me with the next steps.
               </p>
 
             </div>
-
-
-            {/* SAVE */}
 
             <button
               type="button"
@@ -2009,3 +1876,4 @@ Hello, I want to order this product. Please provide me with the next steps.
 }
 
 export default ProductDetailsSection
+

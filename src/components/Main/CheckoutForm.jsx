@@ -265,10 +265,6 @@ const CheckoutForm = () => {
             Number(item.price) || 0,
         })),
 
-        // ---------------------------------
-        // Shipping information
-        // ---------------------------------
-
         shippingMethod:
           selectedShippingZone.slug,
 
@@ -290,10 +286,6 @@ const CheckoutForm = () => {
         orderPayload
       );
 
-      // ---------------------------------
-      // Create order
-      // ---------------------------------
-
       const response = await fetch(
         `${apiUrl}/api/orders`,
         {
@@ -309,10 +301,6 @@ const CheckoutForm = () => {
           ),
         }
       );
-
-      // ---------------------------------
-      // Safely read backend response
-      // ---------------------------------
 
       let data = {};
 
@@ -334,10 +322,6 @@ const CheckoutForm = () => {
           data,
         }
       );
-
-      // ---------------------------------
-      // Backend rejected order
-      // ---------------------------------
 
       if (!response.ok) {
         const errorMessage =
@@ -365,10 +349,6 @@ const CheckoutForm = () => {
         return;
       }
 
-      // ---------------------------------
-      // Backend success
-      // ---------------------------------
-
       if (
         !data?.success &&
         !data?.orderId &&
@@ -389,18 +369,10 @@ const CheckoutForm = () => {
         return;
       }
 
-      // ---------------------------------
-      // Get generated Order ID
-      // ---------------------------------
-
       const generatedOrderId =
         data?.orderId ||
         data?.order?.orderId ||
         `AFIS-${Date.now()}`;
-
-      // ---------------------------------
-      // Save order summary locally
-      // ---------------------------------
 
       const orderSummaryData = {
         orderId:
@@ -440,10 +412,6 @@ const CheckoutForm = () => {
         )
       );
 
-      // ---------------------------------
-      // Clear cart
-      // ---------------------------------
-
       if (
         typeof clearCart ===
         "function"
@@ -454,10 +422,6 @@ const CheckoutForm = () => {
       toast.success(
         "Order placed successfully!"
       );
-
-      // ---------------------------------
-      // Redirect
-      // ---------------------------------
 
       router.push(
         `/thank-you?orderId=${encodeURIComponent(
@@ -478,10 +442,6 @@ const CheckoutForm = () => {
     }
   };
 
-  // ---------------------------------
-  // Loading
-  // ---------------------------------
-
   if (!isMounted) {
     return (
       <div className="flex flex-col items-center gap-2 py-10">
@@ -494,18 +454,12 @@ const CheckoutForm = () => {
     );
   }
 
-  // ---------------------------------
-  // Render
-  // ---------------------------------
-
   return (
     <form
       onSubmit={handlePlaceOrder}
       className="flex flex-col lg:grid lg:grid-cols-[1fr_450px] gap-8 lg:gap-16 items-start"
     >
-      {/* =========================
-          BILLING DETAILS
-      ========================== */}
+
 
       <div className="space-y-6 w-full">
 
@@ -596,12 +550,7 @@ const CheckoutForm = () => {
             className="w-full bg-[#F5F5F5] rounded p-3 focus:outline-none resize-none text-sm"
           />
         </div>
-
       </div>
-
-      {/* =========================
-          ORDER SUMMARY
-      ========================== */}
 
       <div className="space-y-6 w-full">
 
@@ -732,13 +681,7 @@ const CheckoutForm = () => {
               );
             })
           )}
-
         </div>
-
-        {/* =========================
-            SHIPPING
-        ========================== */}
-
         <div className="space-y-3 bg-gray-50 p-4 rounded-lg border border-gray-200">
 
           <p className="text-sm font-semibold text-gray-700">
@@ -806,7 +749,7 @@ const CheckoutForm = () => {
                       className={`flex items-center justify-between gap-3 p-3 rounded-lg border cursor-pointer transition ${
                         shippingMethod ===
                         zone.slug
-                          ? "border-orange-500 bg-orange-50"
+                          ? "border-primary bg-orange-50"
                           : "border-gray-200 bg-white hover:border-gray-300"
                       }`}
                     >

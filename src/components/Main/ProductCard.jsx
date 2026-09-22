@@ -7,6 +7,7 @@ import WishListButton from "./WishListButton";
 export default function ProductCard({ product }) {
   const imageSrc = product?.thumbnail || null;
   if (!imageSrc) return null;
+
   const hasDiscount =
     product.discountPrice &&
     product.discountPrice > 0 &&
@@ -24,6 +25,7 @@ export default function ProductCard({ product }) {
         className="block min-w-0 flex-1"
       >
         <div className="relative flex h-[190px] w-full items-center justify-center overflow-hidden bg-white p-1.5 xs:h-[220px] sm:h-[270px] md:h-[320px] lg:h-[360px] xl:h-[380px]">
+
           {hasDiscount && (
             <span className="absolute left-2 top-2 z-10 rounded-md bg-red-600 px-2 py-1 text-[9px] font-semibold text-white shadow-md sm:left-3 sm:top-3 sm:px-2.5 sm:text-[10px] md:text-xs">
               -{discountPercentage}%
@@ -49,7 +51,7 @@ export default function ProductCard({ product }) {
             alt={product.title || "fashion item"}
             fill
             sizes="(max-width: 480px) 50vw, (max-width: 640px) 310px, (max-width: 768px) 340px, (max-width: 1024px) 300px, 380px"
-            className="object-contain object-center p-1.5 transition-transform duration-500 group-hover:scale-105 sm:p-2"
+            className="object-contain object-center p-0 transition-transform duration-500 group-hover:scale-105"
           />
 
         </div>

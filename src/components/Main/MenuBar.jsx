@@ -20,6 +20,7 @@ import { AiOutlineHome, AiOutlineAppstore, AiOutlineUser, AiOutlineInfoCircle } 
 import { FaShoppingBag } from "react-icons/fa";
 import { TbTruckDelivery } from 'react-icons/tb';
 import API from '../../utils/api';
+import axios from "axios";
 
 const MenuBar = () => {
     const pathname = usePathname();
@@ -74,30 +75,37 @@ const MenuBar = () => {
         window.addEventListener('userLogin', handleStorageChange);
 
         // Dynamic Site Settings Fetch
-        const fetchSiteSettings = async () => {
-            try {
-                const res = await API.get('/settings');
+      const fetchSiteSettings = async () => {
+    try {
+        const apiBase =
+            process.env.NEXT_PUBLIC_API_URL ||
+            "http://localhost:5000";
 
-                if (
-                    res.data &&
-                    res.data.success &&
-                    res.data.data
-                ) {
-                    setSiteSettings({
-                        logo: res.data.data.logo || "",
-                        siteName: res.data.data.siteName || ""
-                    });
-                }
-            } catch (error) {
-                console.error("Failed to fetch site settings:", error);
+        const res = await axios.get(
+            `${apiBase.replace(/\/+$/, "")}/api/settings`,
+            {
+                withCredentials: true,
             }
-        };
+        );
+
+        if (
+            res.data &&
+            res.data.success &&
+            res.data.data
+        ) {
+            setSiteSettings({
+                logo: res.data.data.logo || "",
+                siteName: res.data.data.siteName || ""
+            });
+        }
+    } catch (error) {
+        console.error("Failed to fetch site settings:", error);
+    }
+};
 
         fetchSiteSettings();
-
         const fetchCategories = async () => {
             try {
-                // হার্ডকোডেড ফেচ এর বদলে API (axios) ব্যবহার করা হলো
                 const res = await API.get('/categories/all');
                 if (res.data && res.data.success) {
                     setCategories(res.data.data);

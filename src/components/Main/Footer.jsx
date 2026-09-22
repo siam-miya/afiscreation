@@ -79,15 +79,9 @@ const Footer = () => {
       <div className="container px-4 sm:px-6 md:px-0">
 
         <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8 xl:gap-20'>
-
-          {/* Footer Logo / Subscribe */}
-
           <div className="flex flex-col">
-
             <div>
-
               {settings.logo ? (
-
                 <img
                   src={settings.logo}
                   height={120}
@@ -95,9 +89,7 @@ const Footer = () => {
                   alt={`${settings.siteName} logo`}
                   className="max-w-[200px] md:max-w-[240px] h-auto object-contain"
                 />
-
               ) : (
-
                 <Image
                   src={footer_icon}
                   height={120}
@@ -105,9 +97,7 @@ const Footer = () => {
                   alt={`${settings.siteName} logo`}
                   className="max-w-[200px] md:max-w-[240px] h-auto"
                 />
-
               )}
-
             </div>
 
             <h2 className='text-white font-medium font-inter text-[20px] leading-7 py-4'>
@@ -117,53 +107,32 @@ const Footer = () => {
             <p className='text-white text-[16px] leading-6'>
               Get 10% off your first order
             </p>
-
             <div className='py-4 max-w-[280px] sm:max-w-full'>
-
               <form action="">
-
                 <div className='flex items-center gap-3 border border-white rounded-md py-3 px-4'>
-
                   <input
                     className='focus:outline-none placeholder:text-white text-white bg-transparent w-full'
                     type="email"
                     placeholder='enter your email'
                   />
-
                   <span className="shrink-0">
-
                     <Image
                       src={arrow_right}
                       height={24}
                       width={24}
                       alt='icon'
                     />
-
                   </span>
-
                 </div>
-
               </form>
-
             </div>
-
-
-            {/* =====================================================
-                SOCIAL LINKS - DYNAMIC FROM ADMIN SETTINGS
-            ===================================================== */}
 
             {(settings.facebook ||
               settings.instagram ||
               settings.youtube) && (
 
               <div className='flex items-center justify-start gap-6 pt-2'>
-
-                {/* =================================================
-                    FACEBOOK
-                ================================================= */}
-
                 {settings.facebook && (
-
                   <a
                     href={settings.facebook}
                     target="_blank"
@@ -180,19 +149,10 @@ const Footer = () => {
                       xmlns="http://www.w3.org/2000/svg"
                       className="fill-white hover:fill-blue-500 transition-colors duration-300 cursor-pointer"
                     >
-
                       <path d="M13 10H17.5L17 12H13V21H11V12H7V10H11V8.128C11 6.345 11.186 5.698 11.534 5.046C11.875 4.40181 12.4018 3.87501 13.046 3.534C13.698 3.186 14.345 3 16.128 3C16.65 3 17.108 3.05 17.5 3.15V5H16.128C14.804 5 14.401 5.078 13.99 5.298C13.686 5.46 13.46 5.686 13.298 5.99C13.078 6.401 13 6.804 13 8.128V10Z" />
-
                     </svg>
-
                   </a>
-
                 )}
-
-
-                {/* =================================================
-                    INSTAGRAM
-                ================================================= */}
 
                 {settings.instagram && (
 
@@ -228,19 +188,10 @@ const Footer = () => {
                       <path
                         d="M17.5 7.5C17.7652 7.5 18.0196 7.39464 18.2071 7.20711C18.3946 7.01957 18.5 6.76522 18.5 6.5C18.5 6.23478 18.3946 5.98043 18.2071 5.79289C18.0196 5.60536 17.7652 5.5 17.5 5.5C17.2348 5.5 16.9804 5.60536 16.7929 5.79289C16.6054 5.98043 16.5 6.23478 16.5 6.5C16.5 6.76522 16.6054 7.01957 16.7929 7.20711C16.9804 7.5 17.5 7.5Z"
                         className="fill-current stroke-none"
-                      />
-
+                    />
                     </svg>
-
                   </a>
-
                 )}
-
-
-                {/* =================================================
-                    YOUTUBE
-                ================================================= */}
-
                 {settings.youtube && (
 
                   <a
@@ -278,9 +229,6 @@ const Footer = () => {
             )}
 
           </div>
-
-
-          {/* Support */}
 
           <div>
 
@@ -332,9 +280,6 @@ const Footer = () => {
 
           </div>
 
-
-          {/* Account */}
-
           <div>
 
             <h2 className='text-white font-medium font-poppins text-[20px] leading-7 border-b border-gray-800 pb-2 md:border-b-0 md:pb-0'>
@@ -347,17 +292,13 @@ const Footer = () => {
 
                 <Link
                   className='text-[16px] leading-6 text-white font-poppins hover:text-secondary hover:font-semibold transition-all'
-                  href={"/"}
+                  href={"/user/profile"}
                 >
                   My Account
                 </Link>
-
               </li>
-
               <div className='flex items-center gap-2 py-4'>
-
                 <li>
-
                   <Link
                     className='text-[16px] leading-6 text-white font-poppins hover:text-secondary hover:font-semibold transition-all'
                     href={"/login"}
@@ -375,17 +316,13 @@ const Footer = () => {
 
                   <Link
                     className='text-[16px] leading-6 text-white font-poppins hover:text-secondary hover:font-semibold transition-all'
-                    href={"/login"}
+                    href={"/signup"}
                   >
-                    Register
+                    SignUp
                   </Link>
-
                 </li>
-
               </div>
-
               <li>
-
                 <Link
                   className='text-[16px] leading-6 text-white font-poppins hover:text-secondary hover:font-semibold transition-all'
                   href={"/cart"}
@@ -399,7 +336,7 @@ const Footer = () => {
 
                 <Link
                   className='text-[16px] leading-6 text-white font-poppins hover:text-secondary hover:font-semibold transition-all'
-                  href={"/Wishlist"}
+                  href={"/wishlist"}
                 >
                   Wishlist
                 </Link>
@@ -410,7 +347,7 @@ const Footer = () => {
 
                 <Link
                   className='text-[16px] leading-6 text-white font-poppins hover:text-secondary hover:font-semibold transition-all'
-                  href={"/Shop"}
+                  href={"/products"}
                 >
                   Shop
                 </Link>
@@ -469,7 +406,7 @@ const Footer = () => {
 
                 <Link
                   className='text-[16px] leading-6 text-white hover:text-secondary hover:font-semibold transition-all'
-                  href={"/Contact"}
+                  href={"/contact"}
                 >
                   Contact
                 </Link>

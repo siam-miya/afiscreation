@@ -29,38 +29,26 @@ import {
   User,
   Package,
   Ruler,
+  DollarSign,
+  CreditCard,
+  CircleDollarSign,
 } from "lucide-react";
 
 import { toast } from "react-hot-toast";
 
 const OrdersPage = () => {
   const [orders, setOrders] = useState([]);
-
   const [loading, setLoading] = useState(true);
-
   const [actionLoading, setActionLoading] = useState({});
-
   const [copiedId, setCopiedId] = useState("");
-
-  // ========================================
-  // ORDER FILTER STATE
-  // ========================================
-
   const [orderPeriod, setOrderPeriod] = useState("all");
-
-  // ========================================
-  // ORDER SEARCH STATE
-  // ========================================
-
+  const [orderStatusFilter, setOrderStatusFilter] =
+    useState("all");
+  const [paymentFilter, setPaymentFilter] =
+    useState("all");
   const [orderSearch, setOrderSearch] = useState("");
-
-  // ========================================
-  // CUSTOMER EDIT STATE
-  // ========================================
-
   const [editingCustomerId, setEditingCustomerId] =
     useState(null);
-
   const [editingPhone, setEditingPhone] =
     useState("");
 
@@ -136,6 +124,12 @@ const OrdersPage = () => {
   const orderStats = useMemo(() => {
     const now = new Date();
 
+    const startOfToday = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate()
+    );
+
     const sevenDaysAgo = new Date(now);
 
     sevenDaysAgo.setDate(
@@ -154,9 +148,26 @@ const OrdersPage = () => {
       oneYearAgo.getFullYear() - 1
     );
 
+    let today = 0;
     let last7Days = 0;
     let lastMonth = 0;
     let lastYear = 0;
+
+    const statusCounts = {
+      Pending: 0,
+      Processing: 0,
+      Confirmed: 0,
+      "Ready To Ship": 0,
+      Shipped: 0,
+      Delivered: 0,
+      Cancelled: 0,
+      Returned: 0,
+      Failed: 0,
+    };
+
+    let paidOrders = 0;
+    let pendingPayment = 0;
+    let totalRevenue = 0;
 
     orders.forEach((order) => {
       if (!order?.createdAt) return;
@@ -165,8 +176,16 @@ const OrdersPage = () => {
         order.createdAt
       );
 
-      if (Number.isNaN(createdAt.getTime())) {
+      if (
+        Number.isNaN(
+          createdAt.getTime()
+        )
+      ) {
         return;
+      }
+
+      if (createdAt >= startOfToday) {
+        today++;
       }
 
       if (createdAt >= sevenDaysAgo) {
@@ -180,13 +199,50 @@ const OrdersPage = () => {
       if (createdAt >= oneYearAgo) {
         lastYear++;
       }
+
+      const status =
+        order.status || "Pending";
+
+      if (
+        Object.prototype.hasOwnProperty.call(
+          statusCounts,
+          status
+        )
+      ) {
+        statusCounts[status]++;
+      }
+
+      const paymentStatus =
+        order.paymentStatus ||
+        "Pending";
+
+      if (
+        paymentStatus === "Paid"
+      ) {
+        paidOrders++;
+
+        totalRevenue += Number(
+          order.totalCost || 0
+        );
+      }
+
+      if (
+        paymentStatus === "Pending"
+      ) {
+        pendingPayment++;
+      }
     });
 
     return {
       total: orders.length,
+      today,
       last7Days,
       lastMonth,
       lastYear,
+      statusCounts,
+      paidOrders,
+      pendingPayment,
+      totalRevenue,
     };
   }, [orders]);
 
@@ -200,45 +256,125 @@ const OrdersPage = () => {
     if (orderPeriod !== "all") {
       const now = new Date();
 
-      const startDate = new Date(now);
+      if (orderPeriod === "today") {
+        const startOfToday = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate()
+        );
 
-      if (orderPeriod === "7days") {
-        startDate.setDate(
-          startDate.getDate() - 7
+        result = result.filter(
+          (order) => {
+            if (!order?.createdAt) {
+              return false;
+            }
+
+            const createdAt =
+              new Date(
+                order.createdAt
+              );
+
+            if (
+              Number.isNaN(
+                createdAt.getTime()
+              )
+            ) {
+              return false;
+            }
+
+            return (
+              createdAt >=
+              startOfToday
+            );
+          }
         );
       }
 
-      if (orderPeriod === "month") {
-        startDate.setMonth(
-          startDate.getMonth() - 1
-        );
-      }
-
-      if (orderPeriod === "year") {
-        startDate.setFullYear(
-          startDate.getFullYear() - 1
-        );
-      }
-
-      result = result.filter((order) => {
-        if (!order?.createdAt) {
-          return false;
-        }
-
-        const createdAt = new Date(
-          order.createdAt
+      if (
+        orderPeriod === "7days" ||
+        orderPeriod === "month" ||
+        orderPeriod === "year"
+      ) {
+        const startDate = new Date(
+          now
         );
 
         if (
-          Number.isNaN(
-            createdAt.getTime()
-          )
+          orderPeriod === "7days"
         ) {
-          return false;
+          startDate.setDate(
+            startDate.getDate() - 7
+          );
         }
 
-        return createdAt >= startDate;
-      });
+        if (
+          orderPeriod === "month"
+        ) {
+          startDate.setMonth(
+            startDate.getMonth() - 1
+          );
+        }
+
+        if (
+          orderPeriod === "year"
+        ) {
+          startDate.setFullYear(
+            startDate.getFullYear() - 1
+          );
+        }
+
+        result = result.filter(
+          (order) => {
+            if (!order?.createdAt) {
+              return false;
+            }
+
+            const createdAt =
+              new Date(
+                order.createdAt
+              );
+
+            if (
+              Number.isNaN(
+                createdAt.getTime()
+              )
+            ) {
+              return false;
+            }
+
+            return (
+              createdAt >=
+              startDate
+            );
+          }
+        );
+      }
+    }
+
+    if (
+      orderStatusFilter !==
+      "all"
+    ) {
+      result = result.filter(
+        (order) =>
+          (
+            order?.status ||
+            "Pending"
+          ) ===
+          orderStatusFilter
+      );
+    }
+
+    if (
+      paymentFilter !== "all"
+    ) {
+      result = result.filter(
+        (order) =>
+          (
+            order?.paymentStatus ||
+            "Pending"
+          ) === paymentFilter
+      );
     }
 
     const search = orderSearch
@@ -246,57 +382,91 @@ const OrdersPage = () => {
       .toLowerCase();
 
     if (search) {
-      result = result.filter((order) => {
-        const customerName = String(
-          order?.fullName || ""
-        ).toLowerCase();
+      result = result.filter(
+        (order) => {
+          const customerName =
+            String(
+              order?.fullName || ""
+            ).toLowerCase();
 
-        const phoneNumber = String(
-          order?.phoneNumber || ""
-        ).toLowerCase();
+          const phoneNumber =
+            String(
+              order?.phoneNumber || ""
+            ).toLowerCase();
 
-        const orderId = String(
-          order?.orderId || ""
-        ).toLowerCase();
+          const orderId =
+            String(
+              order?.orderId || ""
+            ).toLowerCase();
 
-        return (
-          customerName.includes(search) ||
-          phoneNumber.includes(search) ||
-          orderId.includes(search)
-        );
-      });
+          return (
+            customerName.includes(
+              search
+            ) ||
+            phoneNumber.includes(
+              search
+            ) ||
+            orderId.includes(
+              search
+            )
+          );
+        }
+      );
     }
 
     return result;
   }, [
     orders,
     orderPeriod,
+    orderStatusFilter,
+    paymentFilter,
     orderSearch,
   ]);
 
-  // ========================================
-  // PERIOD LABEL
-  // ========================================
+  const selectedPeriodLabel =
+    useMemo(() => {
+      switch (orderPeriod) {
+        case "today":
+          return "Today Orders";
 
-  const selectedPeriodLabel = useMemo(() => {
-    switch (orderPeriod) {
-      case "7days":
-        return "Last 7 Days";
+        case "7days":
+          return "Last 7 Days";
 
-      case "month":
-        return "Last 1 Month";
+        case "month":
+          return "Last 1 Month";
 
-      case "year":
-        return "Last 1 Year";
+        case "year":
+          return "Last 1 Year";
 
-      default:
-        return "All Orders";
-    }
-  }, [orderPeriod]);
+        default:
+          return "All Orders";
+      }
+    }, [orderPeriod]);
 
-  // ========================================
-  // ACTION LOADING
-  // ========================================
+  const selectedFilterLabel =
+    useMemo(() => {
+      let label =
+        selectedPeriodLabel;
+
+      if (
+        orderStatusFilter !==
+        "all"
+      ) {
+        label += ` · ${orderStatusFilter}`;
+      }
+
+      if (
+        paymentFilter !== "all"
+      ) {
+        label += ` · Payment: ${paymentFilter}`;
+      }
+
+      return label;
+    }, [
+      selectedPeriodLabel,
+      orderStatusFilter,
+      paymentFilter,
+    ]);
 
   const setAction = (
     orderId,
@@ -320,9 +490,225 @@ const OrdersPage = () => {
     ];
   };
 
-  // ========================================
-  // START CUSTOMER EDIT
-  // ========================================
+  const handleOrderStatusChange =
+    async (
+      order,
+      newStatus
+    ) => {
+      if (!order?._id) {
+        toast.error(
+          "Invalid order."
+        );
+
+        return;
+      }
+
+      if (
+        !newStatus ||
+        newStatus === order.status
+      ) {
+        return;
+      }
+
+      setAction(
+        order._id,
+        "status",
+        true
+      );
+
+      try {
+        const res = await fetch(
+          `${apiUrl}/api/orders/${order._id}/status`,
+          {
+            method: "PUT",
+
+            headers: {
+              Accept:
+                "application/json",
+
+              "Content-Type":
+                "application/json",
+            },
+
+            body: JSON.stringify({
+              status:
+                newStatus,
+            }),
+          }
+        );
+
+        const data =
+          await res.json();
+
+        if (
+          !res.ok ||
+          !data.success
+        ) {
+          throw new Error(
+            data.message ||
+              "Failed to update order status."
+          );
+        }
+
+        setOrders(
+          (prevOrders) =>
+            prevOrders.map(
+              (item) =>
+                item?._id ===
+                order._id
+                  ? {
+                      ...item,
+
+                      status:
+                        data.order
+                          ?.status ||
+                        newStatus,
+
+                      trackingHistory:
+                        data.order
+                          ?.trackingHistory ||
+                        item.trackingHistory,
+
+                      updatedAt:
+                        data.order
+                          ?.updatedAt ||
+                        item.updatedAt,
+                    }
+                  : item
+            )
+        );
+
+        toast.success(
+          `Order status changed to ${newStatus}.`
+        );
+      } catch (error) {
+        console.error(
+          "Order status update error:",
+          error
+        );
+
+        toast.error(
+          error.message ||
+            "Failed to update order status."
+        );
+      } finally {
+        setAction(
+          order._id,
+          "status",
+          false
+        );
+      }
+    };
+
+  const handlePaymentStatusChange =
+    async (
+      order,
+      newPaymentStatus
+    ) => {
+      if (!order?._id) {
+        toast.error(
+          "Invalid order."
+        );
+
+        return;
+      }
+
+      const currentPaymentStatus =
+        order.paymentStatus ||
+        "Pending";
+
+      if (
+        !newPaymentStatus ||
+        newPaymentStatus ===
+          currentPaymentStatus
+      ) {
+        return;
+      }
+
+      setAction(
+        order._id,
+        "paymentStatus",
+        true
+      );
+
+      try {
+        const res = await fetch(
+          `${apiUrl}/api/orders/${order._id}/payment-status`,
+          {
+            method: "PUT",
+
+            headers: {
+              Accept:
+                "application/json",
+
+              "Content-Type":
+                "application/json",
+            },
+
+            body: JSON.stringify({
+              paymentStatus:
+                newPaymentStatus,
+            }),
+          }
+        );
+
+        const data =
+          await res.json();
+
+        if (
+          !res.ok ||
+          !data.success
+        ) {
+          throw new Error(
+            data.message ||
+              "Failed to update payment status."
+          );
+        }
+
+        setOrders(
+          (prevOrders) =>
+            prevOrders.map(
+              (item) =>
+                item?._id ===
+                order._id
+                  ? {
+                      ...item,
+
+                      paymentStatus:
+                        data.order
+                          ?.paymentStatus ||
+                        newPaymentStatus,
+
+                      updatedAt:
+                        data.order
+                          ?.updatedAt ||
+                        item.updatedAt,
+                    }
+                  : item
+            )
+        );
+
+        toast.success(
+          `Payment marked as ${newPaymentStatus}.`
+        );
+      } catch (error) {
+        console.error(
+          "Payment status update error:",
+          error
+        );
+
+        toast.error(
+          error.message ||
+            "Failed to update payment status."
+        );
+      } finally {
+        setAction(
+          order._id,
+          "paymentStatus",
+          false
+        );
+      }
+    };
 
   const handleStartCustomerEdit = (
     order
@@ -340,155 +726,155 @@ const OrdersPage = () => {
     );
   };
 
-  // ========================================
-  // CANCEL CUSTOMER EDIT
-  // ========================================
-
-  const handleCancelCustomerEdit = () => {
-    setEditingCustomerId(null);
-
-    setEditingPhone("");
-
-    setEditingAddress("");
-  };
-
-  // ========================================
-  // SAVE CUSTOMER PHONE + ADDRESS
-  // ========================================
-
-  const handleSaveCustomerInfo = async (
-    order
-  ) => {
-    if (!order?._id) {
-      toast.error("Invalid order.");
-
-      return;
-    }
-
-    const cleanPhone =
-      editingPhone.trim();
-
-    const cleanAddress =
-      editingAddress.trim();
-
-    if (!cleanPhone) {
-      toast.error(
-        "Customer phone number cannot be empty."
-      );
-
-      return;
-    }
-
-    if (!cleanAddress) {
-      toast.error(
-        "Customer address cannot be empty."
-      );
-
-      return;
-    }
-
-    setAction(
-      order._id,
-      "customerInfo",
-      true
-    );
-
-    try {
-      const res = await fetch(
-        `${apiUrl}/api/orders/${order._id}/customer-info`,
-        {
-          method: "PUT",
-
-          headers: {
-            Accept: "application/json",
-
-            "Content-Type":
-              "application/json",
-          },
-
-          body: JSON.stringify({
-            phoneNumber:
-              cleanPhone,
-
-            streetAddress:
-              cleanAddress,
-          }),
-        }
-      );
-
-      const data = await res.json();
-
-      if (!res.ok || !data.success) {
-        throw new Error(
-          data.message ||
-            "Failed to update customer information."
-        );
-      }
-
-      setOrders(
-        (prevOrders) =>
-          prevOrders.map(
-            (item) =>
-              item?._id === order._id
-                ? {
-                    ...item,
-
-                    phoneNumber:
-                      data.order
-                        ?.phoneNumber ||
-                      cleanPhone,
-
-                    streetAddress:
-                      data.order
-                        ?.streetAddress ||
-                      cleanAddress,
-
-                    updatedAt:
-                      data.order
-                        ?.updatedAt ||
-                      item.updatedAt,
-                  }
-                : item
-          )
-      );
-
+  const handleCancelCustomerEdit =
+    () => {
       setEditingCustomerId(null);
 
       setEditingPhone("");
 
       setEditingAddress("");
+    };
 
-      toast.success(
-        "Customer phone and address updated successfully."
-      );
-    } catch (error) {
-      console.error(
-        "Customer information update error:",
-        error
-      );
+  const handleSaveCustomerInfo =
+    async (order) => {
+      if (!order?._id) {
+        toast.error(
+          "Invalid order."
+        );
 
-      toast.error(
-        error.message ||
-          "Failed to update customer information."
-      );
-    } finally {
+        return;
+      }
+
+      const cleanPhone =
+        editingPhone.trim();
+
+      const cleanAddress =
+        editingAddress.trim();
+
+      if (!cleanPhone) {
+        toast.error(
+          "Customer phone number cannot be empty."
+        );
+
+        return;
+      }
+
+      if (!cleanAddress) {
+        toast.error(
+          "Customer address cannot be empty."
+        );
+
+        return;
+      }
+
       setAction(
         order._id,
         "customerInfo",
-        false
+        true
       );
-    }
-  };
 
-  // ========================================
-  // FRAUD CHECK
-  // ========================================
+      try {
+        const res = await fetch(
+          `${apiUrl}/api/orders/${order._id}/customer-info`,
+          {
+            method: "PUT",
+
+            headers: {
+              Accept:
+                "application/json",
+
+              "Content-Type":
+                "application/json",
+            },
+
+            body: JSON.stringify({
+              phoneNumber:
+                cleanPhone,
+
+              streetAddress:
+                cleanAddress,
+            }),
+          }
+        );
+
+        const data =
+          await res.json();
+
+        if (
+          !res.ok ||
+          !data.success
+        ) {
+          throw new Error(
+            data.message ||
+              "Failed to update customer information."
+          );
+        }
+
+        setOrders(
+          (prevOrders) =>
+            prevOrders.map(
+              (item) =>
+                item?._id ===
+                order._id
+                  ? {
+                      ...item,
+
+                      phoneNumber:
+                        data.order
+                          ?.phoneNumber ||
+                        cleanPhone,
+
+                      streetAddress:
+                        data.order
+                          ?.streetAddress ||
+                        cleanAddress,
+
+                      updatedAt:
+                        data.order
+                          ?.updatedAt ||
+                        item.updatedAt,
+                    }
+                  : item
+            )
+        );
+
+        setEditingCustomerId(
+          null
+        );
+
+        setEditingPhone("");
+
+        setEditingAddress("");
+
+        toast.success(
+          "Customer phone and address updated successfully."
+        );
+      } catch (error) {
+        console.error(
+          "Customer information update error:",
+          error
+        );
+
+        toast.error(
+          error.message ||
+            "Failed to update customer information."
+        );
+      } finally {
+        setAction(
+          order._id,
+          "customerInfo",
+          false
+        );
+      }
+    };
 
   const handleFraudCheck = async (
     order
   ) => {
     if (!order?._id) {
-      toast.error("Invalid order.");
+      toast.error(
+        "Invalid order."
+      );
 
       return;
     }
@@ -506,14 +892,16 @@ const OrdersPage = () => {
           method: "GET",
 
           headers: {
-            Accept: "application/json",
+            Accept:
+              "application/json",
           },
 
           cache: "no-store",
         }
       );
 
-      const data = await res.json();
+      const data =
+        await res.json();
 
       if (
         !res.ok ||
@@ -540,7 +928,8 @@ const OrdersPage = () => {
         (prevOrders) =>
           prevOrders.map(
             (item) =>
-              item?._id === order._id
+              item?._id ===
+              order._id
                 ? {
                     ...item,
 
@@ -582,15 +971,13 @@ const OrdersPage = () => {
     }
   };
 
-  // ========================================
-  // PATHAO ENTRY
-  // ========================================
-
   const handlePathaoEntry = async (
     order
   ) => {
     if (!order?._id) {
-      toast.error("Invalid order.");
+      toast.error(
+        "Invalid order."
+      );
 
       return;
     }
@@ -662,7 +1049,8 @@ const OrdersPage = () => {
           method: "POST",
 
           headers: {
-            Accept: "application/json",
+            Accept:
+              "application/json",
 
             "Content-Type":
               "application/json",
@@ -670,7 +1058,8 @@ const OrdersPage = () => {
         }
       );
 
-      const data = await res.json();
+      const data =
+        await res.json();
 
       if (
         !res.ok ||
@@ -692,13 +1081,15 @@ const OrdersPage = () => {
           "object" &&
         data.order._id
       ) {
-        setOrders((prevOrders) =>
-          prevOrders.map(
-            (item) =>
-              item?._id === order._id
-                ? data.order
-                : item
-          )
+        setOrders(
+          (prevOrders) =>
+            prevOrders.map(
+              (item) =>
+                item?._id ===
+                order._id
+                  ? data.order
+                  : item
+            )
         );
       } else {
         await fetchOrders();
@@ -722,209 +1113,206 @@ const OrdersPage = () => {
     }
   };
 
-  // ========================================
-  // STEADFAST ENTRY
-  // ========================================
-
-  const handleSteadFastEntry = async (
-    order
-  ) => {
-    if (!order?._id) {
-      toast.error("Invalid order.");
-
-      return;
-    }
-
-    const existingCourier =
-      order.courier?.provider ||
-      order.courier?.name ||
-      order.courierName ||
-      null;
-
-    const existingConsignment =
-      order.courier?.consignmentId ||
-      order.consignmentId ||
-      order.consignment_id ||
-      null;
-
-    if (
-      existingCourier ||
-      existingConsignment
-    ) {
-      toast.error(
-        "This order has already been submitted to a courier."
-      );
-
-      return;
-    }
-
-    if (
-      !String(
-        order.streetAddress || ""
-      ).trim()
-    ) {
-      toast.error(
-        "Please add the customer's address before sending to SteadFast."
-      );
-
-      return;
-    }
-
-    if (
-      !String(
-        order.phoneNumber || ""
-      ).trim()
-    ) {
-      toast.error(
-        "Please add the customer's phone number before sending to SteadFast."
-      );
-
-      return;
-    }
-
-    const confirmed =
-      window.confirm(
-        `Are you sure you want to send ${order.orderId} to SteadFast?`
-      );
-
-    if (!confirmed) return;
-
-    setAction(
-      order._id,
-      "steadfast",
-      true
-    );
-
-    try {
-      const res = await fetch(
-        `${apiUrl}/api/courier/push-to-steadfast/${order._id}`,
-        {
-          method: "POST",
-
-          headers: {
-            Accept: "application/json",
-
-            "Content-Type":
-              "application/json",
-          },
-        }
-      );
-
-      const data = await res.json();
-
-      if (
-        !res.ok ||
-        !data.success
-      ) {
-        throw new Error(
-          data.message ||
-            "Failed to send order to SteadFast"
+  const handleSteadFastEntry =
+    async (order) => {
+      if (!order?._id) {
+        toast.error(
+          "Invalid order."
         );
+
+        return;
       }
 
-      toast.success(
-        "Order successfully sent to SteadFast."
-      );
+      const existingCourier =
+        order.courier?.provider ||
+        order.courier?.name ||
+        order.courierName ||
+        null;
 
-      await fetchOrders();
-    } catch (error) {
-      console.error(
-        "SteadFast entry error:",
-        error
-      );
+      const existingConsignment =
+        order.courier?.consignmentId ||
+        order.consignmentId ||
+        order.consignment_id ||
+        null;
 
-      toast.error(
-        error.message ||
-          "SteadFast entry failed"
-      );
-    } finally {
+      if (
+        existingCourier ||
+        existingConsignment
+      ) {
+        toast.error(
+          "This order has already been submitted to a courier."
+        );
+
+        return;
+      }
+
+      if (
+        !String(
+          order.streetAddress || ""
+        ).trim()
+      ) {
+        toast.error(
+          "Please add the customer's address before sending to SteadFast."
+        );
+
+        return;
+      }
+
+      if (
+        !String(
+          order.phoneNumber || ""
+        ).trim()
+      ) {
+        toast.error(
+          "Please add the customer's phone number before sending to SteadFast."
+        );
+
+        return;
+      }
+
+      const confirmed =
+        window.confirm(
+          `Are you sure you want to send ${order.orderId} to SteadFast?`
+        );
+
+      if (!confirmed) return;
+
       setAction(
         order._id,
         "steadfast",
-        false
+        true
       );
-    }
-  };
 
-  // ========================================
-  // DELETE ORDER
-  // ========================================
+      try {
+        const res = await fetch(
+          `${apiUrl}/api/courier/push-to-steadfast/${order._id}`,
+          {
+            method: "POST",
 
-  const handleDeleteOrder = async () => {
-    if (!deleteOrder?._id) {
-      toast.error("Invalid order.");
+            headers: {
+              Accept:
+                "application/json",
 
-      return;
-    }
+              "Content-Type":
+                "application/json",
+            },
+          }
+        );
 
-    const orderId =
-      deleteOrder._id;
+        const data =
+          await res.json();
 
-    setAction(
-      orderId,
-      "delete",
-      true
-    );
-
-    try {
-      const res = await fetch(
-        `${apiUrl}/api/orders/${orderId}`,
-        {
-          method: "DELETE",
-
-          headers: {
-            Accept: "application/json",
-          },
+        if (
+          !res.ok ||
+          !data.success
+        ) {
+          throw new Error(
+            data.message ||
+              "Failed to send order to SteadFast"
+          );
         }
-      );
 
-      const data = await res.json();
+        toast.success(
+          "Order successfully sent to SteadFast."
+        );
 
-      if (
-        !res.ok ||
-        !data.success
-      ) {
-        throw new Error(
-          data.message ||
-            "Failed to delete order."
+        await fetchOrders();
+      } catch (error) {
+        console.error(
+          "SteadFast entry error:",
+          error
+        );
+
+        toast.error(
+          error.message ||
+            "SteadFast entry failed"
+        );
+      } finally {
+        setAction(
+          order._id,
+          "steadfast",
+          false
         );
       }
+    };
 
-      setOrders(
-        (prevOrders) =>
-          prevOrders.filter(
-            (order) =>
-              order?._id !== orderId
-          )
-      );
+  const handleDeleteOrder =
+    async () => {
+      if (!deleteOrder?._id) {
+        toast.error(
+          "Invalid order."
+        );
 
-      setDeleteOrder(null);
+        return;
+      }
 
-      toast.success(
-        "Order deleted successfully."
-      );
-    } catch (error) {
-      console.error(
-        "Delete order error:",
-        error
-      );
+      const orderId =
+        deleteOrder._id;
 
-      toast.error(
-        error.message ||
-          "Failed to delete order."
-      );
-    } finally {
       setAction(
         orderId,
         "delete",
-        false
+        true
       );
-    }
-  };
 
-  // ========================================
-  // COPY TRACKING
-  // ========================================
+      try {
+        const res = await fetch(
+          `${apiUrl}/api/orders/${orderId}`,
+          {
+            method: "DELETE",
+
+            headers: {
+              Accept:
+                "application/json",
+            },
+          }
+        );
+
+        const data =
+          await res.json();
+
+        if (
+          !res.ok ||
+          !data.success
+        ) {
+          throw new Error(
+            data.message ||
+              "Failed to delete order."
+          );
+        }
+
+        setOrders(
+          (prevOrders) =>
+            prevOrders.filter(
+              (order) =>
+                order?._id !==
+                orderId
+            )
+        );
+
+        setDeleteOrder(null);
+
+        toast.success(
+          "Order deleted successfully."
+        );
+      } catch (error) {
+        console.error(
+          "Delete order error:",
+          error
+        );
+
+        toast.error(
+          error.message ||
+            "Failed to delete order."
+        );
+      } finally {
+        setAction(
+          orderId,
+          "delete",
+          false
+        );
+      }
+    };
 
   const copyTracking = async (
     value
@@ -950,10 +1338,6 @@ const OrdersPage = () => {
       );
     }
   };
-
-  // ========================================
-  // STATUS STYLE
-  // ========================================
 
   const getStatusStyle = (
     status
@@ -1016,12 +1400,38 @@ const OrdersPage = () => {
       return "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400";
     }
 
+    if (
+      normalized.includes(
+        "confirmed"
+      )
+    ) {
+      return "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-400";
+    }
+
     return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400";
   };
 
-  // ========================================
-  // FRAUD RISK STYLE
-  // ========================================
+  const getPaymentStyle = (
+    paymentStatus
+  ) => {
+    switch (
+      paymentStatus ||
+      "Pending"
+    ) {
+      case "Paid":
+        return "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-900/50";
+
+      case "Failed":
+        return "bg-red-100 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-900/50";
+
+      case "Refunded":
+        return "bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-900/50";
+
+      case "Pending":
+      default:
+        return "bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-400 dark:border-yellow-900/50";
+    }
+  };
 
   const getFraudRiskStyle = (
     riskLevel
@@ -1087,62 +1497,86 @@ const OrdersPage = () => {
   };
 
   // ========================================
-  // ORDER STAT CARD
+  // PROFESSIONAL FILTER TABS
   // ========================================
 
   const OrderStatCard = ({
     id,
     title,
     count,
-    subtitle,
     icon: Icon,
+    type = "period",
   }) => {
     const isActive =
-      orderPeriod === id;
+      type === "period"
+        ? orderPeriod === id &&
+          orderStatusFilter === "all" &&
+          paymentFilter === "all"
+        : type === "status"
+        ? orderStatusFilter === id &&
+          orderPeriod === "all" &&
+          paymentFilter === "all"
+        : paymentFilter === id &&
+          orderPeriod === "all" &&
+          orderStatusFilter === "all";
+
+    const handleClick = () => {
+      if (type === "period") {
+        setOrderPeriod(id);
+        setOrderStatusFilter("all");
+        setPaymentFilter("all");
+      }
+
+      if (type === "status") {
+        setOrderStatusFilter(id);
+        setOrderPeriod("all");
+        setPaymentFilter("all");
+      }
+
+      if (type === "payment") {
+        setPaymentFilter(id);
+        setOrderPeriod("all");
+        setOrderStatusFilter("all");
+      }
+    };
 
     return (
       <button
         type="button"
-        onClick={() =>
-          setOrderPeriod(id)
-        }
-        className={`w-full text-left rounded-2xl border p-4 md:p-5 transition-all duration-200 ${
+        onClick={handleClick}
+        className={`relative shrink-0 flex items-center gap-2.5 px-4 py-3 text-left transition-all duration-200 border-b-2 ${
           isActive
-            ? "border-amber-400 bg-amber-50 shadow-md ring-1 ring-amber-300 dark:bg-amber-950/30 dark:border-amber-500 dark:ring-amber-600"
-            : "border-gray-200 bg-white hover:border-amber-300 hover:shadow-md dark:border-slate-700 dark:bg-slate-800 dark:hover:border-amber-500"
+            ? "border-amber-500 text-amber-600 dark:text-amber-400"
+            : "border-transparent text-gray-500 hover:text-gray-800 dark:text-slate-400 dark:hover:text-white"
         }`}
       >
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <p className="text-xs md:text-sm font-medium text-gray-500 dark:text-slate-400">
-              {title}
-            </p>
+        <span
+          className={`w-7 h-7 rounded-lg flex items-center justify-center transition ${
+            isActive
+              ? "bg-amber-100 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400"
+              : "bg-gray-100 text-gray-500 dark:bg-slate-700 dark:text-slate-400"
+          }`}
+        >
+          <Icon size={15} />
+        </span>
 
-            <p className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mt-1">
-              {count.toLocaleString()}
-            </p>
+        <span className="flex flex-col">
+          <span className="text-xs font-semibold whitespace-nowrap">
+            {title}
+          </span>
 
-            <p className="text-[11px] md:text-xs text-gray-400 dark:text-slate-500 mt-1">
-              {subtitle}
-            </p>
-          </div>
-
-          <div
-            className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
+          <span
+            className={`text-sm font-bold ${
               isActive
-                ? "bg-amber-500 text-white"
-                : "bg-gray-100 text-gray-500 dark:bg-slate-700 dark:text-slate-300"
+                ? "text-gray-900 dark:text-white"
+                : "text-gray-700 dark:text-slate-300"
             }`}
           >
-            <Icon size={19} />
-          </div>
-        </div>
-
-        {isActive && (
-          <div className="mt-3 text-[11px] font-semibold text-amber-700 dark:text-amber-400">
-            Currently viewing
-          </div>
-        )}
+            {Number(
+              count || 0
+            ).toLocaleString()}
+          </span>
+        </span>
       </button>
     );
   };
@@ -1162,6 +1596,10 @@ const OrdersPage = () => {
   return (
     <div className="admin-orders-page p-4 md:p-6 max-w-[1800px] mx-auto">
 
+      {/* ========================================
+          PAGE HEADER
+      ======================================== */}
+
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
           Manage Customer Orders
@@ -1174,41 +1612,287 @@ const OrdersPage = () => {
       </div>
 
       {/* ========================================
-          ORDER STATISTICS
+          PROFESSIONAL ORDER FILTER TABS
       ======================================== */}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
-        <OrderStatCard
-          id="all"
-          title="Total Orders"
-          count={orderStats.total}
-          subtitle="All customer orders"
-          icon={ShoppingBag}
-        />
+      <div className="mb-6 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl shadow-sm overflow-hidden">
 
-        <OrderStatCard
-          id="7days"
-          title="Last 7 Days"
-          count={orderStats.last7Days}
-          subtitle="Orders in the last 7 days"
-          icon={Clock3}
-        />
+        {/* TABS */}
 
-        <OrderStatCard
-          id="month"
-          title="Last 1 Month"
-          count={orderStats.lastMonth}
-          subtitle="Orders in the last month"
-          icon={CalendarDays}
-        />
+        <div className="border-b border-gray-200 dark:border-slate-700">
 
-        <OrderStatCard
-          id="year"
-          title="Last 1 Year"
-          count={orderStats.lastYear}
-          subtitle="Orders in the last year"
-          icon={CalendarRange}
-        />
+          <div className="flex items-center overflow-x-auto px-2">
+
+            {/* ORDER PERIOD */}
+
+            <OrderStatCard
+              id="all"
+              title="All Orders"
+              count={
+                orderStats.total
+              }
+              icon={ShoppingBag}
+            />
+
+            <OrderStatCard
+              id="today"
+              title="Today"
+              count={
+                orderStats.today
+              }
+              icon={Clock3}
+            />
+
+            <OrderStatCard
+              id="7days"
+              title="7 Days"
+              count={
+                orderStats.last7Days
+              }
+              icon={CalendarDays}
+            />
+
+            <OrderStatCard
+              id="month"
+              title="1 Month"
+              count={
+                orderStats.lastMonth
+              }
+              icon={CalendarDays}
+            />
+
+            <OrderStatCard
+              id="year"
+              title="1 Year"
+              count={
+                orderStats.lastYear
+              }
+              icon={CalendarRange}
+            />
+
+            <div className="w-px h-8 bg-gray-200 dark:bg-slate-700 mx-1 shrink-0" />
+
+            {/* ORDER STATUS */}
+
+            <OrderStatCard
+              id="Pending"
+              title="Pending"
+              count={
+                orderStats
+                  .statusCounts
+                  .Pending
+              }
+              icon={Clock3}
+              type="status"
+            />
+
+            <OrderStatCard
+              id="Processing"
+              title="Processing"
+              count={
+                orderStats
+                  .statusCounts
+                  .Processing
+              }
+              icon={Loader2}
+              type="status"
+            />
+
+            <OrderStatCard
+              id="Confirmed"
+              title="Confirmed"
+              count={
+                orderStats
+                  .statusCounts
+                  .Confirmed
+              }
+              icon={CheckCircle2}
+              type="status"
+            />
+
+            <OrderStatCard
+              id="Ready To Ship"
+              title="Ready To Ship"
+              count={
+                orderStats
+                  .statusCounts[
+                    "Ready To Ship"
+                  ]
+              }
+              icon={PackageCheck}
+              type="status"
+            />
+
+            <OrderStatCard
+              id="Shipped"
+              title="Shipped"
+              count={
+                orderStats
+                  .statusCounts
+                  .Shipped
+              }
+              icon={Truck}
+              type="status"
+            />
+
+            <OrderStatCard
+              id="Delivered"
+              title="Delivered"
+              count={
+                orderStats
+                  .statusCounts
+                  .Delivered
+              }
+              icon={CheckCircle2}
+              type="status"
+            />
+
+            <OrderStatCard
+              id="Cancelled"
+              title="Cancelled"
+              count={
+                orderStats
+                  .statusCounts
+                  .Cancelled
+              }
+              icon={X}
+              type="status"
+            />
+
+            <OrderStatCard
+              id="Returned"
+              title="Returned"
+              count={
+                orderStats
+                  .statusCounts
+                  .Returned
+              }
+              icon={Package}
+              type="status"
+            />
+
+            <OrderStatCard
+              id="Failed"
+              title="Failed"
+              count={
+                orderStats
+                  .statusCounts
+                  .Failed
+              }
+              icon={AlertTriangle}
+              type="status"
+            />
+
+            <div className="w-px h-8 bg-gray-200 dark:bg-slate-700 mx-1 shrink-0" />
+
+            {/* PAYMENT */}
+
+            <OrderStatCard
+              id="Pending"
+              title="Payment Pending"
+              count={
+                orderStats.pendingPayment
+              }
+              icon={CreditCard}
+              type="payment"
+            />
+
+            <OrderStatCard
+              id="Paid"
+              title="Paid"
+              count={
+                orderStats.paidOrders
+              }
+              icon={CircleDollarSign}
+              type="payment"
+            />
+
+          </div>
+        </div>
+
+        {/* FILTER SUMMARY */}
+
+        <div className="px-4 md:px-5 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+
+          <div>
+
+            <div className="flex items-center gap-2">
+
+              <h2 className="text-sm font-bold text-gray-900 dark:text-white">
+                {selectedFilterLabel}
+              </h2>
+
+              {(orderPeriod !== "all" ||
+                orderStatusFilter !==
+                  "all" ||
+                paymentFilter !==
+                  "all") && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOrderPeriod(
+                      "all"
+                    );
+
+                    setOrderStatusFilter(
+                      "all"
+                    );
+
+                    setPaymentFilter(
+                      "all"
+                    );
+                  }}
+                  className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600 text-[10px] font-semibold transition"
+                >
+                  <X size={11} />
+                  Clear
+                </button>
+              )}
+
+            </div>
+
+            <p className="text-[11px] text-gray-400 dark:text-slate-500 mt-0.5">
+              Showing{" "}
+              <span className="font-semibold text-gray-700 dark:text-slate-300">
+                {filteredOrders.length.toLocaleString()}
+              </span>{" "}
+              order
+              {filteredOrders.length !==
+              1
+                ? "s"
+                : ""}
+            </p>
+
+          </div>
+
+          {/* REVENUE */}
+
+          <div className="flex items-center gap-3">
+
+            <div className="hidden sm:block h-8 w-px bg-gray-200 dark:bg-slate-700" />
+
+            <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+              <DollarSign size={15} />
+            </div>
+
+            <div>
+
+              <p className="text-[9px] uppercase tracking-wide font-bold text-gray-400 dark:text-slate-500">
+                Paid Revenue
+              </p>
+
+              <p className="text-sm font-bold text-gray-900 dark:text-white">
+                ৳
+                {Number(
+                  orderStats.totalRevenue
+                ).toLocaleString()}
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
       </div>
 
       {/* ========================================
@@ -1216,28 +1900,22 @@ const OrdersPage = () => {
       ======================================== */}
 
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-5">
+
         <div>
-          <div className="flex items-center gap-2">
+
+          <div className="flex flex-wrap items-center gap-2">
+
             <h2 className="text-lg font-bold text-gray-900 dark:text-white">
-              {selectedPeriodLabel}
+              Orders
             </h2>
 
-            {orderPeriod !== "all" && (
-              <button
-                type="button"
-                onClick={() =>
-                  setOrderPeriod("all")
-                }
-                className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 text-[10px] font-semibold"
-              >
-                <X size={11} />
+            <span className="inline-flex items-center px-2 py-1 rounded-md bg-gray-100 dark:bg-slate-700 text-[10px] font-bold text-gray-600 dark:text-slate-300">
+              {selectedFilterLabel}
+            </span>
 
-                Clear
-              </button>
-            )}
           </div>
 
-          <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">
+          <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">
             Showing{" "}
             <span className="font-semibold text-gray-700 dark:text-slate-200">
               {filteredOrders.length.toLocaleString()}
@@ -1248,12 +1926,13 @@ const OrdersPage = () => {
               ? "s"
               : ""}
           </p>
+
         </div>
 
-        {/* SEARCH DIRECTLY BESIDE ALL ORDERS */}
-
         <div className="w-full lg:w-[390px]">
+
           <div className="relative">
+
             <Search
               size={17}
               className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
@@ -1282,16 +1961,21 @@ const OrdersPage = () => {
                 <X size={16} />
               </button>
             )}
+
           </div>
+
         </div>
+
       </div>
 
       {/* ========================================
           ORDERS
       ======================================== */}
 
-      {filteredOrders.length === 0 ? (
+      {filteredOrders.length ===
+      0 ? (
         <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 p-12 text-center">
+
           <PackageCheck
             className="mx-auto text-gray-300 dark:text-slate-600 mb-3"
             size={45}
@@ -1299,13 +1983,16 @@ const OrdersPage = () => {
 
           <p className="text-gray-500 dark:text-slate-400 font-medium">
             No orders found for{" "}
-            {selectedPeriodLabel.toLowerCase()}.
+            {selectedFilterLabel.toLowerCase()}.
           </p>
+
         </div>
       ) : (
         <div className="space-y-4">
+
           {filteredOrders.map(
             (order) => {
+
               if (
                 !order ||
                 typeof order !==
@@ -1361,24 +2048,35 @@ const OrdersPage = () => {
                 )
                   ? fraud.fraudReports
                       .length
-                  : 0;
+                  : Number(
+                      fraud?.fraudReports ||
+                        0
+                    );
 
               const isEditingCustomer =
                 editingCustomerId ===
                 order._id;
+
+              const currentPaymentStatus =
+                order.paymentStatus ||
+                "Pending";
 
               return (
                 <div
                   key={order._id}
                   className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl shadow-sm hover:shadow-md transition overflow-hidden"
                 >
+
                   {/* ========================================
                       TOP BAR
                   ======================================== */}
 
                   <div className="px-4 md:px-5 py-3 border-b border-gray-100 dark:border-slate-700 bg-gray-50/70 dark:bg-slate-900/50">
+
                     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+
                       <div className="flex flex-wrap items-center gap-3">
+
                         <div>
                           <p className="text-[10px] uppercase tracking-wide font-bold text-gray-400 dark:text-slate-500">
                             Order ID
@@ -1408,17 +2106,135 @@ const OrdersPage = () => {
 
                         <div className="h-7 w-px bg-gray-200 dark:bg-slate-700 hidden sm:block" />
 
-                        <span
-                          className={`px-2.5 py-1 rounded-lg text-[11px] font-bold whitespace-nowrap ${getStatusStyle(
-                            order.status
-                          )}`}
-                        >
-                          {order.status ||
-                            "Pending"}
-                        </span>
+                        <div className="flex items-center gap-2">
+
+                          <select
+                            value={
+                              order.status ||
+                              "Pending"
+                            }
+                            onChange={(e) =>
+                              handleOrderStatusChange(
+                                order,
+                                e.target
+                                  .value
+                              )
+                            }
+                            disabled={isActionLoading(
+                              order._id,
+                              "status"
+                            )}
+                            className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border outline-none cursor-pointer ${getStatusStyle(
+                              order.status
+                            )}`}
+                          >
+
+                            <option value="Pending">
+                              Pending
+                            </option>
+
+                            <option value="Confirmed">
+                              Confirmed
+                            </option>
+
+                            <option value="Processing">
+                              Processing
+                            </option>
+
+                            <option value="Ready To Ship">
+                              Ready To Ship
+                            </option>
+
+                            <option value="Shipped">
+                              Shipped
+                            </option>
+
+                            <option value="Delivered">
+                              Delivered
+                            </option>
+
+                            <option value="Cancelled">
+                              Cancelled
+                            </option>
+
+                            <option value="Returned">
+                              Returned
+                            </option>
+
+                            <option value="Failed">
+                              Failed
+                            </option>
+
+                          </select>
+
+                          {isActionLoading(
+                            order._id,
+                            "status"
+                          ) && (
+                            <Loader2
+                              size={13}
+                              className="animate-spin text-gray-400"
+                            />
+                          )}
+
+                        </div>
+
+                        <div className="flex items-center gap-2">
+
+                          <select
+                            value={
+                              currentPaymentStatus
+                            }
+                            onChange={(e) =>
+                              handlePaymentStatusChange(
+                                order,
+                                e.target
+                                  .value
+                              )
+                            }
+                            disabled={isActionLoading(
+                              order._id,
+                              "paymentStatus"
+                            )}
+                            className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border outline-none cursor-pointer ${getPaymentStyle(
+                              currentPaymentStatus
+                            )}`}
+                          >
+
+                            <option value="Pending">
+                              Payment Pending
+                            </option>
+
+                            <option value="Paid">
+                              Paid
+                            </option>
+
+                            <option value="Failed">
+                              Payment Failed
+                            </option>
+
+                            <option value="Refunded">
+                              Refunded
+                            </option>
+
+                          </select>
+
+                          {isActionLoading(
+                            order._id,
+                            "paymentStatus"
+                          ) && (
+                            <Loader2
+                              size={13}
+                              className="animate-spin text-gray-400"
+                            />
+                          )}
+
+                        </div>
+
                       </div>
 
                       <div className="flex items-center gap-2">
+
                         <span className="text-xs text-gray-500 dark:text-slate-400">
                           Total:
                         </span>
@@ -1430,7 +2246,9 @@ const OrdersPage = () => {
                               0
                           ).toLocaleString()}
                         </span>
+
                       </div>
+
                     </div>
                   </div>
 
@@ -1439,19 +2257,21 @@ const OrdersPage = () => {
                   ======================================== */}
 
                   <div className="p-4 md:p-5">
+
                     <div className="grid grid-cols-1 xl:grid-cols-12 gap-5">
 
-                      {/* ========================================
-                          CUSTOMER
-                      ======================================== */}
+                      {/* CUSTOMER */}
 
                       <div className="xl:col-span-3">
+
                         <div className="flex items-center gap-2 mb-3">
+
                           <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 flex items-center justify-center">
                             <User size={16} />
                           </div>
 
                           <div>
+
                             <p className="text-xs font-bold text-gray-900 dark:text-white">
                               Customer
                             </p>
@@ -1459,17 +2279,22 @@ const OrdersPage = () => {
                             <p className="text-[10px] text-gray-400 dark:text-slate-500">
                               Customer information
                             </p>
+
                           </div>
+
                         </div>
 
                         {isEditingCustomer ? (
                           <div className="space-y-3">
+
                             <div>
+
                               <label className="block text-[10px] font-semibold text-gray-500 dark:text-slate-400 mb-1">
                                 Phone Number
                               </label>
 
                               <div className="relative">
+
                                 <Phone
                                   size={13}
                                   className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400"
@@ -1492,15 +2317,18 @@ const OrdersPage = () => {
                                   className="w-full h-9 border border-orange-300 dark:border-orange-700 rounded-lg pl-8 pr-2 text-xs text-gray-800 dark:text-white bg-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-200"
                                   placeholder="01XXXXXXXXX"
                                 />
+
                               </div>
                             </div>
 
                             <div>
+
                               <label className="block text-[10px] font-semibold text-gray-500 dark:text-slate-400 mb-1">
                                 Address
                               </label>
 
                               <div className="relative">
+
                                 <MapPin
                                   size={13}
                                   className="absolute left-2.5 top-2.5 text-gray-400"
@@ -1523,11 +2351,13 @@ const OrdersPage = () => {
                                   className="w-full border border-orange-300 dark:border-orange-700 rounded-lg py-2 pl-8 pr-2 text-xs text-gray-800 dark:text-white bg-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-200 resize-none"
                                   placeholder="Enter complete customer address..."
                                 />
+
                               </div>
                             </div>
 
                             {courierSubmitted && (
                               <div className="bg-orange-50 dark:bg-orange-950/30 border border-orange-100 dark:border-orange-900/50 rounded-lg p-2">
+
                                 <p className="text-[10px] text-orange-700 dark:text-orange-400 leading-4">
                                   This order is already
                                   submitted to{" "}
@@ -1536,13 +2366,16 @@ const OrdersPage = () => {
                                       courierProvider
                                     }
                                   </b>
-                                  . Updating here changes
+                                  .
+                                  Updating here changes
                                   your website order only.
                                 </p>
+
                               </div>
                             )}
 
                             <div className="flex gap-2">
+
                               <button
                                 type="button"
                                 onClick={() =>
@@ -1556,6 +2389,7 @@ const OrdersPage = () => {
                                 )}
                                 className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50 text-[11px] font-semibold"
                               >
+
                                 {isActionLoading(
                                   order._id,
                                   "customerInfo"
@@ -1575,6 +2409,7 @@ const OrdersPage = () => {
                                 )}
 
                                 Save
+
                               </button>
 
                               <button
@@ -1588,6 +2423,7 @@ const OrdersPage = () => {
                                 )}
                                 className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600 text-[11px] font-semibold"
                               >
+
                                 <X
                                   size={
                                     13
@@ -1595,17 +2431,22 @@ const OrdersPage = () => {
                                 />
 
                                 Cancel
+
                               </button>
+
                             </div>
+
                           </div>
                         ) : (
                           <div className="space-y-2">
+
                             <p className="font-semibold text-sm text-gray-900 dark:text-white">
                               {order.fullName ||
                                 "Unknown Customer"}
                             </p>
 
                             <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-slate-400">
+
                               <Phone
                                 size={13}
                               />
@@ -1614,9 +2455,11 @@ const OrdersPage = () => {
                                 {order.phoneNumber ||
                                   "No phone"}
                               </span>
+
                             </div>
 
                             <div className="flex items-start gap-2">
+
                               <MapPin
                                 size={13}
                                 className="text-gray-400 mt-0.5 shrink-0"
@@ -1626,6 +2469,7 @@ const OrdersPage = () => {
                                 {order.streetAddress ||
                                   "No address"}
                               </p>
+
                             </div>
 
                             <button
@@ -1637,6 +2481,7 @@ const OrdersPage = () => {
                               }
                               className="inline-flex items-center gap-1.5 mt-1 text-[10px] font-semibold text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300 hover:underline"
                             >
+
                               <Pencil
                                 size={
                                   11
@@ -1644,10 +2489,12 @@ const OrdersPage = () => {
                               />
 
                               Edit Phone & Address
+
                             </button>
 
                             {order.orderNotes && (
                               <div className="mt-2 bg-blue-50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/50 rounded-lg p-2">
+
                                 <p className="text-[10px] font-semibold text-blue-600 dark:text-blue-400">
                                   Order Note
                                 </p>
@@ -1657,18 +2504,21 @@ const OrdersPage = () => {
                                     order.orderNotes
                                   }
                                 </p>
+
                               </div>
                             )}
+
                           </div>
                         )}
+
                       </div>
 
-                      {/* ========================================
-                          PRODUCTS
-                      ======================================== */}
+                      {/* PRODUCTS */}
 
                       <div className="xl:col-span-4">
+
                         <div className="flex items-center gap-2 mb-3">
+
                           <div className="w-8 h-8 rounded-lg bg-purple-50 dark:bg-purple-950/30 text-purple-600 dark:text-purple-400 flex items-center justify-center">
                             <Package
                               size={16}
@@ -1676,6 +2526,7 @@ const OrdersPage = () => {
                           </div>
 
                           <div>
+
                             <p className="text-xs font-bold text-gray-900 dark:text-white">
                               Products
                             </p>
@@ -1686,10 +2537,13 @@ const OrdersPage = () => {
                                 0}{" "}
                               item(s)
                             </p>
+
                           </div>
+
                         </div>
 
                         <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+
                           {Array.isArray(
                             order.cart
                           ) &&
@@ -1698,6 +2552,7 @@ const OrdersPage = () => {
                                 item,
                                 idx
                               ) => {
+
                                 const customization =
                                   item?.customization ||
                                   {};
@@ -1705,8 +2560,8 @@ const OrdersPage = () => {
                                 const hasCustomization =
                                   Boolean(
                                     customization.length ||
-                                    customization.height ||
-                                    customization.width
+                                      customization.height ||
+                                      customization.width
                                   );
 
                                 return (
@@ -1717,7 +2572,9 @@ const OrdersPage = () => {
                                     }
                                     className="flex items-start gap-2.5 border border-gray-100 dark:border-slate-700 rounded-xl p-2.5 bg-gray-50/50 dark:bg-slate-900/50"
                                   >
+
                                     <div className="w-11 h-11 relative bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shrink-0 overflow-hidden">
+
                                       <Image
                                         src={
                                           item?.thumbnail ||
@@ -1731,9 +2588,11 @@ const OrdersPage = () => {
                                         sizes="44px"
                                         className="object-cover"
                                       />
+
                                     </div>
 
                                     <div className="flex-1 min-w-0">
+
                                       <p className="font-semibold text-xs text-gray-800 dark:text-white line-clamp-2">
                                         {item?.title ||
                                           "Product"}
@@ -1749,6 +2608,7 @@ const OrdersPage = () => {
                                       </p>
 
                                       <div className="flex flex-wrap gap-1 mt-1">
+
                                         {item?.selectedColor && (
                                           <span className="bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-slate-200 text-[9px] px-1.5 py-0.5 rounded border border-gray-200 dark:border-slate-600 font-medium">
                                             Color:{" "}
@@ -1766,15 +2626,14 @@ const OrdersPage = () => {
                                             }
                                           </span>
                                         )}
-                                      </div>
 
-                                      {/* ========================================
-                                          CUSTOM MEASUREMENT
-                                      ======================================== */}
+                                      </div>
 
                                       {hasCustomization && (
                                         <div className="mt-2 rounded-lg border border-orange-100 dark:border-orange-900/50 bg-orange-50/70 dark:bg-orange-950/30 p-2">
+
                                           <div className="flex items-center gap-1.5 mb-1.5">
+
                                             <Ruler
                                               size={11}
                                               className="text-orange-600 dark:text-orange-400"
@@ -1783,11 +2642,14 @@ const OrdersPage = () => {
                                             <p className="text-[9px] font-bold uppercase tracking-wide text-orange-700 dark:text-orange-400">
                                               Custom Measurement
                                             </p>
+
                                           </div>
 
                                           <div className="grid grid-cols-3 gap-1.5">
+
                                             {customization.length && (
                                               <div className="bg-white dark:bg-slate-800 border border-orange-100 dark:border-orange-900/50 rounded-md px-1.5 py-1">
+
                                                 <p className="text-[8px] text-gray-400 dark:text-slate-500">
                                                   Length
                                                 </p>
@@ -1798,11 +2660,13 @@ const OrdersPage = () => {
                                                   }{" "}
                                                   inch
                                                 </p>
+
                                               </div>
                                             )}
 
                                             {customization.height && (
                                               <div className="bg-white dark:bg-slate-800 border border-orange-100 dark:border-orange-900/50 rounded-md px-1.5 py-1">
+
                                                 <p className="text-[8px] text-gray-400 dark:text-slate-500">
                                                   Height
                                                 </p>
@@ -1813,11 +2677,13 @@ const OrdersPage = () => {
                                                   }{" "}
                                                   inch
                                                 </p>
+
                                               </div>
                                             )}
 
                                             {customization.width && (
                                               <div className="bg-white dark:bg-slate-800 border border-orange-100 dark:border-orange-900/50 rounded-md px-1.5 py-1">
+
                                                 <p className="text-[8px] text-gray-400 dark:text-slate-500">
                                                   Width
                                                 </p>
@@ -1828,13 +2694,16 @@ const OrdersPage = () => {
                                                   }{" "}
                                                   inch
                                                 </p>
+
                                               </div>
                                             )}
+
                                           </div>
 
                                           <p className="text-[8px] text-orange-600 dark:text-orange-400 mt-1.5">
                                             No extra charge
                                           </p>
+
                                         </div>
                                       )}
 
@@ -1846,20 +2715,23 @@ const OrdersPage = () => {
                                           }
                                         </p>
                                       )}
+
                                     </div>
+
                                   </div>
                                 );
                               }
                             )}
+
                         </div>
                       </div>
 
-                      {/* ========================================
-                          SHIPPING
-                      ======================================== */}
+                      {/* SHIPPING */}
 
                       <div className="xl:col-span-2">
+
                         <div className="flex items-center gap-2 mb-3">
+
                           <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 flex items-center justify-center">
                             <Truck
                               size={16}
@@ -1867,6 +2739,7 @@ const OrdersPage = () => {
                           </div>
 
                           <div>
+
                             <p className="text-xs font-bold text-gray-900 dark:text-white">
                               Shipping
                             </p>
@@ -1874,11 +2747,15 @@ const OrdersPage = () => {
                             <p className="text-[10px] text-gray-400 dark:text-slate-500">
                               Delivery details
                             </p>
+
                           </div>
+
                         </div>
 
                         <div className="space-y-2">
+
                           <div>
+
                             <p className="text-[10px] text-gray-400 dark:text-slate-500">
                               Method
                             </p>
@@ -1887,9 +2764,11 @@ const OrdersPage = () => {
                               {order.shippingMethod ||
                                 "N/A"}
                             </p>
+
                           </div>
 
                           <div>
+
                             <p className="text-[10px] text-gray-400 dark:text-slate-500">
                               Shipping Charge
                             </p>
@@ -1901,16 +2780,20 @@ const OrdersPage = () => {
                                   0
                               ).toLocaleString()}
                             </p>
+
                           </div>
 
                           <div>
+
                             <p className="text-[10px] text-gray-400 dark:text-slate-500">
                               Courier
                             </p>
 
                             {courierProvider ? (
                               <div className="mt-1">
+
                                 <div className="flex items-center gap-1.5">
+
                                   <Truck
                                     size={
                                       13
@@ -1923,28 +2806,32 @@ const OrdersPage = () => {
                                       courierProvider
                                     }
                                   </span>
+
                                 </div>
 
                                 <p className="text-[10px] text-gray-500 dark:text-slate-400 mt-1">
                                   {courierStatus ||
                                     "Pending"}
                                 </p>
+
                               </div>
                             ) : (
                               <span className="inline-block mt-1 text-[10px] text-gray-400 dark:text-slate-500">
                                 Not assigned
                               </span>
                             )}
+
                           </div>
+
                         </div>
                       </div>
 
-                      {/* ========================================
-                          FRAUD
-                      ======================================== */}
+                      {/* FRAUD */}
 
                       <div className="xl:col-span-3">
+
                         <div className="flex items-center gap-2 mb-3">
+
                           <div className="w-8 h-8 rounded-lg bg-purple-50 dark:bg-purple-950/30 text-purple-600 dark:text-purple-400 flex items-center justify-center">
                             <ShieldCheck
                               size={16}
@@ -1952,6 +2839,7 @@ const OrdersPage = () => {
                           </div>
 
                           <div>
+
                             <p className="text-xs font-bold text-gray-900 dark:text-white">
                               Fraud Check
                             </p>
@@ -1959,7 +2847,9 @@ const OrdersPage = () => {
                             <p className="text-[10px] text-gray-400 dark:text-slate-500">
                               Customer risk analysis
                             </p>
+
                           </div>
+
                         </div>
 
                         {fraud?.checked ? (
@@ -1969,8 +2859,11 @@ const OrdersPage = () => {
                               "bg-gray-50 border-gray-100 dark:bg-slate-800 dark:border-slate-700"
                             }`}
                           >
+
                             <div className="flex items-center justify-between gap-2">
+
                               <div className="flex items-center gap-1.5">
+
                                 {fraudRiskStyle &&
                                   React.createElement(
                                     fraudRiskStyle.Icon,
@@ -1991,6 +2884,7 @@ const OrdersPage = () => {
                                   {fraud.riskLevel ||
                                     "Unverified"}
                                 </span>
+
                               </div>
 
                               <span className="text-[9px] font-semibold text-gray-500 dark:text-slate-400">
@@ -1999,6 +2893,7 @@ const OrdersPage = () => {
                                   ? `${fraud.cancellationRate}% cancel`
                                   : ""}
                               </span>
+
                             </div>
 
                             {fraud.riskLevel ===
@@ -2008,6 +2903,7 @@ const OrdersPage = () => {
                               </p>
                             ) : (
                               <>
+
                                 <p className="text-[10px] text-gray-600 dark:text-slate-300 mt-1">
                                   {fraud.totalOrders ||
                                     0}{" "}
@@ -2052,6 +2948,7 @@ const OrdersPage = () => {
                                   Risk based on cancellation
                                   history
                                 </p>
+
                               </>
                             )}
 
@@ -2062,15 +2959,20 @@ const OrdersPage = () => {
                                 ).toLocaleString()}
                               </p>
                             )}
+
                           </div>
                         ) : (
                           <div className="rounded-xl border border-dashed border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900 p-3">
+
                             <p className="text-xs text-gray-400 dark:text-slate-500">
                               Fraud check not completed.
                             </p>
+
                           </div>
                         )}
+
                       </div>
+
                     </div>
 
                     {/* ========================================
@@ -2078,13 +2980,16 @@ const OrdersPage = () => {
                     ======================================== */}
 
                     <div className="mt-5 pt-4 border-t border-gray-100 dark:border-slate-700">
+
                       <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
 
                         {/* TRACKING */}
 
                         <div className="flex flex-wrap items-center gap-4">
+
                           {consignmentId && (
                             <div>
+
                               <p className="text-[9px] uppercase font-bold text-gray-400 dark:text-slate-500">
                                 Consignment
                               </p>
@@ -2116,12 +3021,15 @@ const OrdersPage = () => {
                                     }
                                   />
                                 )}
+
                               </button>
+
                             </div>
                           )}
 
                           {trackingCode && (
                             <div>
+
                               <p className="text-[9px] uppercase font-bold text-gray-400 dark:text-slate-500">
                                 Tracking
                               </p>
@@ -2153,12 +3061,15 @@ const OrdersPage = () => {
                                     }
                                   />
                                 )}
+
                               </button>
+
                             </div>
                           )}
 
                           {courierStatus && (
                             <div>
+
                               <p className="text-[9px] uppercase font-bold text-gray-400 dark:text-slate-500">
                                 Courier Status
                               </p>
@@ -2168,8 +3079,28 @@ const OrdersPage = () => {
                                   courierStatus
                                 }
                               </p>
+
                             </div>
                           )}
+
+                          <div>
+
+                            <p className="text-[9px] uppercase font-bold text-gray-400 dark:text-slate-500">
+                              Payment
+                            </p>
+
+                            <span
+                              className={`inline-flex mt-0.5 px-2 py-1 rounded-md border text-[10px] font-bold ${getPaymentStyle(
+                                currentPaymentStatus
+                              )}`}
+                            >
+                              {
+                                currentPaymentStatus
+                              }
+                            </span>
+
+                          </div>
+
                         </div>
 
                         {/* ACTION BUTTONS */}
@@ -2191,6 +3122,7 @@ const OrdersPage = () => {
                             )}
                             className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg bg-purple-50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-400 border border-purple-200 dark:border-purple-900/50 hover:bg-purple-100 dark:hover:bg-purple-900/40 disabled:opacity-50 text-[11px] font-bold transition"
                           >
+
                             {isActionLoading(
                               order._id,
                               "fraud"
@@ -2212,6 +3144,7 @@ const OrdersPage = () => {
                             {fraud?.checked
                               ? "Check Again"
                               : "Fraud Check"}
+
                           </button>
 
                           {/* PATHAO */}
@@ -2232,6 +3165,7 @@ const OrdersPage = () => {
                             }
                             className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg bg-orange-50 dark:bg-orange-950/30 text-orange-700 dark:text-orange-400 border border-orange-200 dark:border-orange-900/50 hover:bg-orange-100 dark:hover:bg-orange-900/40 disabled:opacity-50 disabled:cursor-not-allowed text-[11px] font-bold transition"
                           >
+
                             {isActionLoading(
                               order._id,
                               "pathao"
@@ -2259,6 +3193,7 @@ const OrdersPage = () => {
                               : courierSubmitted
                               ? "Courier Submitted"
                               : "Send to Pathao"}
+
                           </button>
 
                           {/* STEADFAST */}
@@ -2279,6 +3214,7 @@ const OrdersPage = () => {
                             }
                             className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-900/50 hover:bg-blue-100 dark:hover:bg-blue-900/40 disabled:opacity-50 disabled:cursor-not-allowed text-[11px] font-bold transition"
                           >
+
                             {isActionLoading(
                               order._id,
                               "steadfast"
@@ -2306,6 +3242,7 @@ const OrdersPage = () => {
                               : courierSubmitted
                               ? "Courier Submitted"
                               : "Send to SteadFast"}
+
                           </button>
 
                           {/* DELETE */}
@@ -2323,20 +3260,28 @@ const OrdersPage = () => {
                             )}
                             className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/50 hover:bg-red-100 dark:hover:bg-red-900/40 disabled:opacity-50 text-[11px] font-bold transition"
                           >
+
                             <Trash2
                               size={14}
                             />
 
                             Delete
+
                           </button>
+
                         </div>
+
                       </div>
+
                     </div>
+
                   </div>
+
                 </div>
               );
             }
           )}
+
         </div>
       )}
 
@@ -2346,15 +3291,19 @@ const OrdersPage = () => {
 
       {deleteOrder && (
         <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+
           <div className="w-full max-w-md bg-white dark:bg-slate-800 rounded-2xl shadow-2xl overflow-hidden">
 
             <div className="px-5 py-4 border-b border-gray-100 dark:border-slate-700 flex items-center justify-between">
+
               <div className="flex items-center gap-3">
+
                 <div className="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 flex items-center justify-center">
                   <Trash2 size={19} />
                 </div>
 
                 <div>
+
                   <h3 className="text-base font-bold text-gray-900 dark:text-white">
                     Delete Order
                   </h3>
@@ -2362,7 +3311,9 @@ const OrdersPage = () => {
                   <p className="text-[11px] text-gray-400 dark:text-slate-500">
                     Permanent action
                   </p>
+
                 </div>
+
               </div>
 
               <button
@@ -2378,17 +3329,22 @@ const OrdersPage = () => {
               >
                 <X size={17} />
               </button>
+
             </div>
 
             <div className="p-5">
+
               <div className="bg-red-50 dark:bg-red-950/30 border border-red-100 dark:border-red-900/50 rounded-xl p-4">
+
                 <div className="flex items-start gap-3">
+
                   <AlertTriangle
                     size={18}
                     className="text-red-500 mt-0.5 shrink-0"
                   />
 
                   <div>
+
                     <p className="text-sm font-semibold text-red-800 dark:text-red-400">
                       Are you sure?
                     </p>
@@ -2398,8 +3354,11 @@ const OrdersPage = () => {
                       deleted from your website database.
                       This action cannot be undone.
                     </p>
+
                   </div>
+
                 </div>
+
               </div>
 
               {(
@@ -2409,19 +3368,26 @@ const OrdersPage = () => {
                 deleteOrder.consignment_id
               ) && (
                 <div className="mt-3 bg-orange-50 dark:bg-orange-950/30 border border-orange-100 dark:border-orange-900/50 rounded-xl p-3">
+
                   <p className="text-[11px] text-orange-700 dark:text-orange-400 leading-5">
+
                     <b>Warning:</b> This order has
                     already been submitted to a courier.
                     Deleting it from your website will
                     not automatically cancel the courier
                     shipment.
+
                   </p>
+
                 </div>
               )}
 
               <div className="mt-4 rounded-xl border border-gray-200 dark:border-slate-700 p-3">
+
                 <div className="flex items-center justify-between gap-3">
+
                   <div>
+
                     <p className="text-[10px] uppercase font-bold text-gray-400 dark:text-slate-500">
                       Order ID
                     </p>
@@ -2430,9 +3396,11 @@ const OrdersPage = () => {
                       {deleteOrder.orderId ||
                         "N/A"}
                     </p>
+
                   </div>
 
                   <div className="text-right">
+
                     <p className="text-[10px] uppercase font-bold text-gray-400 dark:text-slate-500">
                       Customer
                     </p>
@@ -2441,11 +3409,15 @@ const OrdersPage = () => {
                       {deleteOrder.fullName ||
                         "Unknown"}
                     </p>
+
                   </div>
+
                 </div>
+
               </div>
 
               <div className="flex gap-2 mt-5">
+
                 <button
                   type="button"
                   onClick={() =>
@@ -2471,6 +3443,7 @@ const OrdersPage = () => {
                   )}
                   className="flex-1 h-11 rounded-xl bg-red-600 text-white hover:bg-red-700 text-sm font-semibold inline-flex items-center justify-center gap-2 disabled:opacity-50"
                 >
+
                   {isActionLoading(
                     deleteOrder._id,
                     "delete"
@@ -2490,12 +3463,18 @@ const OrdersPage = () => {
                       Delete Order
                     </>
                   )}
+
                 </button>
+
               </div>
+
             </div>
+
           </div>
+
         </div>
       )}
+
     </div>
   );
 };
