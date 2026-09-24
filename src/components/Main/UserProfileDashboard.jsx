@@ -21,7 +21,6 @@ const UserProfileDashboardContent = () => {
     confirmPassword: "",
   });
 
-  // Profile Picture States
   const [profileImage, setProfileImage] = useState(null);
   const [imagePreview, setImagePreview] = useState("");
 
@@ -172,7 +171,7 @@ const UserProfileDashboardContent = () => {
   if (!isAuthorized) {
     return (
       <div className="min-h-[50vh] flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-[#eb6e1b] border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -189,7 +188,7 @@ const UserProfileDashboardContent = () => {
                 <li
                   onClick={() => setActiveMenu("My Profile")}
                   className={`cursor-pointer transition-colors ${
-                    activeMenu === "My Profile" ? "text-[#eb6e1b] font-medium" : "hover:text-black"
+                    activeMenu === "My Profile" ? "text-primary font-medium" : "hover:text-black"
                   }`}
                 >
                   My Profile
@@ -224,7 +223,7 @@ const UserProfileDashboardContent = () => {
                 
                 {/* Profile Picture Upload UI Section */}
                 <div className="flex items-center gap-6 pb-6 border-b border-gray-100">
-                  <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-[#eb6e1b] bg-gray-100 flex items-center justify-center">
+                  <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-primary bg-gray-100 flex items-center justify-center">
                     {imagePreview ? (
                       <Image 
                         src={imagePreview} 
@@ -237,7 +236,7 @@ const UserProfileDashboardContent = () => {
                     )}
                   </div>
                   <div>
-                    <label className="cursor-pointer bg-gray-100 hover:bg-[#eb6e1b] hover:text-white text-gray-700 text-sm font-medium py-2 px-4 rounded transition-all inline-flex items-center gap-2">
+                    <label className="cursor-pointer bg-gray-100 hover:bg-secondary hover:text-white text-gray-700 text-sm font-medium py-2 px-4 rounded transition-all inline-flex items-center gap-2">
                       <FiCamera size={16} />
                       <span>Change Photo</span>
                       <input 
@@ -260,7 +259,7 @@ const UserProfileDashboardContent = () => {
                       value={formData.firstName}
                       onChange={handleChange}
                       required
-                      className="w-full bg-gray-100 px-4 py-3 text-sm rounded outline-none focus:ring-1 focus:ring-[#eb6e1b]"
+                      className="w-full bg-gray-100 px-4 py-3 text-sm rounded outline-none focus:ring-1 focus:ring-primary"
                     />
                   </div>
                   <div>
@@ -270,7 +269,7 @@ const UserProfileDashboardContent = () => {
                       name="lastName"
                       value={formData.lastName}
                       onChange={handleChange}
-                      className="w-full bg-gray-100 px-4 py-3 text-sm rounded outline-none focus:ring-1 focus:ring-[#eb6e1b]"
+                      className="w-full bg-gray-100 px-4 py-3 text-sm rounded outline-none focus:ring-1 focus:ring-primary"
                     />
                   </div>
                 </div>
@@ -294,7 +293,7 @@ const UserProfileDashboardContent = () => {
                       value={formData.address}
                       onChange={handleChange}
                       placeholder="Enter address"
-                      className="w-full bg-gray-100 px-4 py-3 text-sm rounded outline-none focus:ring-1 focus:ring-[#eb6e1b]"
+                      className="w-full bg-gray-100 px-4 py-3 text-sm rounded outline-none focus:ring-1 focus:ring-primary"
                     />
                   </div>
                 </div>
@@ -310,7 +309,7 @@ const UserProfileDashboardContent = () => {
                       placeholder="Current Password"
                       value={formData.currentPassword}
                       onChange={handleChange}
-                      className="w-full bg-gray-100 px-4 py-3 text-sm rounded outline-none focus:ring-1 focus:ring-[#eb6e1b]"
+                      className="w-full bg-gray-100 px-4 py-3 text-sm rounded outline-none focus:ring-1 focus:ring-primary"
                     />
                     <span
                       onClick={() => setShowCurrentPassword(!showCurrentPassword)}
@@ -327,7 +326,7 @@ const UserProfileDashboardContent = () => {
                       placeholder="New Password"
                       value={formData.newPassword}
                       onChange={handleChange}
-                      className="w-full bg-gray-100 px-4 py-3 text-sm rounded outline-none focus:ring-1 focus:ring-[#eb6e1b]"
+                      className="w-full bg-gray-100 px-4 py-3 text-sm rounded outline-none focus:ring-1 focus:ring-primary"
                     />
                     <span
                       onClick={() => setShowNewPassword(!showNewPassword)}
@@ -344,7 +343,7 @@ const UserProfileDashboardContent = () => {
                       placeholder="Confirm New Password"
                       value={formData.confirmPassword}
                       onChange={handleChange}
-                      className="w-full bg-gray-100 px-4 py-3 text-sm rounded outline-none focus:ring-1 focus:ring-[#eb6e1b]"
+                      className="w-full bg-gray-100 px-4 py-3 text-sm rounded outline-none focus:ring-1 focus:ring-primary"
                     />
                     <span
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
@@ -359,7 +358,7 @@ const UserProfileDashboardContent = () => {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="bg-[#eb6e1b] cursor-pointer text-white px-8 py-3 text-sm font-medium rounded hover:bg-black transition-colors disabled:opacity-50 flex items-center justify-center min-w-[130px]"
+                    className="bg-primary cursor-pointer text-white px-8 py-3 text-sm font-medium rounded hover:bg-secondary transition-colors disabled:opacity-50 flex items-center justify-center min-w-[130px]"
                   >
                     {loading ? (
                       <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>

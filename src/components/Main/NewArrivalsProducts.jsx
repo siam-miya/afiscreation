@@ -37,180 +37,57 @@ const NewArrivalsProducts = () => {
     return null;
   }
 
-  const p1 = products[0];
-  const p2 = products[1];
-  const p3 = products[2];
-  const p4 = products[3];
+  // Show up to 4 products in a clean 2x2 grid layout
+  const displayProducts = products.slice(0, 4);
 
   return (
-    <div className="w-full bg-white py-4 sm:py-6 md:py-12">
-
-      <div className="grid w-full grid-cols-2 gap-2.5 auto-rows-[180px] sm:gap-3 sm:auto-rows-[220px] md:gap-5 md:auto-rows-[280px]">
-
-        {/* First Large Product (Main Featured Card) */}
-        {p1 && (
-          <div className="relative col-span-2 row-span-2 flex cursor-pointer flex-col justify-end overflow-hidden rounded-xl bg-gray-100 p-4 shadow-sm sm:rounded-2xl sm:p-5 md:p-8 group">
-
+    <div className="w-full bg-white py-6 md:py-12">
+      <div className="grid w-full grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+        {displayProducts.map((product, index) => (
+          <div
+            key={product._id || product.id || index}
+            className="relative flex cursor-pointer flex-col justify-end overflow-hidden rounded-xl bg-gray-100 p-5 shadow-sm sm:rounded-2xl md:p-8 h-[260px] sm:h-[300px] md:h-[360px] group"
+          >
+            {/* Product Image */}
             <div className="absolute inset-0 z-0 h-full w-full overflow-hidden">
               <Image
-                src={p1.thumbnail}
-                alt={p1.title || 'Product'}
+                src={product.thumbnail}
+                alt={product.title || 'Product'}
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105"
-                priority
+                className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
+                priority={index < 2}
               />
             </div>
 
             {/* Smooth Dark Gradient Scrim for text readability */}
             <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
 
-            <div className="relative z-20 max-w-[92%] text-white sm:max-w-[90%]">
-
-              <h3 className="truncate font-inter text-base font-bold leading-tight tracking-wide drop-shadow-sm sm:text-xl md:text-2xl">
-                {p1.title}
-              </h3>
-
-              {p1.description && (
-                <p className="mt-1.5 line-clamp-2 font-poppins text-[10px] font-light text-gray-200 opacity-90 sm:mt-2 sm:text-xs md:text-sm">
-                  {p1.description}
-                </p>
-              )}
-
-              <Link
-                href={`/products/${p1._id || p1.id}`}
-                className="group/btn mt-3 inline-flex items-center gap-1 text-[10px] font-semibold underline underline-offset-4 transition-colors hover:text-gray-200 sm:mt-4 sm:gap-1.5 sm:text-xs md:text-sm"
-              >
-                Shop Now
-
-                <span className="transition-transform duration-300 group-hover/btn:translate-x-1">
-                  →
-                </span>
-              </Link>
-
-            </div>
-          </div>
-        )}
-
-        {/* Second Product (Wide Card) */}
-        {p2 && (
-          <div className="relative col-span-2 row-span-1 flex cursor-pointer flex-col justify-end overflow-hidden rounded-xl bg-gray-100 p-4 shadow-sm sm:rounded-2xl sm:p-5 md:p-6 group">
-
-            <div className="absolute inset-0 z-0 h-full w-full overflow-hidden">
-              <Image
-                src={p2.thumbnail}
-                alt={p2.title || 'Product'}
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
-              />
-            </div>
-
-            <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
-
+            {/* Product Info */}
             <div className="relative z-20 max-w-[90%] text-white">
-
-              <h3 className="truncate font-inter text-sm font-bold leading-tight tracking-wide drop-shadow-sm sm:text-lg md:text-xl">
-                {p2.title}
+              <h3 className="truncate font-inter text-base font-bold leading-tight tracking-wide drop-shadow-sm sm:text-xl md:text-2xl">
+                {product.title}
               </h3>
 
-              {p2.description && (
-                <p className="mt-1 line-clamp-1 font-inter text-[10px] font-light text-gray-200 opacity-90 sm:mt-1.5 sm:text-xs">
-                  {p2.description}
+              {product.description && (
+                <p className="mt-1.5 line-clamp-2 font-poppins text-xs font-light text-gray-200 opacity-90 sm:text-sm">
+                  {product.description}
                 </p>
               )}
 
               <Link
-                href={`/products/${p2._id || p2.id}`}
-                className="group/btn mt-2 inline-flex items-center gap-1 text-[10px] font-semibold underline underline-offset-4 transition-colors hover:text-gray-200 sm:mt-2.5 sm:text-xs"
+                href={`/products/${product._id || product.id}`}
+                className="group/btn mt-3 inline-flex items-center gap-1 text-xs font-semibold underline underline-offset-4 transition-colors hover:text-gray-200 sm:mt-4 sm:text-sm"
               >
                 Shop Now
-
                 <span className="transition-transform duration-300 group-hover/btn:translate-x-1">
                   →
                 </span>
               </Link>
-
             </div>
           </div>
-        )}
-
-        {/* Third Product (Grid Small Card 1) */}
-        {p3 && (
-          <div className="relative col-span-1 row-span-1 flex cursor-pointer flex-col justify-end overflow-hidden rounded-xl bg-gray-100 p-3.5 shadow-sm sm:rounded-2xl sm:p-4 md:p-6 group">
-
-            <div className="absolute inset-0 z-0 h-full w-full overflow-hidden">
-              <Image
-                src={p3.thumbnail}
-                alt={p3.title || 'Product'}
-                fill
-                sizes="(max-width: 768px) 50vw, 25vw"
-                className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
-              />
-            </div>
-
-            <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
-
-            <div className="relative z-20 w-full text-white">
-
-              <h3 className="truncate font-inter text-[11px] font-bold leading-tight tracking-wide drop-shadow-sm sm:text-sm md:text-base">
-                {p3.title}
-              </h3>
-
-              <Link
-                href={`/products/${p3._id || p3.id}`}
-                className="group/btn mt-1.5 inline-flex items-center gap-1 text-[9px] font-semibold underline underline-offset-4 transition-colors hover:text-gray-200 sm:mt-2 sm:text-xs"
-              >
-                Shop Now
-
-                <span className="transition-transform duration-300 group-hover/btn:translate-x-1">
-                  →
-                </span>
-              </Link>
-
-            </div>
-          </div>
-        )}
-
-        {/* Fourth Product (Grid Small Card 2) */}
-        {p4 && (
-          <div className="relative col-span-1 row-span-1 flex cursor-pointer flex-col justify-end overflow-hidden rounded-xl bg-gray-100 p-3.5 shadow-sm sm:rounded-2xl sm:p-4 md:p-6 group">
-
-            <div className="absolute inset-0 z-0 h-full w-full overflow-hidden">
-              <Image
-                src={p4.thumbnail}
-                alt={p4.title || 'Product'}
-                fill
-                sizes="(max-width: 768px) 50vw, 25vw"
-                className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
-              />
-            </div>
-
-            <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
-
-            <div className="relative z-20 w-full text-white">
-
-              <h3 className="truncate font-inter text-[11px] font-bold leading-tight tracking-wide drop-shadow-sm sm:text-sm md:text-base">
-                {p4.title}
-              </h3>
-
-              <Link
-                href={`/products/${p4._id || p4.id}`}
-                className="group/btn mt-1.5 inline-flex items-center gap-1 text-[9px] font-semibold underline underline-offset-4 transition-colors hover:text-gray-200 sm:mt-2 sm:text-xs"
-              >
-                Shop Now
-
-                <span className="transition-transform duration-300 group-hover/btn:translate-x-1">
-                  →
-                </span>
-              </Link>
-
-            </div>
-          </div>
-        )}
-
+        ))}
       </div>
-
     </div>
   );
 };
