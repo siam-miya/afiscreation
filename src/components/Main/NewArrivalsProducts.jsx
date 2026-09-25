@@ -29,7 +29,6 @@ const NewArrivalsProducts = () => {
         setLoading(false);
       }
     };
-
     fetchNewArrivals();
   }, []);
 
