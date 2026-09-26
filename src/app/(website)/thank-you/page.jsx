@@ -12,7 +12,6 @@ import Link from "next/link";
 import Image from "next/image";
 
 import {
-  CheckCircle2,
   Download,
   Home,
   Package,
@@ -31,7 +30,7 @@ function ThankYouContent() {
     orderId: "",
     name: "",
     phone: "",
-    email: "support@afiscreation.com",
+    email: "afiofficialstudio@gmail.com",
     address: "",
     city: "Dhaka",
     shippingCost: 0,
@@ -40,8 +39,7 @@ function ThankYouContent() {
     total: 0,
   });
 
-  const [isGeneratingPdf, setIsGeneratingPdf] =
-    useState(false);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
   const invoiceRef = useRef(null);
 
@@ -52,9 +50,7 @@ function ThankYouContent() {
 
     const cleanOrderId = orderId.trim().toUpperCase();
 
-    const savedOrder = localStorage.getItem(
-      `order_${orderId}`
-    );
+    const savedOrder = localStorage.getItem(`order_${orderId}`);
 
     if (savedOrder) {
       try {
@@ -110,7 +106,7 @@ function ThankYouContent() {
         if (!res.ok || !data.success) {
           throw new Error(
             data.message ||
-            "Failed to fetch order"
+              "Failed to fetch order"
           );
         }
 
@@ -137,14 +133,13 @@ function ThankYouContent() {
             "N/A",
 
           email:
-            "support@afiscreation.com",
+            "afiofficialstudio@gmail.com",
 
           address:
             order.streetAddress ||
             "Dhaka",
 
-          city:
-            "Dhaka",
+          city: "Dhaka",
 
           shippingCost:
             Number(order.shippingCharge) || 0,
@@ -169,78 +164,196 @@ function ThankYouContent() {
       });
   }, [searchParams]);
 
- const downloadInvoicePdf = async () => {
-  if (
-    !invoiceRef.current ||
-    isGeneratingPdf
-  ) {
-    return;
-  }
+  const downloadInvoicePdf = async () => {
+    if (
+      !invoiceRef.current ||
+      isGeneratingPdf
+    ) {
+      return;
+    }
 
-  setIsGeneratingPdf(true);
+    setIsGeneratingPdf(true);
 
-  try {
-    await new Promise((resolve) =>
-      requestAnimationFrame(resolve)
-    );
+    let iframe = null;
 
-    const canvas = await html2canvas(
-      invoiceRef.current,
-      {
-        scale: 2,
-        useCORS: true,
-        allowTaint: false,
-        backgroundColor: "#ffffff",
-        logging: false,
-        imageTimeout: 15000,
-        removeContainer: true,
-        foreignObjectRendering: false,
-      }
-    );
+    try {
+      iframe =
+        document.createElement("iframe");
 
-    const imgData =
-      canvas.toDataURL(
-        "image/png",
-        1.0
+      iframe.style.position =
+        "fixed";
+
+      iframe.style.left =
+        "-10000px";
+
+      iframe.style.top =
+        "0";
+
+      iframe.style.width =
+        "900px";
+
+      iframe.style.height =
+        "1200px";
+
+      iframe.style.border =
+        "0";
+
+      iframe.style.visibility =
+        "hidden";
+
+      document.body.appendChild(
+        iframe
       );
 
-    const pdf = new jsPDF(
-      "p",
-      "mm",
-      "a4"
-    );
+      const iframeDocument =
+        iframe.contentDocument ||
+        iframe.contentWindow.document;
+      const invoiceClone =
+        invoiceRef.current.cloneNode(
+          true
+        );
 
-    const pdfWidth =
-      pdf.internal.pageSize.getWidth();
+      iframeDocument.open();
 
-    const pdfPageHeight =
-      pdf.internal.pageSize.getHeight();
+      iframeDocument.write(`
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="UTF-8" />
 
-    const imgHeight =
-      (canvas.height * pdfWidth) /
-      canvas.width;
+            <style>
+              * {
+                box-sizing: border-box;
+              }
 
-    let heightLeft = imgHeight;
-    let position = 0;
+              html,
+              body {
+                margin: 0;
+                padding: 0;
+                background: #ffffff;
+                color: #333333;
+                font-family: Arial, Helvetica, sans-serif;
+              }
 
-    pdf.addImage(
-      imgData,
-      "PNG",
-      0,
-      position,
-      pdfWidth,
-      imgHeight,
-      undefined,
-      "FAST"
-    );
+              body {
+                width: 800px;
+              }
 
-    heightLeft -= pdfPageHeight;
+              table {
+                border-collapse: collapse;
+              }
 
-    while (heightLeft > 0) {
-      position =
-        heightLeft - imgHeight;
+              img {
+                max-width: 100%;
+              }
 
-      pdf.addPage();
+              p,
+              h1,
+              h2,
+              h3,
+              h4 {
+                margin-top: 0;
+              }
+            </style>
+          </head>
+
+          <body></body>
+        </html>
+      `);
+
+      iframeDocument.close();
+      iframeDocument.body.appendChild(
+        invoiceClone
+      );
+
+      invoiceClone.style.position =
+        "relative";
+
+      invoiceClone.style.top = "0";
+      invoiceClone.style.left = "0";
+
+      invoiceClone.style.width =
+        "800px";
+
+      invoiceClone.style.padding =
+        "40px";
+
+      invoiceClone.style.margin =
+        "0";
+
+      invoiceClone.style.backgroundColor =
+        "#ffffff";
+
+      invoiceClone.style.color =
+        "#333333";
+
+      invoiceClone.style.fontFamily =
+        "Arial, Helvetica, sans-serif";
+      await new Promise((resolve) => {
+        setTimeout(resolve, 300);
+      });
+      const canvas =
+        await html2canvas(
+          invoiceClone,
+          {
+            scale: 2,
+
+            backgroundColor:
+              "#ffffff",
+
+            useCORS: false,
+
+            allowTaint: false,
+
+            logging: false,
+
+            foreignObjectRendering:
+              false,
+
+            imageTimeout: 10000,
+
+            removeContainer: true,
+          }
+        );
+
+      if (
+        !canvas ||
+        canvas.width === 0 ||
+        canvas.height === 0
+      ) {
+        throw new Error(
+          "Invoice canvas could not be generated."
+        );
+      }
+
+      const imgData =
+        canvas.toDataURL(
+          "image/png",
+          1.0
+        );
+
+      const pdf =
+        new jsPDF({
+          orientation: "portrait",
+          unit: "mm",
+          format: "a4",
+          compress: true,
+        });
+
+      const pdfWidth =
+        pdf.internal.pageSize.getWidth();
+
+      const pdfHeight =
+        pdf.internal.pageSize.getHeight();
+
+      const imgHeight =
+        (canvas.height * pdfWidth) /
+        canvas.width;
+
+      let heightLeft =
+        imgHeight;
+
+      let position = 0;
 
       pdf.addImage(
         imgData,
@@ -253,80 +366,86 @@ function ThankYouContent() {
         "FAST"
       );
 
-      heightLeft -= pdfPageHeight;
+      heightLeft -=
+        pdfHeight;
+      while (heightLeft > 0) {
+        position =
+          heightLeft - imgHeight;
+
+        pdf.addPage();
+
+        pdf.addImage(
+          imgData,
+          "PNG",
+          0,
+          position,
+          pdfWidth,
+          imgHeight,
+          undefined,
+          "FAST"
+        );
+
+        heightLeft -=
+          pdfHeight;
+      }
+
+      const fileName =
+        `Invoice-${
+          orderDetails.orderId ||
+          "Afis"
+        }.pdf`;
+
+      pdf.save(fileName);
+
+    } catch (error) {
+      console.error(
+        "PDF generation failed:",
+        error
+      );
+
+      alert(
+        "Invoice download failed. Please try again."
+      );
+
+    } finally {
+
+      if (
+        iframe &&
+        iframe.parentNode
+      ) {
+        iframe.parentNode.removeChild(
+          iframe
+        );
+      }
+
+      setIsGeneratingPdf(false);
     }
-
-    const fileName =
-      `Invoice-${orderDetails.orderId || "Afis"}.pdf`;
-
-    const pdfBlob =
-      pdf.output("blob");
-
-    const blobUrl =
-      URL.createObjectURL(pdfBlob);
-
-    const downloadLink =
-      document.createElement("a");
-
-    downloadLink.href =
-      blobUrl;
-
-    downloadLink.download =
-      fileName;
-
-    downloadLink.style.display =
-      "none";
-
-    document.body.appendChild(
-      downloadLink
-    );
-
-    downloadLink.click();
-
-    document.body.removeChild(
-      downloadLink
-    );
-
-    setTimeout(() => {
-      URL.revokeObjectURL(blobUrl);
-    }, 1000);
-
-  } catch (error) {
-    console.error(
-      "PDF generation failed:",
-      error
-    );
-
-    alert(
-      "Invoice download failed. Please try again."
-    );
-
-  } finally {
-    setIsGeneratingPdf(false);
-  }
-};
+  };
 
   const subtotalAmount =
     Array.isArray(orderDetails.cart)
       ? orderDetails.cart.reduce(
-        (acc, item) =>
-          acc +
-          Number(item.price || 0) *
-          (Number(item.quantity) || 1),
-        0
-      )
+          (acc, item) =>
+            acc +
+            Number(item.price || 0) *
+              (Number(item.quantity) || 1),
+          0
+        )
       : 0;
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
-        <div className="bg-white rounded-bl-4xl rounded-tr-4xl shadow  border border-gray-100 p-8 text-center mb-8">
+        <div className="bg-white rounded-bl-4xl rounded-tr-4xl shadow border border-gray-100 p-8 text-center mb-8">
+
           <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Check className="w-10 h-10"/>  
+            <Check className="w-10 h-10" />
           </div>
+
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
             Order Placed Successfully!
           </h1>
+
           <p className="text-gray-600 mb-6">
             Thank you for shopping with{" "}
             <span className="font-semibold text-primary">
@@ -347,9 +466,14 @@ function ThankYouContent() {
           </div>
 
           <div className="flex flex-wrap justify-center gap-4">
+
             <button
-              onClick={downloadInvoicePdf}
-              disabled={isGeneratingPdf}
+              onClick={
+                downloadInvoicePdf
+              }
+              disabled={
+                isGeneratingPdf
+              }
               className="inline-flex items-center gap-2 bg-primary hover:bg-secondary text-white font-medium px-6 py-2.5 transition-colors shadow-sm disabled:opacity-50 cursor-pointer rounded-tl-2xl"
             >
               <Download className="w-4 h-4" />
@@ -358,6 +482,7 @@ function ThankYouContent() {
                 ? "Generating PDF..."
                 : "Download Invoice"}
             </button>
+
             <Link
               href={`/order/ordertrack?orderId=${encodeURIComponent(
                 orderDetails.orderId
@@ -370,21 +495,25 @@ function ThankYouContent() {
 
             <Link
               href="/"
-              className="inline-flex items-center gap-2 text-white bg-black hover:bg-secondary font-medium px-6 py-2.5 rounded-br-3xl rounded-tl-2xl border border-gray-300 transition-colors "
+              className="inline-flex items-center gap-2 text-white bg-black hover:bg-secondary font-medium px-6 py-2.5 rounded-br-3xl rounded-tl-2xl border border-gray-300 transition-colors"
             >
               <Home className="w-4 h-4" />
               Back to Home
             </Link>
+
           </div>
         </div>
- 
+
+
         <div className="bg-white rounded-bl-4xl rounded-tr-4xl shadow border border-gray-100 p-6 sm:p-8 mb-8">
+
           <h3 className="text-lg font-bold text-gray-900 mb-4 pb-2 border-b border-gray-100 flex items-center gap-2">
             <Package className="w-5 h-5 text-amber-700" />
             Order Summary
           </h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 text-sm">
+
             {/* CUSTOMER */}
 
             <div>
@@ -419,16 +548,16 @@ function ThankYouContent() {
             </div>
           </div>
 
-          {/* ==========================================
-              PRODUCT LIST
-          ========================================== */}
+          {/* PRODUCT LIST */}
 
           <div className="border-t border-gray-100 pt-4">
+
             <h4 className="text-sm font-semibold text-gray-700 mb-3">
               Ordered Items:
             </h4>
 
             <div className="space-y-4">
+
               {orderDetails.cart.map(
                 (item, idx) => (
                   <div
@@ -438,12 +567,11 @@ function ThankYouContent() {
                     }
                     className="flex flex-col sm:flex-row justify-between items-start sm:items-center text-sm py-3 border-b border-gray-100 gap-4"
                   >
-                    {/* PRODUCT INFO */}
 
                     <div className="flex items-start gap-3">
-                      {/* IMAGE */}
 
                       <div className="w-14 h-14 bg-gray-100 border border-gray-200 rounded-lg overflow-hidden relative shrink-0">
+
                         <Image
                           src={
                             item.thumbnail ||
@@ -456,42 +584,45 @@ function ThankYouContent() {
                           fill
                           className="object-cover"
                         />
+
                       </div>
 
-                      {/* DETAILS */}
-
                       <div>
+
                         <p className="text-gray-900 font-semibold">
                           {item.title}
                         </p>
 
                         <p className="text-xs text-gray-500">
                           Qty:{" "}
-                          {item.quantity || 1}
+                          {item.quantity ||
+                            1}
                           {" | "}
                           Price: ৳
                           {item.price} each
                         </p>
 
-                        {/* COLOR + SIZE */}
-
                         <div className="flex flex-wrap gap-1.5 mt-1">
+
                           {item.selectedColor && (
                             <span className="bg-gray-100 text-gray-800 text-[10px] px-1.5 py-0.5 rounded border border-gray-200 font-medium">
                               Color:{" "}
-                              {item.selectedColor}
+                              {
+                                item.selectedColor
+                              }
                             </span>
                           )}
 
                           {item.selectedSize && (
                             <span className="bg-amber-100 text-amber-800 text-[10px] px-1.5 py-0.5 rounded font-medium">
                               Size:{" "}
-                              {item.selectedSize}
+                              {
+                                item.selectedSize
+                              }
                             </span>
                           )}
-                        </div>
 
-                        {/* CUSTOMIZATION */}
+                        </div>
 
                         {item.customization &&
                           (item.customization
@@ -503,75 +634,76 @@ function ThankYouContent() {
                             item.customization
                               .instructions) && (
                             <div className="mt-1.5 text-xs bg-amber-50 text-amber-900 p-2 rounded border border-amber-200 space-y-0.5">
+
                               <p className="font-bold">
                                 Customization:
                               </p>
 
                               {item.customization
                                 .length && (
-                                  <p>
-                                    Length:{" "}
-                                    {
-                                      item
-                                        .customization
-                                        .length
-                                    }
-                                    "
-                                  </p>
-                                )}
+                                <p>
+                                  Length:{" "}
+                                  {
+                                    item
+                                      .customization
+                                      .length
+                                  }
+                                  "
+                                </p>
+                              )}
 
                               {item.customization
                                 .width && (
-                                  <p>
-                                    Width:{" "}
-                                    {
-                                      item
-                                        .customization
-                                        .width
-                                    }
-                                    "
-                                  </p>
-                                )}
+                                <p>
+                                  Width:{" "}
+                                  {
+                                    item
+                                      .customization
+                                      .width
+                                  }
+                                  "
+                                </p>
+                              )}
 
                               {item.customization
                                 .sleeve && (
-                                  <p>
-                                    Sleeve:{" "}
-                                    {
-                                      item
-                                        .customization
-                                        .sleeve
-                                    }
-                                    "
-                                  </p>
-                                )}
+                                <p>
+                                  Sleeve:{" "}
+                                  {
+                                    item
+                                      .customization
+                                      .sleeve
+                                  }
+                                  "
+                                </p>
+                              )}
 
                               {item.customization
                                 .instructions && (
-                                  <p className="italic">
-                                    Note:{" "}
-                                    {
-                                      item
-                                        .customization
-                                        .instructions
-                                    }
-                                  </p>
-                                )}
+                                <p className="italic">
+                                  Note:{" "}
+                                  {
+                                    item
+                                      .customization
+                                      .instructions
+                                  }
+                                </p>
+                              )}
+
                             </div>
                           )}
-
-                        {/* PRODUCT NOTE */}
 
                         {item.productNote && (
                           <p className="text-xs italic text-indigo-600 mt-1">
                             Note:{" "}
-                            {item.productNote}
+                            {
+                              item.productNote
+                            }
                           </p>
                         )}
+
                       </div>
                     </div>
-
-                    {/* ITEM TOTAL */}
 
                     <span className="text-gray-900 font-semibold self-end sm:self-center">
                       ৳
@@ -584,18 +716,21 @@ function ThankYouContent() {
                         ) || 1)
                       ).toFixed(2)}
                     </span>
+
                   </div>
                 )
               )}
+
             </div>
 
-            {/* ==========================================
-                TOTALS
-            ========================================== */}
+            {/* TOTALS */}
 
             <div className="mt-6 space-y-2 text-sm border-t border-gray-100 pt-4">
+
               <div className="flex justify-between text-gray-600">
-                <span>Subtotal</span>
+                <span>
+                  Subtotal
+                </span>
 
                 <span>
                   ৳
@@ -606,50 +741,70 @@ function ThankYouContent() {
               </div>
 
               <div className="flex justify-between text-gray-600">
-                <span>Shipping Cost</span>
+                <span>
+                  Shipping Cost
+                </span>
 
                 <span>
                   ৳
                   {Number(
                     orderDetails.shippingCost ||
-                    0
+                      0
                   ).toFixed(2)}
                 </span>
               </div>
 
               <div className="flex justify-between text-base font-bold text-gray-900 pt-2 border-t border-gray-200">
-                <span>Total Amount</span>
+
+                <span>
+                  Total Amount
+                </span>
 
                 <span className="text-amber-700">
                   ৳
                   {Number(
-                    orderDetails.total || 0
+                    orderDetails.total ||
+                      0
                   ).toFixed(2)}
                 </span>
+
               </div>
+
             </div>
           </div>
         </div>
 
         <div
           style={{
-            position: "absolute",
-            top: "-9999px",
-            left: "-9999px",
+            position: "fixed",
+            left: "-10000px",
+            top: "0",
+            width: "800px",
+            backgroundColor:
+              "#ffffff",
+            pointerEvents: "none",
+            opacity: 1,
           }}
         >
+
           <div
             ref={invoiceRef}
             style={{
               width: "800px",
               padding: "40px",
-              background: "#ffffff",
+              backgroundColor:
+                "#ffffff",
               color: "#333333",
               fontFamily:
-                "Arial, sans-serif",
+                "Arial, Helvetica, sans-serif",
+              fontSize: "14px",
+              lineHeight: "1.4",
+              boxSizing:
+                "border-box",
             }}
           >
-            {/* INVOICE HEADER */}
+
+            {/* HEADER */}
 
             <div
               style={{
@@ -658,18 +813,24 @@ function ThankYouContent() {
                   "space-between",
                 borderBottom:
                   "2px solid #b45309",
-                paddingBottom: "20px",
-                marginBottom: "20px",
+                paddingBottom:
+                  "20px",
+                marginBottom:
+                  "20px",
               }}
             >
+
               <div>
+
                 <h1
                   style={{
                     fontSize: "26px",
-                    color: "#b45309",
+                    color:
+                      "#b45309",
                     margin:
                       "0 0 5px 0",
-                    fontWeight: "bold",
+                    fontWeight:
+                      "bold",
                   }}
                 >
                   Afis Creation
@@ -679,7 +840,8 @@ function ThankYouContent() {
                   style={{
                     margin: "0",
                     fontSize: "12px",
-                    color: "#666",
+                    color:
+                      "#666666",
                   }}
                 >
                   Elegance in Every Stitch
@@ -690,12 +852,15 @@ function ThankYouContent() {
                     margin:
                       "5px 0 0 0",
                     fontSize: "12px",
-                    color: "#666",
+                    color:
+                      "#666666",
                   }}
                 >
-                  Email:{" "}
+                  Email:
+                  {" "}
                   support@afiscreation.com
                 </p>
+
               </div>
 
               <div
@@ -703,12 +868,14 @@ function ThankYouContent() {
                   textAlign: "right",
                 }}
               >
+
                 <h2
                   style={{
                     fontSize: "22px",
                     margin:
                       "0 0 5px 0",
-                    color: "#333",
+                    color:
+                      "#333333",
                   }}
                 >
                   INVOICE
@@ -718,12 +885,17 @@ function ThankYouContent() {
                   style={{
                     margin: "0",
                     fontSize: "14px",
-                    fontWeight: "bold",
-                    color: "#b45309",
+                    fontWeight:
+                      "bold",
+                    color:
+                      "#b45309",
                   }}
                 >
-                  Order ID:{" "}
-                  {orderDetails.orderId}
+                  Order ID:
+                  {" "}
+                  {
+                    orderDetails.orderId
+                  }
                 </p>
 
                 <p
@@ -731,32 +903,39 @@ function ThankYouContent() {
                     margin:
                       "5px 0 0 0",
                     fontSize: "12px",
-                    color: "#666",
+                    color:
+                      "#666666",
                   }}
                 >
-                  Date:{" "}
+                  Date:
+                  {" "}
                   {new Date().toLocaleDateString()}
                 </p>
+
               </div>
             </div>
 
-            {/* BILLING INFO */}
+            {/* BILLING */}
 
             <div
               style={{
                 display: "flex",
                 justifyContent:
                   "space-between",
-                marginBottom: "30px",
+                marginBottom:
+                  "30px",
                 fontSize: "14px",
               }}
             >
+
               <div>
+
                 <h4
                   style={{
                     margin:
                       "0 0 5px 0",
-                    color: "#b45309",
+                    color:
+                      "#b45309",
                   }}
                 >
                   Billed To:
@@ -766,7 +945,8 @@ function ThankYouContent() {
                   style={{
                     margin:
                       "0 0 3px 0",
-                    fontWeight: "bold",
+                    fontWeight:
+                      "bold",
                   }}
                 >
                   {orderDetails.name}
@@ -778,7 +958,8 @@ function ThankYouContent() {
                       "0 0 3px 0",
                   }}
                 >
-                  Phone:{" "}
+                  Phone:
+                  {" "}
                   {orderDetails.phone}
                 </p>
 
@@ -787,9 +968,11 @@ function ThankYouContent() {
                     margin: "0",
                   }}
                 >
-                  Address:{" "}
+                  Address:
+                  {" "}
                   {orderDetails.address}
                 </p>
+
               </div>
 
               <div
@@ -797,11 +980,13 @@ function ThankYouContent() {
                   textAlign: "right",
                 }}
               >
+
                 <h4
                   style={{
                     margin:
                       "0 0 5px 0",
-                    color: "#b45309",
+                    color:
+                      "#b45309",
                   }}
                 >
                   Payment Method:
@@ -814,33 +999,39 @@ function ThankYouContent() {
                 >
                   Cash on Delivery (COD)
                 </p>
+
               </div>
             </div>
 
-            {/* INVOICE TABLE */}
+            {/* TABLE */}
 
             <table
               style={{
                 width: "100%",
                 borderCollapse:
                   "collapse",
-                marginBottom: "30px",
+                marginBottom:
+                  "30px",
                 fontSize: "13px",
               }}
             >
+
               <thead>
+
                 <tr
                   style={{
-                    background:
+                    backgroundColor:
                       "#f8fafc",
                     borderBottom:
                       "1px solid #cbd5e1",
                   }}
                 >
+
                   <th
                     style={{
                       padding: "10px",
-                      textAlign: "left",
+                      textAlign:
+                        "left",
                     }}
                   >
                     Item Description
@@ -875,10 +1066,13 @@ function ThankYouContent() {
                   >
                     Total
                   </th>
+
                 </tr>
+
               </thead>
 
               <tbody>
+
                 {orderDetails.cart.map(
                   (item, idx) => (
                     <tr
@@ -891,12 +1085,14 @@ function ThankYouContent() {
                           "1px solid #e2e8f0",
                       }}
                     >
+
                       <td
                         style={{
                           padding:
                             "12px 10px",
                         }}
                       >
+
                         <div
                           style={{
                             fontWeight:
@@ -911,16 +1107,18 @@ function ThankYouContent() {
                             fontSize:
                               "11px",
                             color:
-                              "#666",
+                              "#666666",
                             marginTop:
                               "2px",
                           }}
                         >
+
                           {item.selectedColor &&
                             `Color: ${item.selectedColor} | `}
 
                           {item.selectedSize &&
                             `Size: ${item.selectedSize}`}
+
                         </div>
 
                         {item.customization && (
@@ -934,6 +1132,7 @@ function ThankYouContent() {
                                 "2px",
                             }}
                           >
+
                             {item.customization
                               .length &&
                               `Length: ${item.customization.length}" `}
@@ -948,22 +1147,25 @@ function ThankYouContent() {
 
                             {item.customization
                               .instructions && (
-                                <div
-                                  style={{
-                                    fontStyle:
-                                      "italic",
-                                  }}
-                                >
-                                  Note:{" "}
-                                  {
-                                    item
-                                      .customization
-                                      .instructions
-                                  }
-                                </div>
-                              )}
+                              <div
+                                style={{
+                                  fontStyle:
+                                    "italic",
+                                }}
+                              >
+                                Note:
+                                {" "}
+                                {
+                                  item
+                                    .customization
+                                    .instructions
+                                }
+                              </div>
+                            )}
+
                           </div>
                         )}
+
                       </td>
 
                       <td
@@ -986,7 +1188,8 @@ function ThankYouContent() {
                             "right",
                         }}
                       >
-                        ৳{item.price}
+                        ৳
+                        {item.price}
                       </td>
 
                       <td
@@ -1003,20 +1206,23 @@ function ThankYouContent() {
                         {(
                           Number(
                             item.price ||
-                            0
+                              0
                           ) *
                           (Number(
                             item.quantity
                           ) || 1)
                         ).toFixed(2)}
                       </td>
+
                     </tr>
                   )
                 )}
+
               </tbody>
+
             </table>
 
-            {/* INVOICE TOTAL */}
+            {/* TOTAL */}
 
             <div
               style={{
@@ -1025,12 +1231,14 @@ function ThankYouContent() {
                   "flex-end",
               }}
             >
+
               <div
                 style={{
                   width: "250px",
                   fontSize: "14px",
                 }}
               >
+
                 <div
                   style={{
                     display: "flex",
@@ -1041,7 +1249,9 @@ function ThankYouContent() {
                       "1px solid #e2e8f0",
                   }}
                 >
-                  <span>Subtotal:</span>
+                  <span>
+                    Subtotal:
+                  </span>
 
                   <span>
                     ৳
@@ -1061,13 +1271,15 @@ function ThankYouContent() {
                       "1px solid #e2e8f0",
                   }}
                 >
-                  <span>Shipping:</span>
+                  <span>
+                    Shipping:
+                  </span>
 
                   <span>
                     ৳
                     {Number(
                       orderDetails.shippingCost ||
-                      0
+                        0
                     ).toFixed(2)}
                   </span>
                 </div>
@@ -1081,19 +1293,25 @@ function ThankYouContent() {
                     fontWeight:
                       "bold",
                     fontSize: "16px",
-                    color: "#b45309",
+                    color:
+                      "#b45309",
                   }}
                 >
-                  <span>Total:</span>
+
+                  <span>
+                    Total:
+                  </span>
 
                   <span>
                     ৳
                     {Number(
                       orderDetails.total ||
-                      0
+                        0
                     ).toFixed(2)}
                   </span>
+
                 </div>
+
               </div>
             </div>
 
@@ -1101,15 +1319,21 @@ function ThankYouContent() {
 
             <div
               style={{
-                marginTop: "50px",
-                textAlign: "center",
-                fontSize: "11px",
-                color: "#888",
+                marginTop:
+                  "50px",
+                textAlign:
+                  "center",
+                fontSize:
+                  "11px",
+                color:
+                  "#888888",
                 borderTop:
                   "1px solid #e2e8f0",
-                paddingTop: "15px",
+                paddingTop:
+                  "15px",
               }}
             >
+
               <p
                 style={{
                   margin: "0",
@@ -1118,13 +1342,15 @@ function ThankYouContent() {
                 Thank you for your purchase
                 with Afis Creation! For any
                 query, contact us at
+                {" "}
                 support@afiscreation.com
               </p>
+
             </div>
+
           </div>
         </div>
 
-        {/* END HIDDEN INVOICE */}
       </div>
     </div>
   );

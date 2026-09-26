@@ -41,17 +41,9 @@ const CheckoutForm = () => {
     saveInfo: false,
   });
 
-  // ---------------------------------
-  // Mounted
-  // ---------------------------------
-
   useEffect(() => {
     setIsMounted(true);
   }, []);
-
-  // ---------------------------------
-  // Fetch Shipping Zones
-  // ---------------------------------
 
   useEffect(() => {
     const fetchShippingZones = async () => {
@@ -78,10 +70,6 @@ const CheckoutForm = () => {
           : [];
 
         setShippingZones(activeZones);
-
-        // ---------------------------------
-        // Set default zone
-        // ---------------------------------
 
         if (activeZones.length > 0) {
           const currentZone = activeZones.find(
@@ -118,19 +106,11 @@ const CheckoutForm = () => {
     fetchShippingZones();
   }, []);
 
-  // ---------------------------------
-  // Selected Shipping Zone
-  // ---------------------------------
-
   const selectedShippingZone =
     shippingZones.find(
       (zone) =>
         zone.slug === shippingMethod
     ) || null;
-
-  // ---------------------------------
-  // Subtotal
-  // ---------------------------------
 
   const subtotal = cart.reduce(
     (total, item) =>
@@ -139,10 +119,6 @@ const CheckoutForm = () => {
         (Number(item.quantity) || 1),
     0
   );
-
-  // ---------------------------------
-  // Shipping Charge
-  // ---------------------------------
 
   const shippingCharge =
     selectedShippingZone
@@ -159,16 +135,8 @@ const CheckoutForm = () => {
           ) || 0
       : 0;
 
-  // ---------------------------------
-  // Total
-  // ---------------------------------
-
   const totalCost =
     subtotal + shippingCharge;
-
-  // ---------------------------------
-  // Input Change
-  // ---------------------------------
 
   const handleInputChange = (e) => {
     const {
@@ -187,26 +155,14 @@ const CheckoutForm = () => {
     }));
   };
 
-  // ---------------------------------
-  // Select Shipping Zone
-  // ---------------------------------
-
   const handleShippingChange = (
     zone
   ) => {
     setShippingMethod(zone.slug);
   };
 
-  // ---------------------------------
-  // Place Order
-  // ---------------------------------
-
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
-
-    // ---------------------------------
-    // Basic validation
-    // ---------------------------------
 
     if (!cart || cart.length === 0) {
       toast.error(
@@ -281,10 +237,10 @@ const CheckoutForm = () => {
           Number(totalCost),
       };
 
-      console.log(
-        "Sending order:",
-        orderPayload
-      );
+      // console.log(
+      //   "Sending order:",
+      //   orderPayload
+      // );
 
       const response = await fetch(
         `${apiUrl}/api/orders`,
@@ -314,14 +270,14 @@ const CheckoutForm = () => {
         );
       }
 
-      console.log(
-        "ORDER RESPONSE:",
-        {
-          status: response.status,
-          ok: response.ok,
-          data,
-        }
-      );
+      // console.log(
+      //   "ORDER RESPONSE:",
+      //   {
+      //     status: response.status,
+      //     ok: response.ok,
+      //     data,
+      //   }
+      // );
 
       if (!response.ok) {
         const errorMessage =
@@ -843,12 +799,7 @@ const CheckoutForm = () => {
                 )}
               </p>
             )}
-
         </div>
-
-        {/* =========================
-            PRICE
-        ========================== */}
 
         <div className="border-b pb-3 space-y-3 text-sm">
 
@@ -906,12 +857,7 @@ const CheckoutForm = () => {
               2
             )}
           </span>
-
         </div>
-
-        {/* =========================
-            ORDER BUTTON
-        ========================== */}
 
         <button
           type="submit"

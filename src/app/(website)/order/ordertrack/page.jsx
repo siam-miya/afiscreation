@@ -708,10 +708,6 @@ const OrderTrack = () => {
             </div>
           </div>
 
-          {/* =====================================
-              SUPPORT
-          ===================================== */}
-
           <div className="mt-12 text-center text-[11px] font-bold tracking-wide text-gray-400 uppercase flex items-center justify-center gap-1.5">
             <span>Stuck somewhere?</span>
 
