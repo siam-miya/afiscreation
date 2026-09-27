@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { FiLogOut, FiEye, FiEyeOff, FiUser, FiCamera } from "react-icons/fi";
 import Image from "next/image";
 import API from "@/utils/api";
+import Loading from "../Loading";
 
 const UserProfileDashboardContent = () => {
   const searchParams = useSearchParams();
@@ -377,7 +378,7 @@ const UserProfileDashboardContent = () => {
 };
 
 const UserProfileDashboard = () => (
-  <Suspense fallback={<div className="text-center py-20 font-poppins">Loading Profile...</div>}>
+  <Suspense fallback={<div className="text-center py-20 font-poppins"><Loading/></div>}>
     <UserProfileDashboardContent />
   </Suspense>
 );

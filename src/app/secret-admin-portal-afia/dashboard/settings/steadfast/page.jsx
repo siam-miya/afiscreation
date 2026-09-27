@@ -18,6 +18,7 @@ import {
   Server,
   KeyRound,
 } from "lucide-react";
+import Loading from "@/components/Loading";
 
 const apiUrl = (
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"
@@ -342,17 +343,13 @@ export default function SteadfastSettingsPage() {
 
   };
 
-  // ======================================================
-  // LOADING
-  // ======================================================
-
   if (loading) {
 
     return (
 
       <div className="flex min-h-[400px] items-center justify-center">
 
-        <Loader2 className="h-8 w-8 animate-spin text-orange-600 dark:text-orange-400" />
+       <Loading/>
 
       </div>
 

@@ -37,7 +37,7 @@ const OurProducts = () => {
   }, []);
 
   if (loading) {
-    return null; // অথবা লোডিং স্পিনার দেখাতে পারো
+    return null;
   }
 
   return (

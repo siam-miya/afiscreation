@@ -10,6 +10,7 @@ import Button from '@/components/Main/Button';
 import SubBanner from '@/components/Main/SubBanner';
 import { IoBagCheckOutline } from 'react-icons/io5';
 import { GrCart } from 'react-icons/gr';
+import Loading from '@/components/Loading';
 
 const CartPage = () => {
   const { cart, removeFromCart, updateQuantity, shippingMethod, setShippingMethod } = useCartStore();
@@ -19,7 +20,7 @@ const CartPage = () => {
     setIsMounted(true);
   }, []);
 
-  if (!isMounted) return <div className="text-center py-10 font-sans">Loading cart...</div>;
+  if (!isMounted) return <Loading/>;
 
   const subtotal = cart.reduce((total, item) => total + Number(item.price) * item.quantity, 0);
   const shippingCharge = shippingMethod === 'inside' ? 70 : 130;

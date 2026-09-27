@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { FiUpload, FiSave, FiLoader } from "react-icons/fi";
+import Loading from "@/components/Loading";
 
 const AboutAdmin = () => {
   const [loading, setLoading] = useState(true);
@@ -206,17 +207,13 @@ const AboutAdmin = () => {
   if (loading) {
     return (
       <div className="flex min-h-[400px] items-center justify-center">
-        <FiLoader className="animate-spin text-3xl text-orange-500" />
+       <Loading/>
       </div>
     );
   }
 
   return (
     <div className="mx-auto w-full max-w-5xl space-y-4 p-3 sm:space-y-5 sm:p-4 md:space-y-6 md:p-6">
-
-      {/* ================================= */}
-      {/* PAGE HEADER */}
-      {/* ================================= */}
 
       <div className="flex flex-col gap-4 border-b border-gray-200 pb-4 dark:border-slate-800 sm:flex-row sm:items-center sm:justify-between">
 

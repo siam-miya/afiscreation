@@ -21,14 +21,12 @@ const AboutDetailsSection = ({ data }) => {
   return (
     <div className="container mx-auto px-4 py-12 space-y-20 max-w-7xl select-none">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-        {/* min-w-0 যোগ করায় টেক্সট গ্রিডের বাইরে যাবে না */}
         <div className="space-y-6 min-w-0">
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-black break-words">
             {data?.storyTitle || "Our Story"}
           </h1>
           <div className="space-y-4 text-gray-600 text-base leading-relaxed">
             {data?.storyParagraphs?.map((paragraph, index) => (
-              /* break-words দিয়ে লম্বা টেক্সট ভেঙে নিচে নেমে যাবে */
               <p key={index} className="break-words">
                 {paragraph}
               </p>

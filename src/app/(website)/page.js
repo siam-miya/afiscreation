@@ -8,23 +8,33 @@ import OurSupport from '@/components/Main/OurSupport'
 import RadioExprience from '@/components/Main/RadioExprience'
 import React from 'react'
 
+
 export const metadata = {
-  title: "Premium Abaya & Borkha in Bangladesh",
+  title: "Premium Abaya & Borkha | Customization & Online Shop in Bangladesh",
+
   description:
-    "Shop premium abayas, borkhas and modest fashion from Afis Creation. Discover elegant designs, quality fabrics and comfortable modest wear in Bangladesh.",
+    "Shop premium abayas and borkhas or customize your own design with your preferred color, size and measurements. Discover elegant modest fashion and ready-to-wear collections from Afis Creation in Bangladesh.",
+
   alternates: {
     canonical: "https://afiscreation.com",
   },
+
   openGraph: {
-    title: "Premium Abaya & Borkha in Bangladesh | Afis Creation",
+    title:
+      "Premium Abaya & Borkha | Customization & Online Shop in Bangladesh",
+
     description:
-      "Shop premium abayas, borkhas and modest fashion from Afis Creation. Discover elegant designs and comfortable modest wear in Bangladesh.",
+      "Shop ready-to-wear abayas and borkhas or create your own customized design with your preferred color, size and measurements. Explore elegant modest fashion from Afis Creation in Bangladesh.",
+
     url: "https://afiscreation.com",
+
     siteName: "Afis Creation",
+
     type: "website",
+
     locale: "en_BD",
   },
-}
+};
 
 const HomePage = () => {
   return (

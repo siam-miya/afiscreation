@@ -94,10 +94,6 @@ const OrderTrack = () => {
     }
   };
 
-  // =====================================
-  // FORM SEARCH
-  // =====================================
-
   const handleSearch = (e) => {
     e.preventDefault();
 
@@ -280,10 +276,6 @@ const OrderTrack = () => {
               </form>
             </div>
 
-            {/* =====================================
-                RESULT
-            ===================================== */}
-
             <div className="transition-all duration-500">
               {loading ? (
                 <div className="bg-white rounded-3xl p-12 text-center border border-gray-100 shadow-sm">
@@ -295,9 +287,6 @@ const OrderTrack = () => {
                 </div>
               ) : orderData ? (
                 <div className="space-y-5 animate-fadeIn">
-                  {/* =====================================
-                      ORDER SUMMARY CARDS
-                  ===================================== */}
 
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     {/* ORDER ID */}

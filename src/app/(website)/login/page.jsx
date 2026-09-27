@@ -35,10 +35,6 @@ const Login = () => {
   const [showNewPassword, setShowNewPassword] =
     useState(false);
 
-  /* =========================
-     CHECK EXISTING USER
-  ========================= */
-
   useEffect(() => {
     const storedUser =
       localStorage.getItem('user') ||
@@ -63,10 +59,6 @@ const Login = () => {
     }
   }, [router]);
 
-  /* =========================
-     INPUT CHANGE
-  ========================= */
-
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -77,10 +69,6 @@ const Login = () => {
       setErrorMessage('');
     }
   };
-
-  /* =========================
-     NORMAL LOGIN
-  ========================= */
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -105,9 +93,6 @@ const Login = () => {
             'User information was not returned.'
           );
         }
-
-        // Store ONLY user information.
-        // JWT is stored in HttpOnly cookie by backend.
         localStorage.setItem(
           'user',
           JSON.stringify(userData)
@@ -125,7 +110,6 @@ const Login = () => {
           localStorage.removeItem('adminUser');
         }
 
-        // Remove any old JWT from previous auth system
         localStorage.removeItem('token');
         localStorage.removeItem('adminToken');
         localStorage.removeItem('adminUserToken');
@@ -161,10 +145,6 @@ const Login = () => {
       setLoading(false);
     }
   };
-
-  /* =========================
-     FORGOT PASSWORD - REQUEST OTP
-  ========================= */
 
   const handleRequestOTP = async (e) => {
     e.preventDefault();
@@ -211,9 +191,6 @@ const Login = () => {
     }
   };
 
-  /* =========================
-     RESET PASSWORD
-  ========================= */
 
   const handleResetPassword = async (e) => {
     e.preventDefault();
@@ -285,10 +262,6 @@ const Login = () => {
       setLoading(false);
     }
   };
-
-  /* =========================
-     GOOGLE LOGIN
-  ========================= */
 
   const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
@@ -390,10 +363,6 @@ const Login = () => {
     },
   });
 
-  /* =========================
-     FORGOT MODE RESET
-  ========================= */
-
   const openForgotMode = () => {
     setIsForgotMode(true);
     setForgotStep(1);
@@ -424,10 +393,6 @@ const Login = () => {
       <div className="container mx-auto">
         <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-[50px]">
 
-          {/* =========================
-              LOGO
-          ========================= */}
-
           <div className="w-full lg:w-[950px] flex justify-center">
             <Image
               src={main_logo}
@@ -438,10 +403,6 @@ const Login = () => {
               priority
             />
           </div>
-
-          {/* =========================
-              FORM AREA
-          ========================= */}
 
           <div className="w-full max-w-[500px]">
 
@@ -466,10 +427,6 @@ const Login = () => {
                 : 'Enter your details below'}
             </p>
 
-            {/* =========================
-                ERROR
-            ========================= */}
-
             {errorMessage && (
               <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded text-sm font-poppins">
                 {errorMessage}
@@ -477,10 +434,6 @@ const Login = () => {
             )}
 
             {!isForgotMode ? (
-
-              /* =========================
-                 LOGIN FORM
-              ========================= */
 
               <form
                 onSubmit={handleSubmit}
@@ -577,10 +530,6 @@ const Login = () => {
               </form>
 
             ) : (
-
-              /* =========================
-                 FORGOT PASSWORD
-              ========================= */
 
               <div className="mt-6">
 

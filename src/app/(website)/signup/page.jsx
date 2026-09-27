@@ -31,10 +31,6 @@ const SignUp = () => {
   const [showPassword, setShowPassword] =
     useState(false);
 
-  /* =========================
-     INPUT CHANGE
-  ========================= */
-
   const handleChange = (e) => {
     setFormData({
       ...formData,

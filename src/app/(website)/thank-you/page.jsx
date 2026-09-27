@@ -22,6 +22,7 @@ import {
 
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import Loading from "@/components/Loading";
 
 function ThankYouContent() {
   const searchParams = useSearchParams();
@@ -1361,7 +1362,7 @@ export default function ThankYouPage() {
     <Suspense
       fallback={
         <div className="min-h-screen flex items-center justify-center">
-          Loading...
+          <Loading/>
         </div>
       }
     >

@@ -2,6 +2,7 @@ import React, { Suspense } from 'react';
 import CheckoutForm from '@/components/Main/CheckoutForm';
 import SubBanner from '@/components/Main/SubBanner';
 import { Spinner } from '@heroui/react';
+import Loading from '@/components/Loading';
 
 export const metadata = {
   title: 'Checkout || Afis Creation',
@@ -18,7 +19,7 @@ const CheckoutPage = () => {
         <Suspense fallback={
           <div className="flex flex-col items-center justify-center py-20 gap-2">
             <Spinner color="danger" />
-            <span className="text-xs text-gray-400">Loading checkout...</span>
+            <span><Loading/></span>
           </div>
         }>
           <CheckoutForm />

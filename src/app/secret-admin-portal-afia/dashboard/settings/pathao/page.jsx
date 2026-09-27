@@ -17,6 +17,7 @@ import {
   ShieldCheck,
   Server,
 } from "lucide-react";
+import Loading from "@/components/Loading";
 
 const apiUrl = (
   process.env.NEXT_PUBLIC_API_URL ||
@@ -318,7 +319,7 @@ export default function PathaoSettingsPage() {
 
       <div className="flex min-h-[400px] items-center justify-center bg-transparent">
 
-        <Loader2 className="h-8 w-8 animate-spin text-green-600" />
+    <Loading/>
 
       </div>
 

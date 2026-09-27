@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import AdminSidebar from "@/components/Admin/AdminSidebar";
 import AdminTopbar from "@/components/Admin/AdminTopbar";
+import Loading from '@/components/Loading';
 
 export default function SecretAdminLayout({ children }) {
 
@@ -48,9 +49,6 @@ export default function SecretAdminLayout({ children }) {
       return;
 
     }
-
-
-    // ২. ড্যাশবোর্ড ও অন্য সব সাব-পেজের জন্য Auth চেক
 
     const checkAuth = () => {
 
@@ -118,23 +116,11 @@ export default function SecretAdminLayout({ children }) {
     router
   ]);
 
-
-  // ================================
-  // MOBILE SIDEBAR CLOSE
-  // ================================
-
   useEffect(() => {
-
-    // Page change হলে mobile sidebar automatically close হবে
 
     setSidebarOpen(false);
 
   }, [pathname]);
-
-
-  // ================================
-  // BODY SCROLL LOCK
-  // ================================
 
   useEffect(() => {
 
@@ -157,17 +143,11 @@ export default function SecretAdminLayout({ children }) {
 
   }, [sidebarOpen]);
 
-
-  // ৩. লগইন পেজ হলে শুধু ফর্ম দেখাবে
-
   if (isLoginPage) {
 
     return <>{children}</>;
 
   }
-
-
-  // ৪. অথেন্টিকেশন প্রসেস হওয়ার সময় লোডার দেখাবে
 
   if (loading) {
 
@@ -175,16 +155,13 @@ export default function SecretAdminLayout({ children }) {
 
       <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-slate-900">
 
-        <div className="w-10 h-10 border-4 border-[#eb6e1b] border-t-transparent rounded-full animate-spin"></div>
+      <Loading/>
 
       </div>
 
     );
 
   }
-
-
-  // ৫. অনুমতি না থাকলে রিডাইরেক্ট হওয়ার আগ পর্যন্ত ফাঁকা রাখবে
 
   if (!isAuthorized) {
 

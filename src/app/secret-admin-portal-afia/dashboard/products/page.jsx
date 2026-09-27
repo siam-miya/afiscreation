@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Plus, Trash2, Edit, Loader2, Zap } from 'lucide-react';
+import Loading from '@/components/Loading';
 
 export default function ProductsListPage() {
   const [products, setProducts] = useState([]);
@@ -144,10 +145,7 @@ export default function ProductsListPage() {
       {loading ? (
 
         <div className="flex min-h-[300px] items-center justify-center py-20">
-          <Loader2
-            className="animate-spin text-orange-500"
-            size={32}
-          />
+          <Loading/>
         </div>
 
       ) : products.length === 0 ? (

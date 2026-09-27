@@ -57,8 +57,6 @@ const ContactFormSection = ({ contactInfo }) => {
   return (
     <section className="container mx-auto px-4 py-10 font-sans text-black">
       <div className="grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-8 items-stretch">
-        
-        {/* Contact Info (Backend Dynamic) */}
         <div className="bg-white p-8 rounded shadow-[0_1px_13px_rgba(0,0,0,0.05)] flex flex-col justify-between space-y-8">
           <div className="space-y-4">
             <div className="flex items-center gap-4">
@@ -74,9 +72,7 @@ const ContactFormSection = ({ contactInfo }) => {
               </p>
             </div>
           </div>
-
           <hr className="border-gray-300" />
-
           <div className="space-y-4">
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white text-xl">
@@ -91,8 +87,6 @@ const ContactFormSection = ({ contactInfo }) => {
             </div>
           </div>
         </div>
-
-        {/* Contact Form Submission */}
         <form onSubmit={handleSendMessage} className="bg-white p-8 rounded shadow-[0_1px_13px_rgba(0,0,0,0.05)] flex flex-col justify-between space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <input
@@ -140,7 +134,6 @@ const ContactFormSection = ({ contactInfo }) => {
             </Button>
           </div>
         </form>
-
       </div>
     </section>
   );

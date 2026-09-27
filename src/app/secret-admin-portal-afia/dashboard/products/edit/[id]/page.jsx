@@ -15,6 +15,7 @@ import {
   Sliders,
   Check,
 } from "lucide-react";
+import Loading from "@/components/Loading";
 
 export default function EditProductPage() {
   const { id } = useParams();
@@ -253,10 +254,6 @@ export default function EditProductPage() {
       setLoading(false);
     });
   }, [id]);
-
-  // ----------------------------------
-  // FORM HANDLERS
-  // ----------------------------------
 
   const handleTitleChange = (e) => {
     const title = e.target.value;
@@ -722,7 +719,7 @@ export default function EditProductPage() {
   if (loading) {
     return (
       <div className="p-8 text-white text-center">
-        Loading product data...
+       <Loading/>
       </div>
     );
   }

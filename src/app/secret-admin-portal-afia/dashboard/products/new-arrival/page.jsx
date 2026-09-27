@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Loader2, Sparkles, ExternalLink } from 'lucide-react';
+import Loading from '@/components/Loading';
 
 export default function AdminNewArrivalsPage() {
   const [products, setProducts] = useState([]);
@@ -60,7 +61,7 @@ export default function AdminNewArrivalsPage() {
 
       {loading ? (
         <div className="flex justify-center items-center py-20">
-          <Loader2 className="animate-spin text-orange-500" size={32} />
+        <Loading/>
         </div>
       ) : products.length === 0 ? (
         <div className="text-center py-20 text-slate-500 text-sm">No products found.</div>

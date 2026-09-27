@@ -22,6 +22,7 @@ import {
   Search,
   Globe,
 } from "lucide-react";
+import Loading from "@/components/Loading";
 
 const Page = () => {
   const params = useParams();
@@ -205,11 +206,7 @@ const Page = () => {
     return (
       <div className="min-h-[70vh] flex items-center justify-center bg-gray-50">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="w-8 h-8 animate-spin text-orange-500" />
-
-          <p className="text-sm text-gray-500">
-            Loading product details...
-          </p>
+       <Loading/>
         </div>
       </div>
     );

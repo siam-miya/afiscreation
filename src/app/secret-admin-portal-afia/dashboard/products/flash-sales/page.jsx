@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { Trash2, Loader2, Zap } from 'lucide-react';
+import Loading from '@/components/Loading';
 
 export default function FlashSalesProductsPage() {
   const [products, setProducts] = useState([]);
@@ -37,7 +38,7 @@ export default function FlashSalesProductsPage() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-20"><Loader2 className="animate-spin text-orange-500" size={32} /></div>
+        <div className="flex justify-center py-20"><Loading/></div>
       ) : products.length === 0 ? (
         <div className="text-center py-20 text-slate-500 text-sm">No Flash Sale products found. Check product settings to add them here.</div>
       ) : (

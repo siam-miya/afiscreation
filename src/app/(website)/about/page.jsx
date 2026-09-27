@@ -10,7 +10,7 @@ async function getAboutData() {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
     const res = await fetch(`${baseUrl}/api/about`, {
-      cache: 'no-store', // ইন্সট্যান্ট আপডেট দেখানোর জন্য ক্যাশিং বন্ধ
+      cache: 'no-store', 
     });
     const data = await res.json();
     return data?.success ? data.data : null;
