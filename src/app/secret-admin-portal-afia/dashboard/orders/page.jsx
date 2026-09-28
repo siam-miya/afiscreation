@@ -2592,9 +2592,6 @@ const handleDownloadInvoice = async (order) => {
     </div>
   </div>
 
-  {/* =========================================================
-      SUMMARY BAR
-  ========================================================== */}
   <div className="border-t border-gray-100 dark:border-slate-700 px-4 md:px-5">
 
     <div className="min-h-[58px] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -2666,10 +2663,6 @@ const handleDownloadInvoice = async (order) => {
   </div>
 </div>
 
-      {/* ========================================
-          ALL ORDERS + SEARCH
-      ======================================== */}
-
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-5">
 
         <div>
@@ -2732,16 +2725,9 @@ const handleDownloadInvoice = async (order) => {
                 <X size={16} />
               </button>
             )}
-
           </div>
-
         </div>
-
       </div>
-
-      {/* ========================================
-          ORDERS
-      ======================================== */}
 
       {filteredOrders.length ===
       0 ? (
@@ -2844,9 +2830,6 @@ const handleDownloadInvoice = async (order) => {
     hover:shadow-[0_6px_20px_rgba(15,23,42,0.07)]
   "
 >
-  {/* =========================
-      ORDER HEADER
-  ========================== */}
   <div
     className="
       border-b border-slate-200 dark:border-slate-700
@@ -2985,17 +2968,9 @@ const handleDownloadInvoice = async (order) => {
       </div>
     </div>
   </div>
-
-  {/* =========================
-      CONTENT
-  ========================== */}
   <div className="p-4 md:p-5">
 
     <div className="grid grid-cols-1 gap-0 xl:grid-cols-12">
-
-      {/* =========================
-          CUSTOMER
-      ========================== */}
       <div
         className="
           xl:col-span-3
@@ -3259,9 +3234,6 @@ const handleDownloadInvoice = async (order) => {
         )}
       </div>
 
-      {/* =========================
-          PRODUCTS
-      ========================== */}
       <div
         className="
           xl:col-span-4
@@ -3432,9 +3404,6 @@ const handleDownloadInvoice = async (order) => {
         </div>
       </div>
 
-      {/* =========================
-          SHIPPING
-      ========================== */}
       <div
         className="
           xl:col-span-2
@@ -3506,9 +3475,6 @@ const handleDownloadInvoice = async (order) => {
         </div>
       </div>
 
-      {/* =========================
-          FRAUD
-      ========================== */}
       <div
         className="
           xl:col-span-3
@@ -3633,9 +3599,6 @@ const handleDownloadInvoice = async (order) => {
       </div>
     </div>
 
-    {/* =========================
-        ACTION BAR
-    ========================== */}
     <div
       className="
         mt-5
@@ -3879,9 +3842,6 @@ const handleDownloadInvoice = async (order) => {
         </div>
       )}
 
-      {/* ========================================
-          DELETE MODAL
-      ======================================== */}
 
       {deleteOrder && (
         <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
