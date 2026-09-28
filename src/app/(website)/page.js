@@ -11,27 +11,19 @@ import React from 'react'
 
 export const metadata = {
   title: "Premium Abaya & Borkha | Customization & Online Shop in Bangladesh",
-
   description:
     "Shop premium abayas and borkhas or customize your own design with your preferred color, size and measurements. Discover elegant modest fashion and ready-to-wear collections from Afis Creation in Bangladesh.",
-
   alternates: {
     canonical: "https://afiscreation.com",
   },
-
   openGraph: {
     title:
       "Premium Abaya & Borkha | Customization & Online Shop in Bangladesh",
-
     description:
       "Shop ready-to-wear abayas and borkhas or create your own customized design with your preferred color, size and measurements. Explore elegant modest fashion from Afis Creation in Bangladesh.",
-
     url: "https://afiscreation.com",
-
     siteName: "Afis Creation",
-
     type: "website",
-
     locale: "en_BD",
   },
 };

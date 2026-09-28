@@ -807,108 +807,72 @@ const OrdersPage = () => {
       }
     };
 
-  const handleFraudCheck = async (
-    order
-  ) => {
-    if (!order?._id) {
-      toast.error(
-        "Invalid order."
-      );
+const handleFraudCheck = async (order, force = false) => {
+  if (!order?._id) {
+    toast.error("Invalid order.");
+    return;
+  }
 
+  setAction(order._id, "fraud", true);
+
+  try {
+    const res = await fetch(
+      `${apiUrl}/api/fraud/check/${order._id}${force ? "?force=true" : ""}`,
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+        },
+        cache: "no-store",
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok || !data.success) {
+      throw new Error(data.message || "Fraud check failed");
+    }
+
+    const fraudResult = data.fraudCheck || data.result || null;
+
+    if (!fraudResult) {
+      throw new Error("Fraud check returned no data.");
+    }
+
+    setOrders((prevOrders) =>
+      prevOrders.map((item) =>
+        item?._id === order._id
+          ? {
+              ...item,
+              fraudCheck: fraudResult,
+            }
+          : item
+      )
+    );
+
+    if (data.cached) {
+      toast.success("Saved fraud result loaded.");
       return;
     }
 
-    setAction(
-      order._id,
-      "fraud",
-      true
-    );
-
-    try {
-      const res = await fetch(
-        `${apiUrl}/api/fraud/check/${order._id}`,
-        {
-          method: "GET",
-
-          headers: {
-            Accept:
-              "application/json",
-          },
-
-          cache: "no-store",
-        }
-      );
-
-      const data =
-        await res.json();
-
-      if (
-        !res.ok ||
-        !data.success
-      ) {
-        throw new Error(
-          data.message ||
-            "Fraud check failed"
-        );
-      }
-
-      const fraudResult =
-        data.fraudCheck ||
-        data.result ||
-        null;
-
-      if (!fraudResult) {
-        throw new Error(
-          "Fraud check returned no data."
-        );
-      }
-
-      setOrders(
-        (prevOrders) =>
-          prevOrders.map(
-            (item) =>
-              item?._id ===
-              order._id
-                ? {
-                    ...item,
-
-                    fraudCheck:
-                      fraudResult,
-                  }
-                : item
-          )
-      );
-
-      if (
-        fraudResult.riskLevel ===
-        "Unverified"
-      ) {
-        toast.success(
-          "No SteadFast history found for this number."
-        );
-      } else {
-        toast.success(
-          `Fraud check completed — ${fraudResult.riskLevel} risk`
-        );
-      }
-    } catch (error) {
-      console.error(
-        "Fraud check error:",
-        error
-      );
-
-      toast.error(
-        error.message ||
-          "Fraud check failed"
-      );
-    } finally {
-      setAction(
-        order._id,
-        "fraud",
-        false
+    if (
+      fraudResult.riskLevel === "Unverified" ||
+      fraudResult.riskLevel === "Unknown"
+    ) {
+      toast.success("No SteadFast history found for this number.");
+    } else {
+      toast.success(
+        `Fraud check completed — ${fraudResult.riskLevel} risk`
       );
     }
-  };
+  } catch (error) {
+    console.error("Fraud check error:", error);
+
+    toast.error(error.message || "Fraud check failed");
+  } finally {
+    setAction(order._id, "fraud", false);
+  }
+};
 
   const handlePathaoEntry = async (
     order
@@ -2293,6 +2257,7 @@ const handleDownloadInvoice = async (order) => {
         };
 
       case "Unverified":
+      case "Unknown":
         return {
           Icon: HelpCircle,
 
@@ -3541,7 +3506,8 @@ const handleDownloadInvoice = async (order) => {
 
             </div>
 
-            {fraud.riskLevel === "Unverified" ? (
+            {fraud.riskLevel === "Unverified" ||
+            fraud.riskLevel === "Unknown" ? (
 
               <p className="mt-3 text-[10px] text-slate-500 dark:text-slate-400">
                 No SteadFast history found.
@@ -3551,13 +3517,15 @@ const handleDownloadInvoice = async (order) => {
 
               <>
                 <p className="mt-3 text-[10px] font-medium text-slate-600 dark:text-slate-300">
-                  {fraud.totalOrders || 0} parcels via SteadFast
+                  {fraud.deliveryRatio ?? 0}% delivered ·{" "}
+                  {fraud.cancellationRate ?? 0}% cancelled
                 </p>
 
-                <p className="text-[10px] text-slate-500 dark:text-slate-400">
-                  {fraud.deliveredOrders || 0} delivered ·{" "}
-                  {fraud.cancelledOrders || 0} cancelled
-                </p>
+                {fraud.volumeBand && (
+                  <p className="text-[10px] capitalize text-slate-500 dark:text-slate-400">
+                    Order volume: {fraud.volumeBand}
+                  </p>
+                )}
 
                 {fraud.returnedOrders > 0 && (
                   <p className="mt-1 text-[10px] font-medium text-orange-600 dark:text-orange-400">
@@ -3689,7 +3657,7 @@ const handleDownloadInvoice = async (order) => {
 
           <button
             type="button"
-            onClick={() => handleFraudCheck(order)}
+            onClick={() => handleFraudCheck(order, Boolean(fraud?.checked))}
             disabled={isActionLoading(order._id, "fraud")}
             className="
               inline-flex h-9 items-center justify-center gap-1.5
