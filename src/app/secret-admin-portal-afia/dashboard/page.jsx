@@ -145,10 +145,6 @@ return Number.isNaN(date.getTime()) ? null : date;
 
 };
 
-// =========================
-// ORDER AMOUNT
-// =========================
-
 const getOrderAmount = (order) => {
 const amount = Number(
 order?.totalCost ??
@@ -302,10 +298,6 @@ return {
 
 }, [orderPeriod, orderStats]);
 
-// =========================
-// RECENT ORDERS
-// =========================
-
 const recentOrders = useMemo(() => {
 return [...orders]
 .sort((a, b) => {
@@ -320,10 +312,6 @@ const dateB = getOrderDate(b)?.getTime() || 0;
 
 }, [orders]);
 
-// =========================
-// REVENUE PERIODS
-// =========================
-
 const revenueStats = useMemo(() => {
 return {
 last7Days: orderStats.revenue7Days,
@@ -332,11 +320,6 @@ last1Year: orderStats.revenue1Year,
 total: orderStats.totalRevenue,
 };
 }, [orderStats]);
-
-// =========================
-// ORDER OVERVIEW CHART
-// LAST 7 DAYS
-// =========================
 
 const orderChartData = useMemo(() => {
 const now = new Date();
@@ -380,10 +363,6 @@ return data;
 
 }, [orders]);
 
-// =========================
-// REVENUE CHART DATA
-// =========================
-
 const revenueChartData = useMemo(() => {
 return [
 {
@@ -404,10 +383,6 @@ revenue: revenueStats.total,
 },
 ];
 }, [revenueStats]);
-
-// =========================
-// PRODUCT STATISTICS
-// =========================
 
 const productStats = useMemo(() => {
 const total = products.length;
@@ -453,10 +428,6 @@ return {
 
 }, [products]);
 
-// =========================
-// RECENT PRODUCTS
-// =========================
-
 const recentProducts = useMemo(() => {
 const sorted = [...products].sort((a, b) => {
 const dateA = new Date(
@@ -476,17 +447,9 @@ return sorted.slice(0, 5);
 
 }, [products]);
 
-// =========================
-// MONEY FORMAT
-// =========================
-
 const formatMoney = (amount) => {
 return `৳ ${Number(amount || 0).toLocaleString("en-BD")}`;
 };
-
-// =========================
-// DATE FORMAT
-// =========================
 
 const formatDate = (dateValue) => {
 if (!dateValue) return "-";
@@ -505,10 +468,6 @@ return date.toLocaleDateString("en-BD", {
 
 };
 
-// =========================
-// ORDER ID
-// =========================
-
 const getOrderId = (order) => {
 return (
 order?.orderId ||
@@ -519,10 +478,6 @@ order?._id ||
 );
 };
 
-// =========================
-// CUSTOMER NAME
-// =========================
-
 const getCustomerName = (order) => {
 return (
 order?.fullName ||
@@ -532,10 +487,6 @@ order?.user?.name ||
 "Guest Customer"
 );
 };
-
-// =========================
-// ORDER STATUS CLASS
-// =========================
 
 const getStatusClass = (status) => {
 const normalized = String(status || "Pending").toLowerCase();
@@ -575,10 +526,6 @@ return "bg-amber-100 text-amber-700";
 
 };
 
-// =========================
-// MAIN STATS
-// =========================
-
 const stats = [
 {
 id: 1,
@@ -610,17 +557,13 @@ color: "bg-amber-50 text-amber-600",
 },
 ];
 
-// =========================
-// CUSTOM ORDER TOOLTIP
-// =========================
-
 const OrderTooltip = ({ active, payload, label }) => {
 if (!active || !payload || !payload.length) {
 return null;
 }
 
 return (
-  <div className="bg-white border border-gray-100 shadow-xl rounded-xl px-4 py-3 min-w-[150px]">
+  <div className="bg-white border border-gray-100 shadow-xl rounded-sm px-4 py-3 min-w-[150px]">
     <p className="text-xs font-semibold text-gray-500 mb-2">
       {label}
     </p>
@@ -639,17 +582,13 @@ return (
 
 };
 
-// =========================
-// CUSTOM REVENUE TOOLTIP
-// =========================
-
 const RevenueTooltip = ({ active, payload, label }) => {
 if (!active || !payload || !payload.length) {
 return null;
 }
 
 return (
-  <div className="bg-white border border-gray-100 shadow-xl rounded-xl px-4 py-3 min-w-[170px]">
+  <div className="bg-white border border-gray-100 shadow-xl rounded-sm px-4 py-3 min-w-[170px]">
     <p className="text-xs font-semibold text-gray-500 mb-2">
       {label}
     </p>
@@ -668,10 +607,6 @@ return (
 };
 
 return ( <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8 font-poppins">
-{/* =========================
-DASHBOARD HEADER
-========================= */}
-
   <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-7">
     <div>
       <div className="flex items-center gap-2">
@@ -731,7 +666,7 @@ DASHBOARD HEADER
       return (
         <div
           key={item.id}
-          className="bg-white p-4 md:p-5 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between"
+          className="bg-white p-4 md:p-5 rounded-md border border-gray-100 shadow-sm flex items-center justify-between"
         >
           <div className="min-w-0">
             <p className="text-[10px] md:text-xs text-gray-400 font-semibold uppercase tracking-wider">
@@ -753,17 +688,8 @@ DASHBOARD HEADER
     })}
   </div>
 
-  {/* =========================
-      TOP ANALYTICS
-      CHARTS DIRECTLY UNDER STATS
-  ========================= */}
-
   <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
-    {/* =========================
-        ORDER ACTIVITY
-    ========================= */}
-
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 md:p-6">
+    <div className="bg-white rounded-md border border-gray-100 shadow-sm p-5 md:p-6">
       <div className="flex items-center justify-between gap-3 mb-6">
         <div>
           <div className="flex items-center gap-2">
@@ -912,11 +838,7 @@ DASHBOARD HEADER
       </div>
     </div>
 
-    {/* =========================
-        REVENUE ANALYTICS
-    ========================= */}
-
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 md:p-6">
+    <div className="bg-white rounded-md border border-gray-100 shadow-sm p-5 md:p-6">
       <div className="flex items-center justify-between gap-3 mb-6">
         <div>
           <div className="flex items-center gap-2">
@@ -1065,7 +987,7 @@ DASHBOARD HEADER
   </div>
 
 
-  <div className="bg-white rounded-2xl border border-gray-100 shadow-sm mb-6 overflow-hidden">
+  <div className="bg-white rounded-md border border-gray-100 shadow-sm mb-6 overflow-hidden">
     <div className="px-4 md:px-5 pt-4">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div>
@@ -1278,7 +1200,7 @@ DASHBOARD HEADER
   </div>
 
 
-  <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 md:p-5 mb-6">
+  <div className="bg-white rounded-md border border-gray-100 shadow-sm p-4 md:p-5 mb-6">
     <div className="flex items-center justify-between mb-4">
       <div>
         <h2 className="text-base font-bold text-gray-800">
@@ -1386,7 +1308,7 @@ DASHBOARD HEADER
   </div>
 
 
-  <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 md:p-6 mb-6">
+  <div className="bg-white rounded-md border border-gray-100 shadow-sm p-5 md:p-6 mb-6">
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-5">
       <div>
         <h2 className="text-lg font-bold text-gray-800">
@@ -1734,16 +1656,8 @@ DASHBOARD HEADER
     </div>
   </div>
 
-  {/* =========================
-      CONTENT GRID
-  ========================= */}
-
   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    {/* =========================
-        RECENT ORDERS
-    ========================= */}
-
-    <div className="lg:col-span-2 bg-white p-5 md:p-6 rounded-2xl border border-gray-100 shadow-sm">
+    <div className="lg:col-span-2 bg-white p-5 md:p-6 rounded-md border border-gray-100 shadow-sm">
       <div className="flex items-center justify-between mb-5">
         <div>
           <h2 className="text-lg font-bold text-gray-800">
@@ -1913,11 +1827,7 @@ DASHBOARD HEADER
       )}
     </div>
 
-    {/* =========================
-        STORE MANAGEMENT
-    ========================= */}
-
-    <div className="bg-white p-5 md:p-6 rounded-2xl border border-gray-100 shadow-sm">
+    <div className="bg-white p-5 md:p-6 rounded-tr-4xl rounded-bl-4xl border border-primary shadow-sm">
       <div className="flex items-center gap-2 mb-1">
         <div className="w-9 h-9 rounded-xl bg-gray-100 text-gray-700 flex items-center justify-center">
           <FiPackage size={17} />

@@ -1,65 +1,137 @@
 import axios from "axios";
 
+/* =========================
+   BASE URL
+========================= */
+
 const rawURL =
   process.env.NEXT_PUBLIC_API_URL ||
   "http://localhost:5000";
 
-const cleanURL = rawURL.replace(/\/+$/, "");
+const cleanURL = rawURL
+  .trim()
+  .replace(/\/+$/, "");
 
-const baseURL = cleanURL.endsWith("/api/v1")
+const baseURL = cleanURL.endsWith(
+  "/api/v1"
+)
   ? cleanURL
   : cleanURL.endsWith("/api")
   ? `${cleanURL}/v1`
   : `${cleanURL}/api/v1`;
 
+const orderBaseURL =
+  cleanURL.endsWith("/api")
+    ? cleanURL
+    : `${cleanURL}/api`;
+
+/* =========================
+   API CLIENTS
+========================= */
+
 const api = axios.create({
   baseURL,
   withCredentials: true,
+  headers: {
+    "Content-Type":
+      "application/json",
+  },
 });
 
 const orderApi = axios.create({
-  baseURL: `${cleanURL}/api`,
+  baseURL: orderBaseURL,
   withCredentials: true,
 });
+
+const refreshClient =
+  axios.create({
+    baseURL,
+    withCredentials: true,
+    headers: {
+      "Content-Type":
+        "application/json",
+    },
+  });
 
 /* =========================
-   REFRESH CLIENT
+   REFRESH STATE
 ========================= */
 
-const refreshClient = axios.create({
-  baseURL,
-  withCredentials: true,
-});
-
 let isRefreshing = false;
+
 let refreshSubscribers = [];
 
-const subscribeTokenRefresh = (callback) => {
-  refreshSubscribers.push(callback);
+const subscribeTokenRefresh = (
+  callback
+) => {
+  refreshSubscribers.push(
+    callback
+  );
 };
 
 const notifyRefreshSubscribers = (
   success
 ) => {
-  refreshSubscribers.forEach((callback) => {
-    callback(success);
-  });
+  refreshSubscribers.forEach(
+    (callback) => {
+      callback(success);
+    }
+  );
 
   refreshSubscribers = [];
 };
 
+/* =========================
+   STORAGE
+========================= */
+
 const clearStoredUser = () => {
-  if (typeof window === "undefined") {
+  if (
+    typeof window ===
+    "undefined"
+  ) {
     return;
   }
 
-  localStorage.removeItem("user");
-  localStorage.removeItem("adminUser");
+  localStorage.removeItem(
+    "user"
+  );
 
-  // Old token cleanup
-  localStorage.removeItem("token");
-  localStorage.removeItem("accessToken");
-  localStorage.removeItem("refreshToken");
+  localStorage.removeItem(
+    "adminUser"
+  );
+
+  // Remove old token-based auth
+  localStorage.removeItem(
+    "token"
+  );
+
+  localStorage.removeItem(
+    "accessToken"
+  );
+
+  localStorage.removeItem(
+    "refreshToken"
+  );
+};
+
+/* =========================
+   AUTH ENDPOINT CHECK
+========================= */
+
+const isAuthEndpoint = (
+  url = ""
+) => {
+  return (
+    url.includes("/auth/login") ||
+    url.includes("/auth/register") ||
+    url.includes("/auth/verify-otp") ||
+    url.includes("/auth/google") ||
+    url.includes("/auth/refresh") ||
+    url.includes("/auth/logout") ||
+    url.includes("/auth/forgot-password") ||
+    url.includes("/auth/reset-password")
+  );
 };
 
 /* =========================
@@ -67,14 +139,18 @@ const clearStoredUser = () => {
 ========================= */
 
 const refreshSession = async () => {
-  await refreshClient.post("/auth/refresh");
+  return refreshClient.post(
+    "/auth/refresh"
+  );
 };
 
 /* =========================
    REQUEST INTERCEPTOR
 ========================= */
 
-const requestInterceptor = (config) => {
+const requestInterceptor = (
+  config
+) => {
   config.withCredentials = true;
 
   return config;
@@ -82,16 +158,18 @@ const requestInterceptor = (config) => {
 
 api.interceptors.request.use(
   requestInterceptor,
-  (error) => Promise.reject(error)
+  (error) =>
+    Promise.reject(error)
 );
 
 orderApi.interceptors.request.use(
   requestInterceptor,
-  (error) => Promise.reject(error)
+  (error) =>
+    Promise.reject(error)
 );
 
 /* =========================
-   RESPONSE HANDLER
+   RESPONSE INTERCEPTOR
 ========================= */
 
 const setupResponseInterceptor = (
@@ -105,31 +183,61 @@ const setupResponseInterceptor = (
         error.config;
 
       if (!error.response) {
-        return Promise.reject(error);
+        return Promise.reject(
+          error
+        );
       }
 
+      const status =
+        error.response.status;
+
       if (
-        error.response.status !== 401 ||
-        originalRequest?._retry
+        status !== 401 ||
+        !originalRequest ||
+        originalRequest._retry
       ) {
-        return Promise.reject(error);
+        return Promise.reject(
+          error
+        );
       }
 
+      const requestURL =
+        originalRequest.url || "";
+
+      /*
+       * Never refresh for authentication
+       * endpoints themselves.
+       */
       if (
-        originalRequest?.url?.includes(
-          "/auth/refresh"
+        isAuthEndpoint(
+          requestURL
         )
       ) {
-        clearStoredUser();
+        if (
+          requestURL.includes(
+            "/auth/refresh"
+          )
+        ) {
+          clearStoredUser();
+        }
 
-        return Promise.reject(error);
+        return Promise.reject(
+          error
+        );
       }
 
       originalRequest._retry = true;
 
+      /* =========================
+         ANOTHER REQUEST REFRESHING
+      ========================= */
+
       if (isRefreshing) {
         return new Promise(
-          (resolve, reject) => {
+          (
+            resolve,
+            reject
+          ) => {
             subscribeTokenRefresh(
               (success) => {
                 if (!success) {
@@ -138,7 +246,9 @@ const setupResponseInterceptor = (
                 }
 
                 resolve(
-                  client(originalRequest)
+                  client(
+                    originalRequest
+                  )
                 );
               }
             );
@@ -146,16 +256,28 @@ const setupResponseInterceptor = (
         );
       }
 
+      /* =========================
+         START REFRESH
+      ========================= */
+
       isRefreshing = true;
 
       try {
         await refreshSession();
 
-        notifyRefreshSubscribers(true);
+        notifyRefreshSubscribers(
+          true
+        );
 
-        return client(originalRequest);
-      } catch (refreshError) {
-        notifyRefreshSubscribers(false);
+        return client(
+          originalRequest
+        );
+      } catch (
+        refreshError
+      ) {
+        notifyRefreshSubscribers(
+          false
+        );
 
         clearStoredUser();
 
@@ -170,9 +292,14 @@ const setupResponseInterceptor = (
 };
 
 setupResponseInterceptor(api);
-setupResponseInterceptor(orderApi);
+
+setupResponseInterceptor(
+  orderApi
+);
 
 export const API = api;
-export const ORDER_API = orderApi;
+
+export const ORDER_API =
+  orderApi;
 
 export default api;
