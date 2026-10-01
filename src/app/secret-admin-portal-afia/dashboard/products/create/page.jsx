@@ -170,20 +170,6 @@ export default function AddProductPage() {
 
     if (!files.length) return;
 
-    if (
-      extraImagePreviews.length +
-        files.length >
-      4
-    ) {
-      alert(
-        'সর্বোচ্চ ৪টি অতিরিক্ত ছবি আপলোড করা যাবে।'
-      );
-
-      e.target.value = '';
-
-      return;
-    }
-
     setExtraImages((prev) => [
       ...prev,
       ...files,
@@ -237,9 +223,9 @@ export default function AddProductPage() {
       prev.map((color, i) =>
         i === index
           ? {
-              ...color,
-              [field]: value,
-            }
+            ...color,
+            [field]: value,
+          }
           : color
       )
     );
@@ -292,13 +278,13 @@ export default function AddProductPage() {
           imageIndexes:
             alreadySelected
               ? currentIndexes.filter(
-                  (item) =>
-                    item !== imageIndex
-                )
+                (item) =>
+                  item !== imageIndex
+              )
               : [
-                  ...currentIndexes,
-                  imageIndex,
-                ],
+                ...currentIndexes,
+                imageIndex,
+              ],
         };
       })
     );
@@ -371,8 +357,8 @@ export default function AddProductPage() {
 
             code: color.code
               ? color.code
-                  .trim()
-                  .toUpperCase()
+                .trim()
+                .toUpperCase()
               : '#000000',
 
             imageIndexes:
@@ -412,24 +398,10 @@ export default function AddProductPage() {
         )
       );
 
-      /*
-        CUSTOM MEASUREMENT
-
-        hasCustomSize is already
-        included above from formData.
-
-        Only customizationUnit
-        needs to be added separately.
-      */
-
       data.append(
         'customizationUnit',
         customizationUnit
       );
-
-      /*
-        THUMBNAIL
-      */
 
       if (thumbnailFile) {
         data.append(
@@ -478,7 +450,7 @@ export default function AddProductPage() {
       if (!res.ok || !result.success) {
         throw new Error(
           result.message ||
-            'Failed to create product'
+          'Failed to create product'
         );
       }
 
@@ -519,7 +491,7 @@ export default function AddProductPage() {
 
       setErrorMsg(
         err.message ||
-          'Something went wrong'
+        'Something went wrong'
       );
     } finally {
       setSubmitting(false);
@@ -552,7 +524,7 @@ export default function AddProductPage() {
   return (
     <div className="mx-auto w-full max-w-5xl rounded-2xl border border-slate-200 bg-white p-3 text-slate-900 shadow-xl transition-colors duration-200 dark:border-slate-800 dark:bg-slate-900 dark:text-white sm:p-4 md:p-6 lg:p-8 font-poppins">
 
-      {/* HEADER */}
+
 
       <div className="mb-5 border-b border-slate-200 pb-4 dark:border-slate-800 sm:mb-6">
 
@@ -596,11 +568,10 @@ export default function AddProductPage() {
               onClick={() =>
                 setActiveTab(tab.id)
               }
-              className={`rounded-lg px-3 py-2 text-xs font-medium transition sm:px-4 sm:text-sm ${
-                activeTab === tab.id
-                  ? 'bg-orange-500 text-white shadow-md'
-                  : 'bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-900 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-white'
-              }`}
+              className={`rounded-lg px-3 py-2 text-xs font-medium transition sm:px-4 sm:text-sm ${activeTab === tab.id
+                ? 'bg-orange-500 text-white shadow-md'
+                : 'bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-900 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-white'
+                }`}
             >
               {tab.label}
             </button>
@@ -614,8 +585,6 @@ export default function AddProductPage() {
         onSubmit={handleSubmit}
         className="space-y-5 sm:space-y-6"
       >
-
-        {/* ================= BASICS ================= */}
 
         {activeTab === 'basics' && (
           <div className="space-y-5 sm:space-y-6">
@@ -717,10 +686,10 @@ export default function AddProductPage() {
                             (sub) => {
                               const subName =
                                 typeof sub ===
-                                'string'
+                                  'string'
                                   ? sub
                                   : sub.name ||
-                                    sub.title;
+                                  sub.title;
 
                               return (
                                 <option
@@ -937,7 +906,7 @@ export default function AddProductPage() {
             <div>
 
               <label className="mb-2 block text-xs font-medium sm:text-sm">
-                Additional Images (Max 4)
+                Additional Images
               </label>
 
               <input
@@ -994,17 +963,17 @@ export default function AddProductPage() {
 
               {extraImagePreviews.length >
                 0 && (
-                <p className="mt-3 text-xs leading-5 text-slate-500 dark:text-slate-400">
-                  These images can be
-                  assigned to specific
-                  colours from the
-                  <span className="text-orange-500 dark:text-orange-400">
-                    {' '}
-                    Colours & Variants
-                  </span>{' '}
-                  tab.
-                </p>
-              )}
+                  <p className="mt-3 text-xs leading-5 text-slate-500 dark:text-slate-400">
+                    These images can be
+                    assigned to specific
+                    colours from the
+                    <span className="text-orange-500 dark:text-orange-400">
+                      {' '}
+                      Colours & Variants
+                    </span>{' '}
+                    tab.
+                  </p>
+                )}
 
             </div>
 
@@ -1349,150 +1318,82 @@ export default function AddProductPage() {
 
                         {colors.length >
                           1 && (
-                          <button
-                            type="button"
-                            onClick={() =>
-                              removeColor(
-                                idx
-                              )
-                            }
-                            className="flex h-9 w-9 shrink-0 items-center justify-center self-end rounded-lg text-red-500 transition hover:bg-red-50 dark:hover:bg-red-950/30 sm:self-auto"
-                          >
-                            <Trash2
-                              size={18}
-                            />
-                          </button>
-                        )}
+                            <button
+                              type="button"
+                              onClick={() =>
+                                removeColor(
+                                  idx
+                                )
+                              }
+                              className="flex h-9 w-9 shrink-0 items-center justify-center self-end rounded-lg text-red-500 transition hover:bg-red-50 dark:hover:bg-red-950/30 sm:self-auto"
+                            >
+                              <Trash2
+                                size={18}
+                              />
+                            </button>
+                          )}
 
                       </div>
 
                       {(thumbnailPreview ||
                         extraImagePreviews.length >
-                          0) && (
-                        <div className="mt-4">
+                        0) && (
+                          <div className="mt-4">
 
-                          <p className="mb-3 text-xs text-slate-500 dark:text-slate-400">
+                            <p className="mb-3 text-xs text-slate-500 dark:text-slate-400">
 
-                            Select image(s)
-                            for{' '}
+                              Select image(s)
+                              for{' '}
 
-                            <span className="font-semibold text-slate-900 dark:text-white">
+                              <span className="font-semibold text-slate-900 dark:text-white">
 
-                              {color.name ||
-                                `Color ${
-                                  idx +
+                                {color.name ||
+                                  `Color ${idx +
                                   1
-                                }`}
+                                  }`}
 
-                            </span>
+                              </span>
 
-                          </p>
+                            </p>
 
-                          <div className="flex flex-wrap gap-2">
+                            <div className="flex flex-wrap gap-2">
 
-                            {/* THUMBNAIL */}
+                              {/* THUMBNAIL */}
 
-                            {thumbnailPreview && (
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  toggleColorImage(
-                                    idx,
-                                    -1
-                                  )
-                                }
-                                className={`relative h-20 w-20 overflow-hidden rounded-lg border-2 transition-all ${
-                                  (
+                              {thumbnailPreview && (
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    toggleColorImage(
+                                      idx,
+                                      -1
+                                    )
+                                  }
+                                  className={`relative h-20 w-20 overflow-hidden rounded-lg border-2 transition-all ${(
                                     color.imageIndexes ||
                                     []
                                   ).includes(-1)
                                     ? 'border-orange-500 ring-2 ring-orange-500/30'
                                     : 'border-orange-400/60 hover:border-orange-400'
-                                }`}
-                              >
+                                    }`}
+                                >
 
-                                <img
-                                  src={
-                                    thumbnailPreview
-                                  }
-                                  alt="thumbnail"
-                                  className="h-full w-full object-cover"
-                                />
+                                  <img
+                                    src={
+                                      thumbnailPreview
+                                    }
+                                    alt="thumbnail"
+                                    className="h-full w-full object-cover"
+                                  />
 
-                                <span className="absolute left-0 right-0 top-0 bg-orange-500/90 px-1 py-1 text-center text-[9px] font-semibold text-white">
-                                  THUMBNAIL
-                                </span>
-
-                                {(
-                                  color.imageIndexes ||
-                                  []
-                                ).includes(-1) && (
-                                  <span className="absolute inset-0 flex items-center justify-center bg-orange-500/20">
-
-                                    <span className="rounded-full bg-orange-500 p-1 text-white">
-
-                                      <Check
-                                        size={
-                                          12
-                                        }
-                                      />
-
-                                    </span>
-
+                                  <span className="absolute left-0 right-0 top-0 bg-orange-500/90 px-1 py-1 text-center text-[9px] font-semibold text-white">
+                                    THUMBNAIL
                                   </span>
-                                )}
 
-                              </button>
-                            )}
-
-                            {/* EXTRA IMAGES */}
-
-                            {extraImagePreviews.map(
-                              (
-                                src,
-                                imageIndex
-                              ) => {
-
-                                const selected =
-                                  (
+                                  {(
                                     color.imageIndexes ||
                                     []
-                                  ).includes(
-                                    imageIndex
-                                  );
-
-                                return (
-                                  <button
-                                    key={
-                                      imageIndex
-                                    }
-                                    type="button"
-                                    onClick={() =>
-                                      toggleColorImage(
-                                        idx,
-                                        imageIndex
-                                      )
-                                    }
-                                    className={`relative h-16 w-16 overflow-hidden rounded-lg border-2 transition-all ${
-                                      selected
-                                        ? 'border-orange-500 ring-2 ring-orange-500/30'
-                                        : 'border-slate-200 hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500'
-                                    }`}
-                                  >
-
-                                    <img
-                                      src={src}
-                                      alt={`color-${imageIndex}`}
-                                      className="h-full w-full object-cover"
-                                    />
-
-                                    <span className="absolute bottom-0 left-0 bg-black/70 px-1 text-[9px] text-white">
-                                      #
-                                      {imageIndex +
-                                        1}
-                                    </span>
-
-                                    {selected && (
+                                  ).includes(-1) && (
                                       <span className="absolute inset-0 flex items-center justify-center bg-orange-500/20">
 
                                         <span className="rounded-full bg-orange-500 p-1 text-white">
@@ -1508,36 +1409,100 @@ export default function AddProductPage() {
                                       </span>
                                     )}
 
-                                  </button>
-                                );
-                              }
-                            )}
+                                </button>
+                              )}
+
+                              {/* EXTRA IMAGES */}
+
+                              {extraImagePreviews.map(
+                                (
+                                  src,
+                                  imageIndex
+                                ) => {
+
+                                  const selected =
+                                    (
+                                      color.imageIndexes ||
+                                      []
+                                    ).includes(
+                                      imageIndex
+                                    );
+
+                                  return (
+                                    <button
+                                      key={
+                                        imageIndex
+                                      }
+                                      type="button"
+                                      onClick={() =>
+                                        toggleColorImage(
+                                          idx,
+                                          imageIndex
+                                        )
+                                      }
+                                      className={`relative h-16 w-16 overflow-hidden rounded-lg border-2 transition-all ${selected
+                                        ? 'border-orange-500 ring-2 ring-orange-500/30'
+                                        : 'border-slate-200 hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500'
+                                        }`}
+                                    >
+
+                                      <img
+                                        src={src}
+                                        alt={`color-${imageIndex}`}
+                                        className="h-full w-full object-cover"
+                                      />
+
+                                      <span className="absolute bottom-0 left-0 bg-black/70 px-1 text-[9px] text-white">
+                                        #
+                                        {imageIndex +
+                                          1}
+                                      </span>
+
+                                      {selected && (
+                                        <span className="absolute inset-0 flex items-center justify-center bg-orange-500/20">
+
+                                          <span className="rounded-full bg-orange-500 p-1 text-white">
+
+                                            <Check
+                                              size={
+                                                12
+                                              }
+                                            />
+
+                                          </span>
+
+                                        </span>
+                                      )}
+
+                                    </button>
+                                  );
+                                }
+                              )}
+
+                            </div>
+
+                            <p className="mt-2 text-[10px] text-slate-500">
+                              {(
+                                color.imageIndexes ||
+                                []
+                              ).length >
+                                0
+                                ? `${(
+                                  color.imageIndexes ||
+                                  []
+                                ).length
+                                } image(s) selected`
+                                : 'No image selected for this color.'}
+                            </p>
+
+                            <p className="mt-1 text-[10px] text-slate-500">
+                              Thumbnail can also
+                              be assigned to this
+                              color.
+                            </p>
 
                           </div>
-
-                          <p className="mt-2 text-[10px] text-slate-500">
-                            {(
-                              color.imageIndexes ||
-                              []
-                            ).length >
-                            0
-                              ? `${
-                                  (
-                                    color.imageIndexes ||
-                                    []
-                                  ).length
-                                } image(s) selected`
-                              : 'No image selected for this color.'}
-                          </p>
-
-                          <p className="mt-1 text-[10px] text-slate-500">
-                            Thumbnail can also
-                            be assigned to this
-                            color.
-                          </p>
-
-                        </div>
-                      )}
+                        )}
 
                     </div>
                   )
@@ -1596,20 +1561,20 @@ export default function AddProductPage() {
 
                       {sizes.length >
                         1 && (
-                        <button
-                          type="button"
-                          onClick={() =>
-                            removeSize(
-                              idx
-                            )
-                          }
-                          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30"
-                        >
-                          <Trash2
-                            size={18}
-                          />
-                        </button>
-                      )}
+                          <button
+                            type="button"
+                            onClick={() =>
+                              removeSize(
+                                idx
+                              )
+                            }
+                            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30"
+                          >
+                            <Trash2
+                              size={18}
+                            />
+                          </button>
+                        )}
 
                     </div>
                   )

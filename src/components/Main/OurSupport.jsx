@@ -8,7 +8,7 @@ const OurSupport = () => {
         {
             icon: img_1,
             text: "FREE AND FAST DELIVERY",
-            description: "Free delivery for all orders over $140"
+            description: "Free delivery for all orders over 5000BDT"
         },
         {
             icon: img_2,

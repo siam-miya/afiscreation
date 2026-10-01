@@ -35,8 +35,8 @@ const HomePage = () => {
       <FlashSales />
       <Category />
       <BestSelling />
-      <RadioExprience />
       <OurProducts />
+      <RadioExprience />
       <Featured />
       <OurSupport />
     </>
